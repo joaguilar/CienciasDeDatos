@@ -7,59 +7,77 @@
 
 
 \begin{document}
+\selectlanguage{spanish}
 \linespread{1.5}
 \noindent
-\large\textbf{Tarea 1} \\
-\textbf{Resumen del libro "How to Lie with Statistics" de Darrell Huff} \\
+\large\textbf{Tarea 1 Resumen del libro "How to Lie with Statistics" de Darrell Huff} \\
 \normalsize Matemática para la Ciencia de Datos \\
 Alumno: Jose Aguilar\hfill 2/Abril/2019 \\
 
 
 \section*{Capítulo 1: La muestra con el sesgo incorporado}
-\selectlanguage{spanish}
 
-En el reportaje de Yale está la primera gran enseñanza del libro. En este se menciona el ingreso promedio de \textdollar{25.000} de los egresados de Yale, y utilizando este ejemplo muestra los errores en el muestreo, los cuales se dan porque es más fácil encontrar a los egresados a los que les ha ido bien económicamente, con lo que se sesga esta cifra hacia esos individuos de forma importante. Aquellos egresados a los que no les ha ido tan bien, o no responden o no son localizables por esta misma razon. Además, se utiliza un ejemplo de unas encuestas de las revistas que leen las personas para mostrar que aún cuando son localizables, no siempre dicen la verdad.
+\textbf{\textit{El resultado de un estudio con un muestreo es tan bueno como la muestra en que se basa.}}
 
-\textit{El resultado de un estudio con un muestreo es tan bueno como la muestra en qué se basa.}
+Un estudio de exalumnos de Yale está la primera gran enseñanza del libro. En este se menciona el ingreso promedio de \textdollar{25.000} para los egresados de Yale. El libro utiliza este ejemplo para mostrar los errores en el muestreo, los cuales se dan porque es más fácil encontrar a los egresados a los que les ha ido bien económicamente, con lo que se sesga esta cifra hacia esos individuos de forma importante. Aquellos egresados a los que no les ha ido tan bien, o no responden o no son localizables por esta misma razon. Además, se utiliza un ejemplo de unas encuestas de las revistas que leen las personas para mostrar que aún cuando son localizables, no siempre dicen la verdad.
 
-La muestra puede tener sesgos incorporados, tal como lo muestran los ejemplos de tasas de sobrevivencia al cancer y la afirmación del psiquiatra de que \textit{todo el mundo es neurótico}. Además la muestra puede tener sesgos invisibles, por lo que el libro recomienda ser escépticos, aún cuando se ven y se consideran sesgos obvios. Como le ejemplo que dan Tere elección del 32, y que se puede pensar ni algo parecido en las últimas elecciones en Costa Rica. La muestra basica es llamada \textit{aleatoria}, y es seleccionada al azar del universo en estadística significa el todo del cual la muestra es una parte.
+La muestra puede tener sesgos incorporados, tal como lo muestran los ejemplos de tasas de sobrevivencia al cancer y la afirmación del psiquiatra de que \textit{todo el mundo es neurótico}. Además la muestra puede tener sesgos invisibles, por lo que el libro recomienda ser escépticos, aún cuando se ven y se consideran sesgos obvios. Como le ejemplo que dan sobre la elección en los Estados Unidos en 1932, y que se puede pensar que algo parecido sucedió en las últimas elecciones en Costa Rica - las encuestas se hicieron con una muestra que no reflejaba la distribución real de la población, por lo que no predecía realmente como iban a quedar las elecciones.
 
-El muestreo aleatorio es el único que puede ser analizado estadísticamente con confianza, pero tiene limitaciones de costo. Por esto existe el muestreo aleatorio estratificado y que es una opción más económica, por lo que es lo más usado.  Para utilizar este tipo de muestreo se divide el universo en grupos de acuerdo a su prevalencia, de tal forma que tengan la misma proporción. El problema es que esa proporción puede que no sea la correcta. Y obtener una muestra aleatoria dentro de cada estrato es igual de caro. Es una guerra continua contra los orígenes de los ascos. Es importante tener en cuenta que la guerra nunca se gana por lo que hay que ser muy escéptico de los titulares de las noticias.
+La muestra basica es llamada \textit{aleatoria}, y es seleccionada al azar del universo - término que en estadística significa el todo del cual la muestra es una parte.
+
+El muestreo aleatorio es el único que puede ser analizado estadísticamente con confianza, pero tiene limitaciones de costo. Por esto existe el muestreo aleatorio estratificado y que es una opción más económica, por lo que es lo más usado.  Para utilizar este tipo de muestreo se divide el universo en grupos de acuerdo a su prevalencia, de tal forma que tengan la misma proporción que el total. El problema es que esa proporción puede que no sea la correcta. Y obtener una muestra aleatoria dentro de cada estrato es igual de caro. Es una guerra continua contra los orígenes de los sesgos. Es importante tener en cuenta que la guerra nunca se gana por lo que hay que ser muy escéptico de los titulares de las noticias.
  
- Algo interesante es que se hace referencia a un estudio del Dr. Alfred Kinsey donde se notan tres niveles de muestreo en los cuales se pueden introducir un sesgo el muestreo de polo población el muestreo de las preguntas posibles y el maestro de las respuestas que nos alejan las actitudes y experiencias de los entrevistados con respecto a las preguntas.
+ Algo interesante es que se hace referencia a un estudio del Dr. Alfred Kinsey donde se notan tres niveles de muestreo en los cuales se pueden introducir un sesgo:
+  
+ \begin{itemize}
+ 	\item la muestra de la población seleccionada
+ 	\item la muestra de las preguntas posibles
+ 	\item la muestra de las posibles respuestas que pudieron haber dado a las preguntas
+ \end{itemize} 
+   
+ También es necesario ver como los entrevistadores afectan las respuestas. Como el ejemplo dado en el cual los entrevistadores blancos o negros causaba que los entrevistados dieron respuestas diferentes. Esto muestra que existe una tendencia de los entrevistados a dar respuestas que sean satisfactoria para el encuestador.
  
- También es necesario ver como los entrevistadores afectan las respuestas. Como el ejemplo dado del N o R FC y como saber entrevistadores blancos o negros causaba que los entrevistados dieron respuestas diferentes lo cual que se considera consenso introducido por factores desconocidos en las encuestas hay que considerar la tendencia a dar una respuesta que sea satisfactoria para el encuestador.
+ Esto hace pensar que las respuestas en esos casos están sesgadas, por lo que los resultados no valen nada. Hay que pensar en todos los casos donde las conclusiones de una encuesta tiene algún sesgo que no es conocido. Esto es muy obvio en las encuestas políticas y recientemente tenemos ejemplos claros como en las elecciones de Estados Unidos en el 2016 el referendo en Gran Bretaña para salir de la Unión Europea inclusive las elecciones de Costa Rica en el 2018.
  
- Esto hace pensar que las respuestas en esos casos están sesgadas y que no vale nada por eso hay que pensar en todos los casos donde las conclusiones de una encuesta tiene algo sesgo que no es conocido esto es muy obvio en las encuestas políticas y recientemente tenemos ejemplos claros como en las elecciones de Estados Unidos en el 2016 el referendo en Gran Bretaña para salir de la unión europea inclusive las elecciones de Costa Rica en el 2018.
- 
- Este sesgo mencionado normalmente eso hace la persona con más dinero mayor educación mejor información más alerta con mejor apariencia con un comportamiento más convencional y más hábitos que la persona promedio de la población que representa.Esto es consistente con el sentimiento en contra de las encuestas de opinión que se encuentra en los círculos de izquierda donde normalmente se dice que las encuestas están modificadas. Detrás de esta visión está el hecho de qué no haz encuestas normalmenteEstán sesgados a favor de los comportamientos conservadores esto hace que no necesariamente se modifique los resultados de una encuesta para favorecer un grupo simplemente la tendencia de muestreo puede estar sentada en una dirección consistentemente.
+Algo muy interesante es que este sesgo en las encuestas en general da mayor peso a las personas con más dinero mayor educación mejor información, más alertas, con mejor apariencia, con un comportamiento más convencional y más hábitos que la persona promedio de la población que representa. Esto es consistente con el sentimiento en contra de las encuestas de opinión que se encuentra en los círculos de izquierda donde normalmente se dice que las encuestas están amañadas. Detrás de esta visión está el hecho de las encuestas pueden estar sesgadas a favor de los comportamientos conservadores, lo cual hace que no necesariamente se escojan concientemente los resultados para favorecer a estos grupos, sino que  simplemente la tendencia de muestreo puede estar sesgada en una dirección (conservadora) consistentemente.
  
 \section*{Capítulo 2: el promedio bien escogido}
 
-El promedio es una de las herramientas más utilizadas para mentir con estadísticas. Existe tanto la media que es el promedio aritmético,Como también existe la mediana qué parte del grupo en dos de tal manera que la mitad de los números usados es menor que la mediana y la otra mitad mayor que la mediana y finalmente está la moda que es el número más como dentro de los datos de entrada. Por esto cuando alguien dice promedio Hay que estar bien claro de cuál de estos se está refiriendo.  Esos promedios normalmente se encuentran cerca uno del otro sobre todo cuando se trabaja con características humanas dado que los humanos caen en lo que se conoce como la distribución normal por lo cual los tres tipos de promedios siempre son similares. Si embargo para otro tipo de datos, los ingresos esto puede ser muy diferente por ejemplo si existen unos pocos individuos con ingresos realmente alto pueden ser sacar significativamente la media sin embargo la mediana reflejaría mejor como es el ingreso aproximado del grupo. Esto depende de como estan distribuidos los datos - en el caso de los ingresos no es una distribución normal, sino una distribución tirada a un lado.
+\textbf{\textit{El tipo de promedio utilizado puede variar dependiendo de la forma que tengan los datos.}}
 
-El ejemplo que se da en el libro sobre los salarios en una empresa es muy revelador. Esto aplica a un el día de hoy donde irnos ejecutivos de los corporaciones tienen salarios que son muchas veces el salario de los empleados matas. Si se saca la media de los salarios no se va a reflejar realmente cuánto es que ganan Las personas en esa corporación. La moda probablemente va a estar más cerca de los salarios de los operadores de bajo nivel de la empresa por lo que la mediana probablemente sea mucho menor que la media.
+El promedio es una de las herramientas más utilizadas para mentir con estadísticas. Existen tres tipos de promedios:
 
-También es muy interesante ver como se manipulan estos promedios para aparentar cosas que no necesariamente son Sharks ciertas. Como por ejemplo el ejemplo que dan en los lectores de la revista también que dependiendo de cual encuestas ahí revisa el ingreso promedio es diferente por lo que cabe dudar sobre su veracidad.
+ \begin{itemize}
+	\item la media que es el promedio aritmético
+	\item la mediana qué parte del grupo en dos de tal manera que la mitad de los números usados es menor que la mediana y la otra mitad mayor que la mediana
+	\item la moda que es el número más común dentro de los datos de entrada
+\end{itemize} 
 
-En resumen, TODO
+Por esto cuando alguien dice promedio hay que estar bien claro de cuál de estos se está refiriendo.  Esos promedios normalmente se encuentran cerca uno del otro sobre todo cuando se trabaja con características humanas, debido a la tendencia de las características humanas de caer en lo que se conoce como la distribución normal, en cuyo caso los tres tipos de promedios siempre son similares. Si embargo para otro tipo de datos, como por ejemplo los ingresos de las personas, esto puede ser muy diferente - si existen unos pocos individuos con ingresos realmente alto pueden sesgar significativamente la media sin embargo la mediana reflejaría mejor como es el ingreso aproximado del grupo. Esto depende de como estan distribuidos los datos - en el caso de los ingresos no es una distribución normal, sino una distribución sesgada hacia un lado.
+
+El ejemplo que se da en el libro sobre los salarios en una empresa es muy revelador. Esto aplica a un el día de hoy donde los ejecutivos de las corporaciones tienen salarios que son muchas veces el salario de los empleados mas bajos. Si se saca la media de los salarios no se va a reflejar realmente cuánto es que ganan la mayoría de las personas en esa corporación. La moda probablemente va a estar más cerca de los salarios de los operadores de bajo nivel de la empresa por lo que la mediana probablemente sea mucho menor que la media.
+
+También es muy interesante ver como se manipulan estos promedios para aparentar cosas que no necesariamente son ciertas. Como por ejemplo el ejemplo que dan en los lectores de la revista también que dependiendo de cual encuestas se ve, hay diferentes datos de ingreso promedio, adaptado a la agenda de quien esté publicando los datos. Por lo tanto siempre es válido dudar sobre la veracidad de cualquier promedio que no esté acompañado de mayor información sobre como se calculó.
+
 
 \section*{Capítulo 3: Las pequeñas figuras que no están ahi}
 
-El capitulo abre con otro ejemplo muy interesante sobre como manipular con estadisticas: \textbf{Los usuarios reportan 23\% menos caries con la pasta de dientes \textit{Doakes}}. Para llegar a este número, utilizaron grupos muy pequeños y probaron con diferentes grupos hasta que encontraron con un número que les satisfaciera. Esto muestra una de las principales enseñanzas del capítulo la cual es que en un grupo con suficiente tamaño cualquier diferencia en los resultados producidos por el azar va a ser muy pequeña. Sin embargo resultados que al final de cuentas serían aleatorio y no indicarían nada en particularPueden ser producidos por el azar dado un pequeño grupo de casos cualquier resultado es posible. Esto lo ilustra muy bien con el ejemplo de las monedas de tirar una moneda varias veces y en algunos escenarios caerá la mayoría importante de las veces en una cara y en otros escenarios en la otra.Por lo que uno podría tomar cualquiera de sus escenarios que más le convenga y utilizar eso como resultados del estudio facilitado si uno no muestra la metodología que se utilizó.
+\textbf{\textit{Solamente cuando hay un suficiente número de pruebas involucradas es que la ley de los promedios produce una descripción o predicción adecuada sobre las observaciones.}}
 
-\textit{Solamente cuando hay un suficiente número de pruebas involucradas es que la ley de los promedios produce una descripción o predicción adecuada sobre las observaciones.}
+El capítulo abre con otro ejemplo muy interesante sobre como manipular con estadisticas: \textbf{Los usuarios reportan 23\% menos caries con la pasta de dientes \textit{Doakes}}. Para llegar a este número, utilizaron grupos muy pequeños y probaron con diferentes grupos hasta que encontraron con un número que les satisfaciera. Esto muestra una de las principales enseñanzas del capítulo la cual es que en un grupo con suficiente tamaño cualquier diferencia en los resultados producidos por el azar va a ser muy pequeña. Contrario a esto, dado un pequeño grupo de casos cualquier resultado es posible - resultados que al final de cuentas serían aleatorios y no indicarían nada en particular, dado que serían básicamente producto del azar . Esto lo ilustra muy bien con el ejemplo de las monedas, que muestra que al tirar una moneda varias veces, van a existir escenarios en donde caerá la mayoría de las veces en una cara y en otros escenarios en la otra. Por lo que uno podría tomar cualquiera de sus escenarios que más le convenga y utilizar eso como resultados del estudio. Esta decepción se facilita si no se muestra la metodología utilizada.
 
-Éste número de suficiente número de pruebas es algo a lo que es difícil llegar esto lo ilustra muy bien el libro con el ejemplo de los casos de polio donde la incidencia de pollo paralítico está baja que se necesita un número real mente grande para poder observar alguna diferencia. Para esto existeLa prueba de significancia que simplemente reporta qué tan probable es que una prueba representa un resultado Real en vez de un resultado que se produjo al azar. Éste grado de significancia normalmente se expresado como una probabilidad. Si la fuente información contiene este dato es más probable que sea un estudio serio y permite darse una mejor idea de los datos que se observaron al hacer el estudio. Se citan los ejemplos del tamaño de la familia, 
+Éste número de suficiente número de pruebas es algo a lo que es difícil llegar. El ejemplo de los casos de polio lo muestra muy claro - la incidencia de pollo paralítico es tan baja que se necesita un número realmente grande para poder observar diferencias entre grupos con diferentes tratamientos. Para llegar a este número de casos existe la prueba de significancia. Esta prueba reporta qué tan probable es que una prueba representa un resultado real en vez de un resultado que se produjo al azar. Éste grado de significancia normalmente se expresado como una probabilidad. Si la fuente información contiene este dato es más probable que sea un estudio serio y permite darse una mejor idea de los datos que se observaron al hacer el estudio. 
 
-La importancia de conocer el grado de significancia, que normalmente se representa como un margen alrededor del resultado, es explicada bastante bien a travez del ejemplo de los \textit{Gessel Norms} que son observacions sobre las edades a las que los niños aprenden ciertos comportamientos. Estos se describen como \textit{normales}, pero mas normales en términos estadísticos que su uso como algo \textit{deseable}, como en este caso que causó angustia a padres de familia porque los niños no se sentaban a las "x" cantidad de meses. Asi también se da el ejemplo de los estudios de sexualidad del Dr. Kinsey.
+La importancia de conocer el grado de significancia, que normalmente se representa como un margen alrededor del resultado, es explicada bastante bien a travez del ejemplo de los \textit{Gessel Norms} que son observacions sobre las edades a las que los niños aprenden ciertos comportamientos. Estos se describen como \textit{normales}, pero mas normales en términos estadísticos que el uso de la palabra como algo \textit{deseable}, como en este caso que causó angustia a padres de familia porque los niños no se sentaban a las "x" cantidad de meses.
 
 La ausencia del grado de significancia normalmente no es algo que moleste a los periodistas - con solo reportar los numeros principales de un estudio, los periodistas pueden crear un titular espectacular que el dia de hoy puede generar muchos clicks, sin tener que molestarse en entender realmente que es lo que dice un estudio. 
 
-Finalmente el capítulo habla sobre como este tipo de deshonestidad se ve reflejada en gráficos como el del crecimiento del negocio de la agencia de publicidad - sin nigun tipo de cifra ni contexto. El autor visita de nuevo este temad e los gráficos en el capítulo 5.
+El capítulo también habla sobre como este tipo de deshonestidad se ve reflejada en gráficos como el del crecimiento del negocio de la agencia de publicidad - sin nigun tipo de cifra ni contexto. El autor visita de nuevo este tema de los gráficos en el capítulo 5.
 
 
 \section*{Capítulo 4: Mucho ruido acerca de prácticamente nada}
+
+\textbf{\textit{Toda medición tiene un posible error a considerar a la hora de interpretar los datos.}}
 
 Se utiliza un ejemplo de coeficiente intelectual para reflejar dos conceptos sumamente importantes en las estadísticas: el error probable y el error estándar. Éstos representan qué tan precisos pueden ser las muestras que representan el universo de los datos. El error probable habla sobre en promedio cuánto es el error en las mediciones - como en el ejemplo se menciona que al medir 100 yardas, se mide la mitad de las veces 97 yardas, y la otra mitad mas de 3 yardas. El error estándar es similar pero considera dos terceras partes de los casos en vez de la mitad.
 El error estándar normalmente se denota como un porcentaje, un \textit{mas/menos \textbf{+/-}} con respecto a la medición reportada, como por ejemplo 100+/-3 en el caso de la medición de las 100 yardas.
@@ -68,10 +86,14 @@ Otro ejemplo muy interesante que se da en el libro es el de los cigarrillos cuan
 
 \section*{Capítulo 5: El gráfico vistoso}
 
+\textbf{\textit{Los gráficos pueden ser modificados para manipular la opinión de quien los ve.}}
+
 Debido a la resistencia que tienen las personas a trabajar con números y a las matemáticas en general, se recurre a gráficos para representar la información. El tipo de gráfico más común es el gráfico de líneas que muestran tendencias, lo que es algo en lo que cualquiera tiene interés para realizar predicciones. Estos gráficos, sin embargo, son muy Dados a ser manipulados con la intención de ganar un argumento, impresionar lector, o venderle algo. Por esto el autor menciona algunas técnicas que utilizan para este efecto, como por ejemplo el eliminar los márgenes, O en cogerlos, con el fin de dar la impresión que por ejemplo una tendencia es mucho más alta que los valores realmente representa. Aparte de eliminar los márgenes otro truco comúnmente usado es el de comprimir o estirar los márgenes, haciendo que los \textit{pasos} entre número en los ejes del gráfico sea mas pequeño o  de tal manera que las tendencias se vean más exageradas y causen un efecto mas impresionante en el lector del gráfico.
  Otro ejemplio que se menciona es el de ajustar los ejes, cortandoles la parte inferior, de tal forma que se puede accentuar mas o menos una diferencia, como el crecimiento economico, crecimiento en ventas, diferencias entre dos valores, etc - lo cual es similar a lo que se hace 
 
 \section*{Capítulo 6: El dibujo de una sola dimensión}
+
+\textbf{\textit{Los pictogramas también pueden ser modificados para manipular la opinión de quien los ve.}}
 
  Los cuadros tipos pictogramas son otro aspecto que el libro menciona como una herramienta para ajustar la narrativa a lo que se quiere que el público interprete. El ejemplo dado donde se utiliza el crecimiento exponencial del volumen de un objeto (bolsas de dinero o el gráfico sobre la expectativa de vida de los estadounidenses, que al final de cuentas son 8 veces mas grandes en la imaginación de las personas en vez del doble que dicen los numeros, o el horno para fundir metales que es 3 veces mas grande en vez de 1,5 veces). Es curioso que se mencione de forma divertida el escenario de las vacas - que al triplicar el tamaño de las vacas para la representación en la revista, se da la impresion que las vacas de 1936 son \textbf{mucho mas pequeñas} que las vacas de 1936 para el lector distraído - y desafortunadamente da lo mismo con el rinoceronte, pero a la inversa.
 
@@ -80,22 +102,104 @@ Debido a la resistencia que tienen las personas a trabajar con números y a las 
  Cabe destacar que en el día de hoy existen los famosos \textbf{infogramas}, que cumplen una función similar - detrás de muchos de estos infogramas hay una agenda que quiere mover la opinión de quién lo mira. 
  
  \section*{Capítulo 7: La figura semi-adjuntada}
+ 
+ \textbf{\textit{Si no puede probar lo que quiere probar, pruebe otra cosa y pretenda que son los mismo.}}
+
+A esto se le llama la figura semi-adjuntada. Basicamente se usa un dato, una estadística distinta pero al menos remotamente relacionada a lo que se quiere probar, y con eso se confunde a quien ve la estadística a asumir que se prueba. El ejemplo del inicio del capítulo es bastante claro en esto - si no se pudo probar que una medicina curaba el resfrío, se probó que mataba a los gérmenes en un tubo de ensayo. Dos cosas diferentes, pero al decir la segunda, los lectores asumen la primera, y el objetivo está cumplido.
+
+Otra forma de utilizar esta técnica para engañar es no dar un marco de referencia, o una comparación a la hora de hacer una afirmación. Si un extractor de jugo extrae un 26\% más de jugo... extrae un 26\% más que qué otra cosa? Igualmente la estadística sobre que ocurren mas accidentes de transito a las 7pm que a las 7am - lo cual es explicable dado que hay más conductores a esa hora. También aplica para la cantidad de muertes en accidentes de aviación, que ha aumentado significativamente - porque ahora hay muchas mas personas volando en aviones que antes.
+
+También al leer una noticia hay que tener cuidado que la misma información se puede describir de varias maneras. Para reportar el retorno sobre la inversión de una empresa, se da el ejemplo que se puede expresar como un 1\% de retorno sobre las ventas, 15\% de retorno sobre la inversión, ganacias de \$10 millones, un incremento de las ganancias de un 40\% comaparada con las ganacias de los años anteriores, o una reducción de las ganacias del 60\% comparado con el año anterior. Todas formas de decir el mismo dato, dependiendo de la agenda que tenga quien publica la figura.
+
+En general, esta figura semi-adjuntada consiste en escoger dos cosas que suenan parecidas, pero que no lo son, y a través de estadísticas crear la ilusión que una prueba la otra.
 
 \section*{Capítulo 8: \textit{Post Hoc} viene de nuevo}
 
-Este capítulo expone una de las formas más comunes de cometer errores a la hora de extraer conclusiones sobre 
+\textbf{\textit{La correlación no implica causalidad.}}
 
-En inglés se dice normalmente \textit{Correlation is not Causation}, lo cual refleja claramenete lo que expone el capítulo. 
+Este capítulo expone una de las formas más comunes de cometer errores a la hora de extraer conclusiones sobre los estudios. En inglés existe la frase \textit{Correlation does not imply causation} para referirse a este fenómeno. La correlación se da cuando se dice que \textit{B} sigue a \textit{A}. El error es asumir que entonces \textit{A} es la cause de \textit{B}.
+
+En el texto se habla sobre la correlación que hay entre los estudiantes que fuman y los que obtienen bajas notas. Y de ahi sacan la conclusión (erronea) que el fumado es la causa de las malas notas. sin embargo es muy probable que ninguna de estas dos observaciones sea causa de la otra - sino que exista una causa diferente que cause ambas observaciones.
+
+Para evitar caer en esta falacia es necesario revisar con cuidado cualquier afirmacion que hable de una relacion de causalidad. Las correlaciones pueden darse por diferentes causas:
+
+\begin{itemize}
+	\item Aleatoriamente - simplemente fue casualidad que se diera la correlación, y puede ser algo no repetible
+	\item Pueden tener una relación real, pero que no sea posible determinar cual observación causa la otra
+	\item O simplemente ninguna de las observaciones tiene relación con las demás, pero si existe una correlación
+\end{itemize}
+
+La correlación es una tendencia que no necesariamente es una relación uno a uno de las observaciones. Puede ser tanto positiva como negativa (o una razón inversa). Y en algunos casos puede inclusive invertirse a partir de cierto punto - como los ejemplos que dan con la correlación entre años de estudio e ingresos (PhDs se dedican a la academia y no tienen los altos ingresos de otros profesionales en la industria), o entre la lluvia y la producción de maiz (demasiada lluvia daña las plantas).
+
+Las conclusiones que dos observaciones tienen una relación de causa deben ser analizadas con mucho cuidado. El ejemplo que da el libro sobre como las personas que van a la universidad tienen mejores ingresos, puede que no sea tan fuerte como parece a simple vista, dado que quienes asisten a la universidad (sobre todo en Estados Unidos, y sobre todo en la época que se escribió el libro) son personas o muy inteligentes o de mucho dinero - y se menciona que estas pueden ser las causas de sus mejores ingresos, mas que el hecho de haber asistido a la universidad. Otro ejemplo sumamente interesante es el de los casos de cancer, que son mas predominantes en los paises desarrollados (en esa época al menos), cosa que se puede justificar en parte por la mayor expectativa de vida y el hecho que el cancer tiende a aparecer en edades avanzadas, en vez de justificarse por la dieta (como por ejemplo la leche).
+
+Cuando alguien hace mucho ruido sobre una correlación, hay que analizar que no sea un caso de estos donde la correlación, si bien puede existir, puede que no signifique nada mas alla de una casualidad o de la influencia de un tercer factor.
 
 \section*{Capítulo 9: Como \textit{Estaticular}}
 
+\textbf{\textit{Estaticular: Desinformar por medio de la manipulación de estadísticas.}}
+
+Existe una gran cantidad de técnicas utilizadas para manipular la estadísticas, como se han descrito en los otros capítulos de este libro. Es común que inclusive estudios que pasan por un rigurosos proceso científico son manipulados, distorcionados, y sobresimplificados por vendedores, relacionistas públicos, periodistas o editores. Las revistas y periódicos normalmente exageran para sensacionalizar una noticia. Esto se ve todos los días en los titulares de los medios. 
+
+Dentro de los casos que menciona el libro sobre este tipo de acciones, podemos mencionar un par de técnicas que ejemplifican bien la intención de los grupos detras de las publicaciones:
+
+\textbf{Utilizar el punto decimal}. Tal y como se mencionó anteriormente, esto puede hacer creer que se esta realizando un cálculo preciso, pese a que la metodología para llegar a los números presentados puede ser practicamente inválida.
+
+\textbf{Utlizar porcentajes}. Muy usado para representar descuentos, por ejemplo, dado que se puede tomar el descuento como un porcentaje del valor antes del descuento (que daría un número menor), o el porcentaje después de aplicar el descuento (que daría un número mayor - mas atractivo para el potencial comprador)
+
+\textbf{Variar la base de un cálculo}. Similar a lo anterior con los porcentajes, puede ser usado para exagerar o disminuir por ejemplo las ganancias de la empresas
+
+\textbf{Sumar cantidades no relacionadas}. Técnica utilizada para exagerar una cantidad, como por ejemplo las pérdidas causadas por una huelga, que suma por ejemplo la mercaderia no producida, los costos de los proveedores, y cualquier otro monto que pueda ser sumado. También aplica para porcentajes de cuestiones disímiles.
+
+\textbf{Porcentajes vs puntos porcentuales}. Otra distorción mas, por ejemplo un crecimiendo de un año de un 3\%, y al año siguiente de un 6\%, puede describirse como un incremento de 3 puntos porcentuales, o de un 100\%, dependiendo de la intención de la publicación.
+
+\textbf{Percentiles} que pueden no ofrecer mucha información en algunos casos, dadas las caracteristicas de la distribución normal mencionadas anteriormente.
+
+En resumen, hay revisar cualquier material que utilice estadísticas con mucha cautela antes de aceptar lo que dice. El siguiente capítulo habla sobre como hacer estas revisiones.
+
+
 \section*{Capítulo 10: Como contestarle a una estadística}
 
-\section*{Opinión y Conclusiones}
+\textbf{\textit{Cinco preguntas que uno debe hacerse al leer una estadística.}}
 
-\bibliographystyle{unsrt}.
-\bibliography{Jose_Aguilar_Tarea1.bib}
+\begin{itemize}
+	\item \textbf{Quién lo dice?}
 
+	Lo primero que se debe buscar al leer una estadística es quien lo dice. El quién puede indicar si existe un sesgo conciente, en caso que sea alguien que se pueda ver beneficiado por la estadística. También se debe revisar si existe un sesgo inconciente, como por ejemplo querer crear un título espectacular. También hay que revisar si quien lo dice tiene un \textit{nombre O.K.}, como el de un doctor o una universidad, que puede que hayan tenido que ver algo con el estudio, pero no fueron quienes lo realizaron o estan directamente relacionados con los resultados.
+
+	\item \textbf{Cómo lo supo?}
+	
+	Es importante revisar la muestra de un estudio y buscar indicios que se encuentre sesgada - como por ejemplo, que sean muestra auto-reportadas, o que se le pregunta a las personas por datos en los que esta en su mejor interés contestar de cierta forma para quedar bien con el encuestador. También revisar cuestiones como el tamaño de la muestra, y si las conclusiones son soportadas con un margen suficiente como para decir que realmente significantes. 
+	
+	\item \textbf{Qué hace falta?}
+	
+	Si la publicación no tiene información como el numero de casos, o la composiciones de la muestra, o la metodología, o la confiabilidad de la correlación, o cualquier otro de los componentes mencionados en este resumen, y si además quien lo publica tiene algún tipo de interés sobre el resultado, es muy sano sospechar sobre las conclusiones del mismo. También señales como no especificar el tipo de promedio usado o si no tiene una comparación para dar contexto a los resultados. 
+	
+	\item \textbf{Alguien cambió el tema?}
+	
+	Al analizar una estadística hay que fijarse si hay una incongruencia entre los datos y las conclusiones - que una cosa haya sido reportada como otra. Cosas como mas casos reportados de una enfermedad no es lo mismo que mas casos de la enfermedad, o las encuestas de salida en una elección presidencial no es lo mismo que el resultado de la misma. También se da el caso que se cambia el instrumento de medición - por ejemplo se cambia la definición de una granja, causando que dos estudios den conteos de granjas ampliamente diferentes. Otra observación es la poca confiabilidad en los datos que se autoreportan, como se menciona, entrevistados pueden aducir una edad mas joven por su vanidad. Finalmente hay que estar alerta por interpretaciones sobre cosas como porcentajes - diferentes formas de interpretar el porcentaje de interés de un prestamo puede conducir a pagos sumamente diferentes (y mas costosos).
+	
+	\item \textbf{Tiene sentido?}
+	
+	Finalmente tenemos la prueba de sentido común. Si algo está fundamentado en supuestos no probados, esta pregunta puede desarmar a la estadística. Ejemplos de esto abunda - tasas de crecimiento que de mantenerse llegarían a cifras fuera de cualquier realidad, malas interpretaciones con datos como la expectativa de vida al nacer, o planificación estrategica basada en el hecho que la tasa de nacimientos viene decreciendo (lo cual es mas cierto hoy en día que cuando se escribió el libro).
+	
+	Otro indicador que algo extraño puede estar pasando con la estadística es el uso de decimales muy precisos para expresar cosas como un promedio - ejemplos como decir que \textit{una familia necesita en promedio de \$40.13 semanales para sobrevivir en New York}. Esto causa la impresión que se conoce muy bien la situación, cuando en realidad no es mas preciso que decir que son \textit{aproximadamente \$40}.
+	
+\end{itemize}
+
+\section*{Opinión}
+
+Me pareció un libro fascinante, tan vigente hoy en día como cuando fué publicado. Me parece que deberia de ser de lectura obligatoria para toda persona, pero sobre todo en las escuelas de periodismo y política - aunque me preocuparía que lo tomen más como un manual de acuerdo al título.
+
+El periodismo de hoy en dia casi que sigue al pie de la letra lo que se recomienda no hacer en este libro. En casi todos los periódicos y páginas de Internet de noticias se exageran siempre las cifras, y en algunos casos abiertamente se manipula su representación tal y como se describe en el libro con el fin de obtener mas visitas o mas lectores.
+
+Y ni que decir sobre la publicidad. Tengo muy presente el anuncio de una pasta de dientes, que similar a uno de los ejemplos que vienen en el libro, menciona que es la recomendada por \textit{9 de cada 10 odontólogos recomiendan la marca} - afirmación que es presentada por un doctor en gabacha blanca, cuyo nombre aparece en el anuncio. Es un caso digno de estudio desde la óptica de lo presentado aquí.
+
+Las encuestas en este momento se encuentran seriamente desprestigiadas en nuestro país, y ahora entiendo aún más el gran reto que tienen por delante para mejorar su muestreo y no repetir los errores cometidos en la campaña electoral del 2018.
+
+Y los gobernantes no se quedan atras en este tema de \textit{estaticular}. Por ejemplo, no recuerdo si fue el gobierno anterior o uno previo que modificó la fórmula de cálculo del PIB, mejorando mágicamente la productividad del país.
+
+Lo más preocupante es que la falta de análisis como el que presenta el libro ha causado que hoy en día exista un marcado movimiento anti-ciencia liderado por grupos como los anti-vacunas, los que piensan que la tierra es plana, y otros peores que utilizan cualquier publicación para fortalecer su causa sin detenerse y analizar realmente lo que están apoyando. A mi criterio hay una falta de esta \textit{educación estadística} que presenta el libro, el cual ni tan siquiera esta en un lenguaje técnico que no pueda ser entendido por cualquier persona. El reto es como transmitir esto hacia estas y las demás personas para dotarlas de herramientas para discernir este tipo de manipulaciones.
 
 
 \end{document}
