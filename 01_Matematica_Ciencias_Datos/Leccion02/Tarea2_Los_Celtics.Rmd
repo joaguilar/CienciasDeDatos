@@ -34,7 +34,7 @@ kable(algodon)
 Los datos cargados no cumplen con los estándares de _Tidy Data_ https://vita.had.co.nz/papers/tidy-data.pdf para el analisis, por lo que es necesario al menos hacer un cambio - cambiar las observaciones (experimentos) a filas, y mantener las variables independientes a columnas. Afortunadamente, esto lo podemos hacer facilmente haciendo la transpuesta:
 
 ```{r}
-algodon_t = as.data.frame(t(algodon))
+algodon_t <- as.data.frame(t(algodon))
 kable(algodon_t)
 ```
 
@@ -43,7 +43,7 @@ kable(algodon_t)
 Calculo de ANOVA:
 
 ```{r, cache=TRUE}
-algodon_stacked = stack(algodon_t)
+algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
 
 anova_algodon <- aov(values ~ ind, data = algodon_stacked)
