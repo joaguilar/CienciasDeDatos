@@ -1,0 +1,64 @@
+---
+title: "Tarea 2 - Anova"
+author: "Los Celtics"
+date: "9 de Abril, 2019"
+output:
+  pdf_document: 
+    keep_tex: true
+---
+
+```{r setup, include=FALSE}
+if (!require(kableExtra)){
+        install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+}
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "latex")
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Carga de datos
+
+```{r, cache=TRUE}
+algodon <- read.csv("algodon.csv", header = TRUE, row.names = 1)
+```
+
+Datos Cargados:
+
+```{r, cache=TRUE}
+kable(algodon)
+```
+
+## Limpieza de datos
+
+Los datos cargados no cumplen con los estándares de _Tidy Data_ https://vita.had.co.nz/papers/tidy-data.pdf para el analisis, por lo que es necesario al menos hacer un cambio - cambiar las observaciones (experimentos) a filas, y mantener las variables independientes a columnas. Afortunadamente, esto lo podemos hacer facilmente haciendo la transpuesta:
+
+```{r}
+algodon_t = as.data.frame(t(algodon))
+kable(algodon_t)
+```
+
+## ANOVA
+
+Calculo de ANOVA:
+
+```{r, cache=TRUE}
+algodon_stacked = stack(algodon_t)
+kable(algodon_stacked)
+
+anova_algodon <- aov(values ~ ind, data = algodon_stacked)
+summary(anova_algodon)
+```
+
+De aquí podemos decir que:
+
+$$F(4,20)=14.76$$
+
+y
+
+$$p = 9.13e-06 < 0.05$$
+
+Al ser $p < 0.05$, podemos decir que los resultados son significativos, y no fueron obtenidos aleatoriamente.
+
+
+
