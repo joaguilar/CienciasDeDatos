@@ -58,9 +58,16 @@ anova_algodon
 
 De aquí podemos decir que:
 
-$$F(4,20)=14.76$$
+$$F(4,20)=14.76, p < 0.001$$
 
-Este _F-Test_ da una valor mayor que uno, lo que significa, en resumen, que al menos un tratamiento tiene un efecto medible sobre las observaciones.
+Tenemos los grados de libertad $4$ (numerador) y $20$ (denominador), asi como un $p$ menor a $0.001$. Con estos datos podemos buscar en la tabla de Fischer para $p<0.001$:
+\renewcommand{\figurename}{Fig.}
+```{r, out.width="0.3\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Tabla de Fisher p < 0.001"), echo=FALSE}
+knitr::include_graphics("ftable001.PNG")
+```
+Tabla tomada de https://web.ma.utexas.edu/users/davis/375/popecol/tables/f0001.html
+
+Para estos valores del _F-Test_, al buscarlos en la tabla nos da que el valor crítico es $7.10$. Nuestro _F-Test_ da un resultado de $14.76$, que es mayor que el valor crítico, lo que significa que al menos un tratamiento tiene un efecto medible sobre las observaciones y es un resutlado estadísticamente válido.
 
 La explicación de lo anterior es:
 
@@ -73,40 +80,32 @@ Tomando el ejemplo visto en clase, si partimos que cada observación se compone d
 $$ y_{ij} = \mu + \tau_i + \epsilon_{ij} $$
 
 $\mu$ = la media
+
 $\tau$ = Efecto del í-ésimo tratamiento
+
 $\epsilon$ = error de la observación
 
 Tal y como vimos en clase, de esto podemos deducir dos hipotesis:
 
-- Hipotesis nula $H_0$: los efectos de los tratamientos no no afectan, es decir, la media de todos los tratamientos es la misma, y todo puede ser explicado por $\mu + \epsilon_{ij}$
+- Hipotesis nula $H_0$: los efectos de los tratamientos no no afectan, es decir, la media de todos los tratamientos es la misma, y todo puede ser explicado por $y_{ij} = \mu + \epsilon_{ij}$
 - Hipotesis alternativa $H_1$: Los efectos de los tratamientos si afectan, por lo tanto en al menos un par de tratamientos $(i,j)$, $\mu_i \neq \mu_j$
 
-Para probar estas hipotesis, ANOVA lo que hace es calcular la dispersión de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersion de todas las medias y la dispersion de todas las observaciones seria la misma, y el _F test_ daría 1. De lo contrario daría un número mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersión.
+Para probar estas hipotesis, ANOVA, como una forma intuitiva de entenderlo, lo que hace es calcular la dispersión de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersion de todas las medias y la dispersion de todas las observaciones seria similar, y el _F test_ daría un valor inferior al valor crítico de la tabla de Fischer. De lo contrario daría un número mayor que este valor crítico.
 
-Estas varianzas las calcula ANOVA de la siguiente forma:
+Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categoricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles $DF_k=k-1$. En el caso del error, se calcula como el numero de observaciones menos el numero de niveles (o grupos) usados $DF_n=n-k$.
 
-Adicionalmente, ANOVA utiliza los _grados de libertad_. Estos son basicamente cuanta informacion utiliza el modelo. En el caso de variables categoricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles: $DF_k=k-1$. En el caso del error, se calcula como el numero de observaciones menos el numero de niveles (o grupos) usados: $DF_n=n-k$.
+
+El cálculo que realiza ANOVA es el siguiente:
+
+$$
+
+F=CMF
+
+$$
 
 
 - Lo llamado los _mean squares_. Estos son 
 
 Esto se ve reflejado dentro de los datos en el objeto ANOVA:
-
-```{r, cache=TRUE}
-print(summary(anova_algodon)[[1]][["Sum Sq"]][[1]])
-```
-
-```{r, cache=TRUE}
-str(anova_algodon)
-```
-
-
-
-y
-
-$$p = 9.13e-06 < 0.05$$
-
-Al ser $p < 0.05$, podemos decir que los resultados son significativos, y no fueron obtenidos aleatoriamente.
-
 
 
