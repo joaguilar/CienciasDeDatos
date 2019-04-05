@@ -176,7 +176,7 @@ Porc\_35 & 7 & 10 & 11 & 15 & 11\\
 
 \subsection{Limpieza de datos}\label{limpieza-de-datos}
 
-Los datos cargados no cumplen con los estándares de \emph{Tidy Data}
+Los datos cargados no cumplen con los estÃ¡ndares de \emph{Tidy Data}
 \url{https://vita.had.co.nz/papers/tidy-data.pdf} para el analisis, por
 lo que es necesario al menos hacer un cambio - cambiar las observaciones
 (experimentos) a filas, y mantener las variables independientes a
@@ -185,7 +185,7 @@ transpuesta:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{algodon_t =}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{t}\NormalTok{(algodon))}
+\NormalTok{algodon_t <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{t}\NormalTok{(algodon))}
 \KeywordTok{kable}\NormalTok{(algodon_t)}
 \end{Highlighting}
 \end{Shaded}
@@ -212,7 +212,7 @@ Calculo de ANOVA:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{algodon_stacked =}\StringTok{ }\KeywordTok{stack}\NormalTok{(algodon_t)}
+\NormalTok{algodon_stacked <-}\StringTok{ }\KeywordTok{stack}\NormalTok{(algodon_t)}
 \KeywordTok{kable}\NormalTok{(algodon_stacked)}
 \end{Highlighting}
 \end{Shaded}
@@ -275,7 +275,7 @@ values & ind\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{anova_algodon <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(values }\OperatorTok{~}\StringTok{ }\NormalTok{ind, }\DataTypeTok{data =}\NormalTok{ algodon_stacked)}
+\NormalTok{anova_algodon <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(values }\OperatorTok{~}\StringTok{ }\NormalTok{ind, }\DataTypeTok{data =}\NormalTok{ algodon_stacked, }\DataTypeTok{qr =} \OtherTok{TRUE}\NormalTok{)}
 \KeywordTok{summary}\NormalTok{(anova_algodon)}
 \end{Highlighting}
 \end{Shaded}
@@ -288,9 +288,176 @@ values & ind\\
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{anova_algodon}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+##    aov(formula = values ~ ind, data = algodon_stacked, qr = TRUE)
+## 
+## Terms:
+##                    ind Residuals
+## Sum of Squares  475.76    161.20
+## Deg. of Freedom      4        20
+## 
+## Residual standard error: 2.839014
+## Estimated effects may be unbalanced
+\end{verbatim}
+
 De aquí podemos decir que:
 
 \[F(4,20)=14.76\]
+
+Este \emph{F-Test} da una valor mayor que uno, lo que significa, en
+resumen, que al menos un tratamiento tiene un efecto medible sobre las
+observaciones.
+
+La explicación de lo anterior es:
+
+ANOVA lo que hace es calcular varianzas. Estas varianzas nos indican
+cuan alejados estan los datos de la media, es decir, la dispersion de
+los datos. Entre mas grande sea la varianza, significa que los datos
+estan mas lejos.
+
+El \emph{F-test} lo que indica es la razón entre las varianzas de las
+medias de la muestra y de las varianzas de los errores de las
+observaciones de la muestra. La idea es que la varianza de las medias
+deberia de ser similar a la varianza de las observaciones en caso que
+las diferencias de las observaciones sean por errores, dado que tienen
+el mismo origen. De no ser asi, la varianza de la menos un grupo de
+medias seria mucho mayor que la varianza entre las muestras, porque
+habria otro factor que esta afectando solamente a ese grupo.
+
+Tomando el ejemplo visto en clase, si partimos que cada observación se
+compone de tres partes:
+
+\[ y_{ij} = \mu + \tau_i + \epsilon_{ij} \]
+
+\(\mu\) = la media \(\tau\) = Efecto del í-ésimo tratamiento
+\(\epsilon\) = error de la observación
+
+Tal y como vimos en clase, de esto podemos deducir dos hipotesis:
+
+\begin{itemize}
+\tightlist
+\item
+  Hipotesis nula \(H_0\): los efectos de los tratamientos no no afectan,
+  es decir, la media de todos los tratamientos es la misma, y todo puede
+  ser explicado por \(\mu + \epsilon_{ij}\)
+\item
+  Hipotesis alternativa \(H_1\): Los efectos de los tratamientos si
+  afectan, por lo tanto en al menos un par de tratamientos \((i,j)\),
+  \(\mu_i \neq \mu_j\)
+\end{itemize}
+
+Para probar estas hipotesis, ANOVA lo que hace es calcular la dispersión
+de las medias, y dividirlas por la dispersion de todas las
+observaciones. Si \(\tau_i=0 \forall i\), entonces la dispersion de
+todas las medias y la dispersion de todas las observaciones seria la
+misma, y el \emph{F test} daría 1. De lo contrario daría un número mayor
+que uno, al afectar \(\tau\) al menos a uno de los tratamientos moviendo
+un poco la dispersión.
+
+Estas varianzas las calcula ANOVA de la siguiente forma:
+
+Adicionalmente, ANOVA utiliza los \emph{grados de libertad}. Estos son
+basicamente cuanta informacion utiliza el modelo. En el caso de
+variables categoricas, como en este caso, para las medias se calcula
+como uno menos que el numero de niveles: \(DF_k=k-1\). En el caso del
+error, se calcula como el numero de observaciones menos el numero de
+niveles (o grupos) usados: \(DF_n=n-k\).
+
+\begin{itemize}
+\tightlist
+\item
+  Lo llamado los \emph{mean squares}. Estos son
+\end{itemize}
+
+Esto se ve reflejado dentro de los datos en el objeto ANOVA:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(}\KeywordTok{summary}\NormalTok{(anova_algodon)[[}\DecValTok{1}\NormalTok{]][[}\StringTok{"Sum Sq"}\NormalTok{]][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 475.76
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(anova_algodon)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 13
+##  $ coefficients : Named num [1:5] 9.8 5.6 7.8 11.8 1
+##   ..- attr(*, "names")= chr [1:5] "(Intercept)" "indPorc_20" "indPorc_25" "indPorc_30" ...
+##  $ residuals    : Named num [1:25] -2.8 -2.8 5.2 1.2 -0.8 ...
+##   ..- attr(*, "names")= chr [1:25] "1" "2" "3" "4" ...
+##  $ effects      : Named num [1:25] -75.2 0.9 6.84 20.63 1.58 ...
+##   ..- attr(*, "names")= chr [1:25] "(Intercept)" "indPorc_20" "indPorc_25" "indPorc_30" ...
+##  $ rank         : int 5
+##  $ fitted.values: Named num [1:25] 9.8 9.8 9.8 9.8 9.8 15.4 15.4 15.4 15.4 15.4 ...
+##   ..- attr(*, "names")= chr [1:25] "1" "2" "3" "4" ...
+##  $ assign       : int [1:5] 0 1 1 1 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:25, 1:5] -5 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:25] "1" "2" "3" "4" ...
+##   .. .. ..$ : chr [1:5] "(Intercept)" "indPorc_20" "indPorc_25" "indPorc_30" ...
+##   .. ..- attr(*, "assign")= int [1:5] 0 1 1 1 1
+##   .. ..- attr(*, "contrasts")=List of 1
+##   .. .. ..$ ind: chr "contr.treatment"
+##   ..$ qraux: num [1:5] 1.2 1.08 1.1 1.13 1.2
+##   ..$ pivot: int [1:5] 1 2 3 4 5
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 5
+##   ..- attr(*, "class")= chr "qr"
+##  $ df.residual  : int 20
+##  $ contrasts    :List of 1
+##   ..$ ind: chr "contr.treatment"
+##  $ xlevels      :List of 1
+##   ..$ ind: chr [1:5] "Porc_15" "Porc_20" "Porc_25" "Porc_30" ...
+##  $ call         : language aov(formula = values ~ ind, data = algodon_stacked, qr = TRUE)
+##  $ terms        :Classes 'terms', 'formula'  language values ~ ind
+##   .. ..- attr(*, "variables")= language list(values, ind)
+##   .. ..- attr(*, "factors")= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, "dimnames")=List of 2
+##   .. .. .. ..$ : chr [1:2] "values" "ind"
+##   .. .. .. ..$ : chr "ind"
+##   .. ..- attr(*, "term.labels")= chr "ind"
+##   .. ..- attr(*, "order")= int 1
+##   .. ..- attr(*, "intercept")= int 1
+##   .. ..- attr(*, "response")= int 1
+##   .. ..- attr(*, ".Environment")=<environment: R_GlobalEnv> 
+##   .. ..- attr(*, "predvars")= language list(values, ind)
+##   .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "factor"
+##   .. .. ..- attr(*, "names")= chr [1:2] "values" "ind"
+##  $ model        :'data.frame':   25 obs. of  2 variables:
+##   ..$ values: int [1:25] 7 7 15 11 9 12 17 12 18 18 ...
+##   ..$ ind   : Factor w/ 5 levels "Porc_15","Porc_20",..: 1 1 1 1 1 2 2 2 2 2 ...
+##   ..- attr(*, "terms")=Classes 'terms', 'formula'  language values ~ ind
+##   .. .. ..- attr(*, "variables")= language list(values, ind)
+##   .. .. ..- attr(*, "factors")= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, "dimnames")=List of 2
+##   .. .. .. .. ..$ : chr [1:2] "values" "ind"
+##   .. .. .. .. ..$ : chr "ind"
+##   .. .. ..- attr(*, "term.labels")= chr "ind"
+##   .. .. ..- attr(*, "order")= int 1
+##   .. .. ..- attr(*, "intercept")= int 1
+##   .. .. ..- attr(*, "response")= int 1
+##   .. .. ..- attr(*, ".Environment")=<environment: R_GlobalEnv> 
+##   .. .. ..- attr(*, "predvars")= language list(values, ind)
+##   .. .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "factor"
+##   .. .. .. ..- attr(*, "names")= chr [1:2] "values" "ind"
+##  - attr(*, "class")= chr [1:2] "aov" "lm"
+\end{verbatim}
 
 y
 

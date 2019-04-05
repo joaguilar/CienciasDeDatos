@@ -45,14 +45,62 @@ Calculo de ANOVA:
 ```{r, cache=TRUE}
 algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
-
-anova_algodon <- aov(values ~ ind, data = algodon_stacked)
+```
+```{r, cache=TRUE}
+anova_algodon <- aov(values ~ ind, data = algodon_stacked, qr = TRUE)
 summary(anova_algodon)
+
 ```
 
-De aquÃ­ podemos decir que:
+```{r}
+anova_algodon
+```
+
+De aquí podemos decir que:
 
 $$F(4,20)=14.76$$
+
+Este _F-Test_ da una valor mayor que uno, lo que significa, en resumen, que al menos un tratamiento tiene un efecto medible sobre las observaciones.
+
+La explicación de lo anterior es:
+
+ANOVA lo que hace es calcular varianzas. Estas varianzas nos indican cuan alejados estan los datos de la media, es decir, la dispersion de los datos. Entre mas grande sea la varianza, significa que los datos estan mas lejos.
+
+El _F-test_ lo que indica es la razón entre las varianzas de las medias de la muestra y de las varianzas de los errores de las observaciones de la muestra. La idea es que la varianza de las medias deberia de ser similar a la varianza de las observaciones en caso que las diferencias de las observaciones sean por errores, dado que tienen el mismo origen. De no ser asi, la varianza de la menos un grupo de medias seria mucho mayor que la varianza entre las muestras, porque habria otro factor que esta afectando solamente a ese grupo.
+
+Tomando el ejemplo visto en clase, si partimos que cada observación se compone de tres partes:
+
+$$ y_{ij} = \mu + \tau_i + \epsilon_{ij} $$
+
+$\mu$ = la media
+$\tau$ = Efecto del í-ésimo tratamiento
+$\epsilon$ = error de la observación
+
+Tal y como vimos en clase, de esto podemos deducir dos hipotesis:
+
+- Hipotesis nula $H_0$: los efectos de los tratamientos no no afectan, es decir, la media de todos los tratamientos es la misma, y todo puede ser explicado por $\mu + \epsilon_{ij}$
+- Hipotesis alternativa $H_1$: Los efectos de los tratamientos si afectan, por lo tanto en al menos un par de tratamientos $(i,j)$, $\mu_i \neq \mu_j$
+
+Para probar estas hipotesis, ANOVA lo que hace es calcular la dispersión de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersion de todas las medias y la dispersion de todas las observaciones seria la misma, y el _F test_ daría 1. De lo contrario daría un número mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersión.
+
+Estas varianzas las calcula ANOVA de la siguiente forma:
+
+Adicionalmente, ANOVA utiliza los _grados de libertad_. Estos son basicamente cuanta informacion utiliza el modelo. En el caso de variables categoricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles: $DF_k=k-1$. En el caso del error, se calcula como el numero de observaciones menos el numero de niveles (o grupos) usados: $DF_n=n-k$.
+
+
+- Lo llamado los _mean squares_. Estos son 
+
+Esto se ve reflejado dentro de los datos en el objeto ANOVA:
+
+```{r, cache=TRUE}
+print(summary(anova_algodon)[[1]][["Sum Sq"]][[1]])
+```
+
+```{r, cache=TRUE}
+str(anova_algodon)
+```
+
+
 
 y
 
