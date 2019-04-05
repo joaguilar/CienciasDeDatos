@@ -16,6 +16,7 @@ devtools::install_github("kassambara/ggpubr")
 if(!require(ggpubr)) install.packages("ggpubr")
 library(knitr)
 library(kableExtra)
+library(ggpubr)
 options(knitr.table.format = "latex")
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -50,14 +51,13 @@ algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
 ```
 
-```{r}
-library(ggpubr)
+```{r, fig.width=6, fig.height=4}
 ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón")
-
-ggline(algodon_stacked, x= "ind", y = "values", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón")
 ```
 
-
+```{r, fig.width=6, fig.height=4}
+ggline(algodon_stacked, x= "ind", y = "values", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón")
+```
 
 ```{r, cache=TRUE}
 anova_algodon <- aov(values ~ ind, data = algodon_stacked, qr = TRUE)
@@ -80,9 +80,9 @@ knitr::include_graphics("ftable001.PNG")
 ```
 Tabla tomada de https://web.ma.utexas.edu/users/davis/375/popecol/tables/f0001.html
 
-Para estos valores del _F-Test_, al buscarlos en la tabla nos da que el valor cr�tico es $7.10$. Nuestro _F-Test_ da un resultado de $14.76$, que es mayor que el valor cr�tico, lo que significa que al menos un tratamiento tiene un efecto medible sobre las observaciones y es un resutlado estad�sticamente v�lido.
+Para estos valores del _F-Test_, al buscarlos en la tabla nos da que el valor crítico es $7.10$. Nuestro _F-Test_ da un resultado de $14.76$, que es mayor que el valor crítico, lo que significa que al menos un tratamiento tiene un efecto medible sobre las observaciones y es un resutlado estadísticamente válido.
 
-La explicaci�n de lo anterior es:
+La explicación de lo anterior es:
 
 ANOVA lo que hace es calcular varianzas. Estas varianzas nos indican cuán alejados están los datos de la media, es decir, la dispersión de los datos. Entre más grande sea la varianza, significa que los datos están más lejos.
 
@@ -106,7 +106,7 @@ Para probar estas hipótesis, ANOVA lo que hace es calcular la dispersión de la
 Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categoricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles $DF_k=k-1$. En el caso del error, se calcula como el numero de observaciones menos el numero de niveles (o grupos) usados $DF_n=n-k$.
 
 
-El c�lculo que realiza ANOVA es el siguiente:
+El cálculo que realiza ANOVA es el siguiente:
 
 $$
 
