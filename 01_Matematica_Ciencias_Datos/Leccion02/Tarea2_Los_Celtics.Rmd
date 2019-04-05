@@ -11,6 +11,9 @@ output:
 if (!require(kableExtra)){
         install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
 }
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+if(!require(ggpubr)) install.packages("ggpubr")
 library(knitr)
 library(kableExtra)
 options(knitr.table.format = "latex")
@@ -31,7 +34,7 @@ kable(algodon)
 
 ## Limpieza de datos
 
-Los datos cargados no cumplen con los est√°ndares de _Tidy Data_ https://vita.had.co.nz/papers/tidy-data.pdf para el analisis, por lo que es necesario al menos hacer un cambio - cambiar las observaciones (experimentos) a filas, y mantener las variables independientes a columnas. Afortunadamente, esto lo podemos hacer facilmente haciendo la transpuesta:
+Los datos cargados no cumplen con los est·ndares de _Tidy Data_ https://vita.had.co.nz/papers/tidy-data.pdf para el an·lisis, por lo que es necesario al menos hacer un cambio - cambiar las observaciones (experimentos) a filas, y mantener las variables independientes a columnas. Afortunadamente, esto lo podemos hacer facilmente haciendo la transpuesta:
 
 ```{r}
 algodon_t <- as.data.frame(t(algodon))
@@ -46,6 +49,16 @@ Calculo de ANOVA:
 algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
 ```
+
+```{r}
+library(ggpubr)
+ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de AlgodÛn")
+
+ggline(algodon_stacked, x= "ind", y = "values", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de AlgodÛn")
+```
+
+
+
 ```{r, cache=TRUE}
 anova_algodon <- aov(values ~ ind, data = algodon_stacked, qr = TRUE)
 summary(anova_algodon)
@@ -60,28 +73,28 @@ De aquÌ podemos decir que:
 
 $$F(4,20)=14.76$$
 
-Este _F-Test_ da una valor mayor que uno, lo que significa, en resumen, que al menos un tratamiento tiene un efecto medible sobre las observaciones.
+Este _F-Test_ da un valor mayor que uno, lo que significa, en resumen, que al menos un tratamiento tiene un efecto medible sobre las observaciones.
 
 La explicaciÛn de lo anterior es:
 
-ANOVA lo que hace es calcular varianzas. Estas varianzas nos indican cuan alejados estan los datos de la media, es decir, la dispersion de los datos. Entre mas grande sea la varianza, significa que los datos estan mas lejos.
+ANOVA lo que hace es calcular varianzas. Estas varianzas nos indican cu·n alejados est·n los datos de la media, es decir, la dispersiÛn de los datos. Entre m·s grande sea la varianza, significa que los datos est·n m·s lejos.
 
-El _F-test_ lo que indica es la razÛn entre las varianzas de las medias de la muestra y de las varianzas de los errores de las observaciones de la muestra. La idea es que la varianza de las medias deberia de ser similar a la varianza de las observaciones en caso que las diferencias de las observaciones sean por errores, dado que tienen el mismo origen. De no ser asi, la varianza de la menos un grupo de medias seria mucho mayor que la varianza entre las muestras, porque habria otro factor que esta afectando solamente a ese grupo.
+El _F-test_ lo que indica es la razÛn entre las varianzas de las medias de la muestra y de las varianzas de los errores de las observaciones de la muestra. La idea es que la varianza de las medias deberÌa de ser similar a la varianza de las observaciones en caso que las diferencias de las observaciones sean por errores, dado que tienen el mismo origen. De no ser asÌ, la varianza de al menos un grupo de medias serÌa mucho mayor que la varianza entre las muestras, porque habrÌa otro factor que est· afectando solamente a ese grupo.
 
 Tomando el ejemplo visto en clase, si partimos que cada observaciÛn se compone de tres partes:
 
 $$ y_{ij} = \mu + \tau_i + \epsilon_{ij} $$
 
 $\mu$ = la media
-$\tau$ = Efecto del Ì-Èsimo tratamiento
+$\tau$ = Efecto del i-Èsimo tratamiento
 $\epsilon$ = error de la observaciÛn
 
-Tal y como vimos en clase, de esto podemos deducir dos hipotesis:
+Tal y como vimos en clase, de esto podemos deducir dos hipÛtesis:
 
-- Hipotesis nula $H_0$: los efectos de los tratamientos no no afectan, es decir, la media de todos los tratamientos es la misma, y todo puede ser explicado por $\mu + \epsilon_{ij}$
+- HipÛtesis nula $H_0$: los efectos de los tratamientos no afectan, es decir, la media de todos los tratamientos es la misma, y todo puede ser explicado por $\mu + \epsilon_{ij}$
 - Hipotesis alternativa $H_1$: Los efectos de los tratamientos si afectan, por lo tanto en al menos un par de tratamientos $(i,j)$, $\mu_i \neq \mu_j$
 
-Para probar estas hipotesis, ANOVA lo que hace es calcular la dispersiÛn de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersion de todas las medias y la dispersion de todas las observaciones seria la misma, y el _F test_ darÌa 1. De lo contrario darÌa un n˙mero mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersiÛn.
+Para probar estas hipÛtesis, ANOVA lo que hace es calcular la dispersiÛn de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersiÛn de todas las medias y la dispersiÛn de todas las observaciones serÌa la misma, y el _F test_ darÌa 1. De lo contrario darÌa un n˙mero mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersiÛn.
 
 Estas varianzas las calcula ANOVA de la siguiente forma:
 
