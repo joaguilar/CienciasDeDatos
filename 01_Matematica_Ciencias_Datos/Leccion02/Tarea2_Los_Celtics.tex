@@ -347,7 +347,7 @@ Para estos valores del \emph{F-Test}, al buscarlos en la tabla nos da
 que el valor crítico es \(7.10\). Nuestro \emph{F-Test} da un resultado
 de \(14.76\), que es mayor que el valor crítico, lo que significa que al
 menos un tratamiento tiene un efecto medible sobre las observaciones y
-es un resutlado estadísticamente válido.
+es un resultado estadísticamente válido.
 
 La explicación de lo anterior es:
 
@@ -396,18 +396,16 @@ que uno, al afectar \(\tau\) al menos a uno de los tratamientos moviendo
 un poco la dispersión.
 
 Adicionalmente, ANOVA utiliza los \emph{grados de libertad}. En el caso
-de variables categoricas, como en este caso, para las medias se calcula
+de variables categóricas, como en este caso, para las medias se calcula
 como uno menos que el numero de niveles \(DF_k=k-1\). En el caso del
-error, se calcula como el numero de observaciones menos el numero de
+error, se calcula como el número de observaciones menos el número de
 niveles (o grupos) usados \(DF_n=n-k\).
 
 El cálculo que realiza ANOVA es el siguiente:
 
-\$\$
-
+\[
 F=CMF
-
-\$\$
+\]
 
 \begin{itemize}
 \tightlist
