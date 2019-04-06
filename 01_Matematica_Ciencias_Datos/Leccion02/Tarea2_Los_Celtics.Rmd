@@ -11,8 +11,6 @@ output:
 if (!require(kableExtra)){
         install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
 }
-if(!require(devtools)) install.packages("devtools")
-devtools::install_github("kassambara/ggpubr")
 if(!require(ggpubr)) install.packages("ggpubr")
 library(knitr)
 library(kableExtra)
@@ -51,12 +49,12 @@ algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
 ```
 
-```{r, fig.width=6, fig.height=4}
-ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón")
+```{r, fig.width=6, fig.height=3, echo=FALSE}
+ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title="Distribución de los datos en los diferentes tratamientos")
 ```
 
-```{r, fig.width=6, fig.height=4}
-ggline(algodon_stacked, x= "ind", y = "values", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón")
+```{r, fig.width=6, fig.height=3, echo=FALSE, message=FALSE}
+ggline(algodon_stacked, x= "ind", y = "values", group = 1, color = "ind", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title = "Media y cuadrados de los errores por tratamiento")
 ```
 
 ```{r, cache=TRUE}
