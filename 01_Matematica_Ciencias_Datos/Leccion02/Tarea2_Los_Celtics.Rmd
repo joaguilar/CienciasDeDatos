@@ -80,7 +80,7 @@ knitr::include_graphics("ftable001.PNG")
 ```
 Tabla tomada de https://web.ma.utexas.edu/users/davis/375/popecol/tables/f0001.html
 
-Para estos valores del _F-Test_, al buscarlos en la tabla nos da que el valor crítico es $7.10$. Nuestro _F-Test_ da un resultado de $14.76$, que es mayor que el valor crítico, lo que significa que al menos un tratamiento tiene un efecto medible sobre las observaciones y es un resutlado estadísticamente válido.
+Para estos valores del _F-Test_, al buscarlos en la tabla nos da que el valor crítico es $7.10$. Nuestro _F-Test_ da un resultado de $14.76$, que es mayor que el valor crítico, lo que significa que al menos un tratamiento tiene un efecto medible sobre las observaciones y es un resultado estadísticamente válido.
 
 La explicación de lo anterior es:
 
@@ -103,15 +103,13 @@ Tal y como vimos en clase, de esto podemos deducir dos hipótesis:
 
 Para probar estas hipótesis, ANOVA lo que hace es calcular la dispersión de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersión de todas las medias y la dispersión de todas las observaciones sería la misma, y el _F test_ daría 1. De lo contrario daría un número mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersión.
 
-Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categoricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles $DF_k=k-1$. En el caso del error, se calcula como el numero de observaciones menos el numero de niveles (o grupos) usados $DF_n=n-k$.
+Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categóricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles $DF_k=k-1$. En el caso del error, se calcula como el número de observaciones menos el número de niveles (o grupos) usados $DF_n=n-k$.
 
 
 El cálculo que realiza ANOVA es el siguiente:
 
 $$
-
 F=CMF
-
 $$
 
 
