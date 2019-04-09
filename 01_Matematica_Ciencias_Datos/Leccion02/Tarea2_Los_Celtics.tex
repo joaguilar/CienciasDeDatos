@@ -25,7 +25,7 @@
 \usepackage{hyperref}
 \hypersetup{unicode=true,
             pdftitle={Tarea 2 - Anova},
-            pdfauthor={Los Celtics},
+            pdfauthor={José Aguilar; Rafael Alfaro; Gonzalo Rodríguez; Juan Pablo Villalobos},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
@@ -117,7 +117,8 @@
   \title{Tarea 2 - Anova}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
-    \author{Los Celtics}
+  \subtitle{Los Celtics}
+  \author{José Aguilar \\ Rafael Alfaro \\ Gonzalo Rodríguez \\ Juan Pablo Villalobos}
     \preauthor{\centering\large\emph}
   \postauthor{\par}
       \predate{\centering\large\emph}
@@ -138,6 +139,8 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+
+\usepackage{float} \usepackage{graphicx}
 
 \begin{document}
 \maketitle
@@ -273,9 +276,24 @@ values & ind\\
 \hline
 \end{tabular}
 
-\includegraphics{Tarea2_Los_Celtics_files/figure-latex/unnamed-chunk-5-1.pdf}
+La figura 1 muestra la distribución de las observaciones por cada
+tratamiento: la media, los 3 quartiles y los valores atípicos.
 
+\begin{figure}
+\centering
+\includegraphics{Tarea2_Los_Celtics_files/figure-latex/unnamed-chunk-5-1.pdf}
+\caption{Distribución de los datos en los diferentes tratamientos}
+\end{figure}
+
+La figura 2 muestra la media de las observaciones por cada tratamiento y
+el cuadrado de los errores para cada uno de los tratamientos. Los puntos
+representan las diferentes observaciones.
+
+\begin{figure}
+\centering
 \includegraphics{Tarea2_Los_Celtics_files/figure-latex/unnamed-chunk-6-1.pdf}
+\caption{Media y cuadrados de los errores por tratamiento}
+\end{figure}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -319,9 +337,9 @@ Tenemos los grados de libertad \(4\) (numerador) y \(20\) (denominador),
 asi como un \(p\) menor a \(0.001\). Con estos datos podemos buscar en
 la tabla de Fischer para \(p<0.001\): \renewcommand{\figurename}{Fig.}
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics[width=0.3\linewidth]{ftable001} 
+{\centering \includegraphics[width=0.7\linewidth]{ftable001} 
 
 }
 
@@ -385,23 +403,24 @@ un poco la dispersión.
 
 Adicionalmente, ANOVA utiliza los \emph{grados de libertad}. En el caso
 de variables categóricas, como en este caso, para las medias se calcula
-como uno menos que el numero de niveles \(DF_k=k-1\). En el caso del
+como uno menos que el número de niveles \(DF_k=k-1\). En el caso del
 error, se calcula como el número de observaciones menos el número de
 niveles (o grupos) usados \(DF_n=n-k\).
 
-El cálculo que realiza ANOVA es el siguiente:
+\begin{figure}[H]
 
-\[
-F=CMF
-\]
+{\centering \includegraphics{Tarea2_Los_Celtics_files/figure-latex/unnamed-chunk-10-1} 
 
-\begin{itemize}
-\tightlist
-\item
-  Lo llamado los \emph{mean squares}. Estos son
-\end{itemize}
+}
 
-Esto se ve reflejado dentro de los datos en el objeto ANOVA:
+\caption{Distribución de f con p < 0.001 con df1=4 y df2=20}\label{fig:unnamed-chunk-10}
+\end{figure}
+
+En la figura 4 se aprecia el valor de F(4,20)=14.76 dentro de la
+distribución f, con grado de confianza \(\alpha = 0.001\), para los
+valores de las observaciones y se encuentra a la derecha del valor
+crítico de 7.096, confirmando que si existe evidencia de que los efectos
+de los tratamientos si afectan.
 
 
 \end{document}

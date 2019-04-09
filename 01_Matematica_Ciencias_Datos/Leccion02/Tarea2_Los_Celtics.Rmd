@@ -1,22 +1,33 @@
 ---
 title: "Tarea 2 - Anova"
-author: "Los Celtics"
+subtitle: "Los Celtics"
+author: 
+- "José Aguilar"
+- "Rafael Alfaro"
+- "Gonzalo Rodríguez"
+- "Juan Pablo Villalobos"
 date: "9 de Abril, 2019"
 output:
   pdf_document: 
     keep_tex: true
+header-includes: 
+  \usepackage{float}
+  \usepackage{graphicx}
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE, fig.pos = 'H')
 if (!require(kableExtra)){
         install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
 }
 if(!require(ggpubr)) install.packages("ggpubr")
-library(knitr)
+if(!require(HH)) install.packages("HH")
 library(kableExtra)
 library(ggpubr)
+library(HH)
 options(knitr.table.format = "latex")
-knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 ## Carga de datos
@@ -44,26 +55,34 @@ kable(algodon_t)
 
 Calculo de ANOVA:
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, results = "hold"}
 algodon_stacked <- stack(algodon_t)
 kable(algodon_stacked)
 ```
+La figura 1 muestra la distribución de las observaciones por cada tratamiento: la media, los 3 quartiles y los valores atípicos.
 
-```{r, fig.width=6, fig.height=3, echo=FALSE}
-ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title="Distribución de los datos en los diferentes tratamientos")
+
+```{r, fig.width=6, fig.height=3, fig.cap="Distribución de los datos en los diferentes tratamientos", echo=FALSE, cache=TRUE, fig.show = "hold"}
+var1 <- ggboxplot(algodon_stacked, x="ind", y = "values", color = "ind", order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title="Distribución de los datos en los diferentes tratamientos")
+var1
 ```
 
-```{r, fig.width=6, fig.height=3, echo=FALSE, message=FALSE}
-ggline(algodon_stacked, x= "ind", y = "values", group = 1, color = "ind", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title = "Media y cuadrados de los errores por tratamiento")
+La figura 2 muestra la media de las observaciones por cada tratamiento y el cuadrado de los errores para cada uno de los tratamientos. Los puntos representan las diferentes observaciones.
+
+```{r, fig.width=6, fig.height=3, fig.cap="Media y cuadrados de los errores por tratamiento", echo=FALSE, message=FALSE, cache=TRUE, fig.show = "hold"}
+var2 <- ggline(algodon_stacked, x= "ind", y = "values", group = 1, color = "ind", add = c("mean_se", "jitter"), order = c("Porc_15", "Porc_20", "Porc_25", "Porc_30", "Porc_35"), ylab = "libra/pulg^2", xlab = "% de Algodón", title = "Media y cuadrados de los errores por tratamiento")
+var2
 ```
 
-```{r, cache=TRUE}
+
+
+```{r, cache=TRUE, results = "hold"}
 anova_algodon <- aov(values ~ ind, data = algodon_stacked, qr = TRUE)
 summary(anova_algodon)
 
 ```
 
-```{r}
+```{r, results = "hold"}
 anova_algodon
 ```
 
@@ -73,7 +92,7 @@ $$F(4,20)=14.76, p < 0.001$$
 
 Tenemos los grados de libertad $4$ (numerador) y $20$ (denominador), asi como un $p$ menor a $0.001$. Con estos datos podemos buscar en la tabla de Fischer para $p<0.001$:
 \renewcommand{\figurename}{Fig.}
-```{r, out.width="0.3\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Tabla de Fisher p < 0.001"), echo=FALSE}
+```{r, out.width="0.7\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Tabla de Fisher p < 0.001"), echo=FALSE}
 knitr::include_graphics("ftable001.PNG")
 ```
 Tabla tomada de https://web.ma.utexas.edu/users/davis/375/popecol/tables/f0001.html
@@ -101,18 +120,12 @@ Tal y como vimos en clase, de esto podemos deducir dos hipótesis:
 
 Para probar estas hipótesis, ANOVA lo que hace es calcular la dispersión de las medias, y dividirlas por la dispersion de todas las observaciones. Si $\tau_i=0 \forall i$, entonces la dispersión de todas las medias y la dispersión de todas las observaciones sería la misma, y el _F test_ daría 1. De lo contrario daría un número mayor que uno, al afectar $\tau$ al menos a uno de los tratamientos moviendo un poco la dispersión.
 
-Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categóricas, como en este caso, para las medias se calcula como uno menos que el numero de niveles $DF_k=k-1$. En el caso del error, se calcula como el número de observaciones menos el número de niveles (o grupos) usados $DF_n=n-k$.
+Adicionalmente, ANOVA utiliza los _grados de libertad_. En el caso de variables categóricas, como en este caso, para las medias se calcula como uno menos que el número de niveles $DF_k=k-1$. En el caso del error, se calcula como el número de observaciones menos el número de niveles (o grupos) usados $DF_n=n-k$.
 
-
-El cálculo que realiza ANOVA es el siguiente:
-
-$$
-F=CMF
-$$
-
-
-- Lo llamado los _mean squares_. Estos son 
-
-Esto se ve reflejado dentro de los datos en el objeto ANOVA:
-
-
+```{r, include=TRUE, fig.align="center", fig.cap="Distribución de f con p < 0.001 con df1=4 y df2=20", echo=FALSE, cache=TRUE}
+x = algodon_stacked['values']
+curve(df(x,df1=4,df2=20), from=0, to=max(x))
+F.curve(df1=4, df2=20, alpha=0.001, f=seq(x), shade="none", axis.name="f", ncp=0, col=par("col"))
+F.observed(14.76, df1=4, df2=20, shade="right")
+```
+En la figura 4 se aprecia el valor de F(4,20)=14.76 dentro de la distribución f, con grado de confianza $\alpha = 0.001$, para los valores de las observaciones y se encuentra a la derecha del valor crítico de 7.096, confirmando que si existe evidencia de que los efectos de los tratamientos si afectan.
