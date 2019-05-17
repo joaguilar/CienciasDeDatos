@@ -2,6 +2,9 @@
 title: 'Tarea #4'
 author: "Los Celtics"
 date: "5/16/2019"
+header-includes:
+   - \usepackage{amsmath}
+   - \usepackage{scalefont}
 output: powerpoint_presentation
 ---
 
@@ -96,3 +99,309 @@ v2 = np.array([6,7,8,9,10])
 v3 = v1-v2
 print("El resultado de restar v2 de v1 es ",v3)
 ```
+
+
+
+## Norma de Vector
+
+
+
+## Norma de Vector (R) 
+
+
+
+## Norma de Vector (Python)
+
+
+
+## Vector Multiplicado por Escalar
+
+
+
+## Vector Multiplicado por Escalar (R) 
+
+
+
+## Vector Multiplicado por Escalar (Python)
+
+
+
+## Multiplicacion por Componentes
+
+
+
+## Multiplicacion por Componentes (R) 
+
+
+
+## Multiplicacion por Componentes (Python)
+
+
+
+## Division por Componentes
+
+
+
+## Division por Componentes (R) 
+
+
+
+## Division por Componentes (Python)
+
+
+
+## Normalizar Vector
+
+
+
+## Normalizar Vector (R) 
+
+
+
+## Normalizar Vector (Python)
+
+
+
+## Producto Punto
+
+El producto punto entre dos vectores se obtiene sumando los productos de las correspondientes entradas de los vectores:
+
+$$\begin{bmatrix}
+		1\\2\\3\\4\\5
+		\end{bmatrix}
+		\cdot
+		\begin{bmatrix}
+		6\\7\\8\\9\\10
+		\end{bmatrix} = 6+14+24+36+50 = 130$$
+
+## Producto Punto (R) 
+
+La forma mas práctica de obtener el producto punto en R es utilizar el operador %*% , sin embargo este puede tener otros significados si se trabaja con matrices
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE}
+v1<-c(1,2,3,4,5)
+v2<-c(6,7,8,9,10)
+cat("El producto punto de v1 y v2 es ",v1%*%v2,sep=" ")
+```
+
+
+## Producto Punto (Python)
+
+El producto punto en Python se puede obtener utilizando la función _dot()_ del paquete numpy
+
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+v2 = np.array([6,7,8,9,10])
+d = np.dot(v1,v2)
+print("El producto punto de v1 y v2 es",d)
+```
+
+
+## Producto Cruz
+
+El producto de los vectores $\vec(a)$ y $\vec(b)$, de tres dimensiones se define de la siguiente forma:
+
+$$\vec(a)=\begin{bmatrix}
+a_1\\a_2\\a_3
+\end{bmatrix} \times
+\vec(b)=\begin{bmatrix}
+b_2\\b_2\\b_3
+\end{bmatrix} = (a_2b_3 – a_3b_2 , a_3b_1 – a_1b_3 , a_1b_2 – a_2b_1)$$
+
+
+## Producto Cruz (R) 
+
+El producto cruz se puede calcular en R utilizando la funcion _cross(x,y)_ del paquete _pracma_:
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE, warning=FALSE, error=FALSE}
+if (!require(pracma)){install.packages("pracma")}
+v1<-c(1,2,3)
+v2<-c(6,7,8)
+v3<-cross(v1,v3)
+cat("El producto cruz de v1 y v2 es [",v3,"]",sep=" ")
+```
+
+
+## Producto Cruz (Python)
+
+El producto cruz en Python se puede obtener utilizando la función _cross()_ del paquete numpy
+
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3])
+v2 = np.array([6,7,8])
+d = np.cross(v1,v2)
+print("El producto cruz de v1 y v2 es",d)
+```
+
+
+## Multiplicacion de Matrices
+
+$$\begin{pmatrix}
+a_{11} &\ldots  &a_{1n}\\
+\vdots& \ddots &\vdots\\
+a_{i1} & \rightarrow &a_{in}\\
+\vdots&  \ddots &\vdots\\
+a_{m1} & \ldots &a_{mn}
+\end{pmatrix}\begin{pmatrix}
+b_{11}&\ldots &b_{1j} &\ldots &b_{1p}\\
+\vdots& \ddots & \downarrow &  \ddots  &\vdots\\
+b_{n1}&\ldots &b_{nj}&\ldots &b_{np}
+\end{pmatrix}=\begin{pmatrix}
+c_{11}&\ldots& c_{1j} &\ldots &c_{1p}\\
+\vdots&  \ddots & & &\vdots\\
+c_{i1}& & c_{ij} & &c_{ip}\\
+\vdots& &  & \ddots &\vdots\\
+c_{m1} &\ldots& c_{mj} &\ldots &c_{mp}
+\end{pmatrix}$$
+
+Donde $$c_{ij}  =  a_{i1}b_{1j}  + a_{i2}b_{2j}  +  \cdots  + a_{in}b_{nj}$$
+
+
+## Multiplicacion de Matrices (R) 
+
+En R 
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE, warning=FALSE, error=FALSE}
+a<-matrix(c(1,0,0,1),nrow=2,ncol=2,byrow=TRUE)
+b<-matrix(c(4,1,2,2),nrow=2,ncol=2,byrow=TRUE)
+c<-a%*%b
+cat("El resultado de multiplicar a y b es ")
+print(c)
+```
+
+## Multiplicacion de Matrices (Python)
+
+En Python se puede obtener utilizando la función _matmul()_ del paquete numpy
+
+```{python  echo=TRUE,cache=FALSE, background="gray50"}
+import numpy as np
+a = np.array([[1, 0],[0, 1]])
+b = np.array([[4, 1],[2, 2]])
+print("El resultado de multiplicar a y b es ",np.matmul(a, b))
+```
+
+
+## Suma de Matrices
+
+
+
+## Suma de Matrices (R) 
+
+
+
+## Suma de Matrices (Python)
+
+
+
+## Resta de Matrices
+
+
+
+## Resta de Matrices (R) 
+
+
+
+## Resta de Matrices (Python)
+
+
+
+## Transpuesta de Matriz
+
+
+
+## Transpuesta de Matriz (R) 
+
+
+
+## Transpuesta de Matriz (Python)
+
+
+
+## Traza de Matriz
+
+
+
+## Traza de Matriz (R) 
+
+
+
+## Traza de Matriz (Python)
+
+
+
+## Inversa de Matriz
+
+
+
+## Inversa de Matriz (R) 
+
+
+
+## Inversa de Matriz (Python)
+
+
+
+## Determinante de Matriz
+
+
+
+## Determinante de Matriz (R) 
+
+
+
+## Determinante de Matriz (Python)
+
+
+
+## EigenVectors
+
+
+
+## EigenVectors (R) 
+
+
+
+## EigenVectors (Python)
+
+
+
+## EigenValues
+
+
+
+## EigenValues (R) 
+
+
+
+## EigenValues (Python)
+
+
+
+## Potencia de Matrices
+
+
+
+## Potencia de Matrices (R) 
+
+
+
+## Potencia de Matrices (Python)
+
+
+
+## Descomposicion de Matrices
+
+
+
+## Descomposicion de Matrices (R) 
+
+
+
+## Descomposicion de Matrices (Python)
+
+
+
+
+
