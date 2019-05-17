@@ -1,0 +1,98 @@
+---
+title: 'Tarea #4'
+author: "Los Celtics"
+date: "5/16/2019"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+if (!require(reticulate)){
+        install.packages("reticulate",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+}
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Suma de Vectores
+
+La suma de vectores consiste en sumar a cada elemento de un vector, el valor del elemento correspondiente del otro vector. 
+
+$\begin{bmatrix}
+		1\\2\\3
+		\end{bmatrix}
+		+
+		\begin{bmatrix}
+		6\\7\\8
+		\end{bmatrix}		=
+		\begin{bmatrix}
+		7\\9\\11
+		\end{bmatrix}$
+
+## Suma de Vectores (R)
+
+La suma de vectores en R se hace facilmente con el operador +:
+
+```{r echo=TRUE, tidy=TRUE,cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-c(1,2,3)
+v2<-c(6,7,8)
+v3<-v1+v2
+
+cat("El resultado de sumar v1 y v2 es [",v3,"]",sep=" ")
+```
+
+
+## Suma de Vectores (Python)
+
+La suma de vectores en Python se hace facilmente con el operador +, utilizando la bilbioteca numpy para definir los arreglos:
+
+
+
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+v2 = np.array([6,7,8,9,10])
+v3 = v1+v2
+print("El resultado de sumar v1 y v2 es ",v1+v2)
+```
+
+## Resta de Vectores
+
+La resta de vectores consiste en restar a cada elemento del primer vector, el valor del elemento correspondiente del segundo vector. 
+
+$\begin{bmatrix}
+		1\\2\\3
+		\end{bmatrix}
+		-
+		\begin{bmatrix}
+		6\\7\\8
+		\end{bmatrix}		=
+		\begin{bmatrix}
+		-5\\-5\\-5
+		\end{bmatrix}$
+
+## Resta de Vectores (R)
+
+La resta de vectores en R se hace facilmente con el operador -:
+
+```{r echo=TRUE, tidy=TRUE,cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-c(1,2,3)
+v2<-c(6,7,8)
+v3<-v1-v2
+
+cat("El resultado de restar v2 de v1 es [",v3,"]",sep=" ")
+```
+
+
+## Resta de Vectores (Python)
+
+La resta de vectores en Python se hace facilmente con el operador +, utilizando la bilbioteca numpy para definir los arreglos:
+
+
+
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+v2 = np.array([6,7,8,9,10])
+v3 = v1-v2
+print("El resultado de restar v2 de v1 es ",v3)
+```
