@@ -12,6 +12,9 @@ output: powerpoint_presentation
 if (!require(reticulate)){
         install.packages("reticulate",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
 }
+if (!require(matrixcalc)) {
+    install.packages("matrixcalc",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+}
 
 knitr::opts_chunk$set(echo = FALSE)
 ```
@@ -308,36 +311,95 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 ## Determinante de Matriz (R) 
 
+En R 
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE, warning=FALSE, error=FALSE}
+a<-matrix(c(4,1,2,2),nrow=2,ncol=2,byrow=TRUE)
+d<-det(a)
+cat("El resultado de la determinante de a es ")
+print(d)
+```
 
 
 ## Determinante de Matriz (Python)
 
+En Python se puede obtener utilizando la función _linalg.det()_ del paquete numpy
 
+```{python  echo=TRUE,cache=FALSE, background="gray50"}
+import numpy as np
+a = np.array([[4, 1],[2, 2]])
+print("El resultado de la determinante de a es ",np.linalg.det(a))
+```
 
 
 ## EigenVectors (R) 
 
+En R 
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE, warning=FALSE, error=FALSE}
+a<-matrix(c(4,1,2,2),nrow=2,ncol=2,byrow=TRUE)
+e<-eigen(a)
+cat("Los eigenvectors de a son: ")
+print(e$vectors)
+```
 
 
 ## EigenVectors (Python)
 
+En Python se puede obtener utilizando la función _linalg.eig()_ del paquete numpy
 
+```{python  echo=TRUE,cache=FALSE, background="gray50"}
+import numpy as np
+a = np.array([[4, 1],[2, 2]])
+w,v = np.linalg.eig(a)
+print("El eigenvector normalizado de a es ",v)
+```
 
 
 ## EigenValues (R) 
 
+En R 
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50",message=FALSE, warning=FALSE, error=FALSE}
+a<-matrix(c(4,1,2,2),nrow=2,ncol=2,byrow=TRUE)
+e<-eigen(a)
+cat("Los eigenvalues de a son: ")
+print(e$values)
+```
 
 
 ## EigenValues (Python)
 
+En Python se puede obtener utilizando la función _linalg.eig()_ del paquete numpy
 
+```{python  echo=TRUE,cache=FALSE, background="gray50"}
+import numpy as np
+a = np.array([[4, 1],[2, 2]])
+w,v = np.linalg.eig(a)
+print("Los eigenvalues de a son ",w)
+```
 
 ## Potencia de Matrices (R) 
 
+En R 
 
+```{r echo=TRUE, error=FALSE, message=FALSE, warning=FALSE, background="gray50", cache=FALSE, highlight=TRUE, prompt=TRUE}
+a<-matrix(c(4,1,2,2),nrow=2,ncol=2,byrow=TRUE)
+e<-matrix.power(a, 3)
+cat("La matrix A^3 es: ")
+print(e)
+```
 
 ## Potencia de Matrices (Python)
 
+En Python se puede obtener utilizando la función _linalg.matrix_power()_ del paquete numpy
+
+```{python  echo=TRUE,cache=FALSE, background="gray50"}
+import numpy as np
+a = np.array([[4, 1],[2, 2]])
+e = np.linalg.matrix_power(a, 3)
+print("La matrix A^3 es: ",e)
+```
 
 ## Descomposicion de Matrices (R) 
 
