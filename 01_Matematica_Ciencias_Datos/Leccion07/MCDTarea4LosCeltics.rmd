@@ -16,20 +16,6 @@ if (!require(reticulate)){
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Suma de Vectores
-
-La suma de vectores consiste en sumar a cada elemento de un vector, el valor del elemento correspondiente del otro vector. 
-
-$\begin{bmatrix}
-		1\\2\\3
-		\end{bmatrix}
-		+
-		\begin{bmatrix}
-		6\\7\\8
-		\end{bmatrix}		=
-		\begin{bmatrix}
-		7\\9\\11
-		\end{bmatrix}$
 
 ## Suma de Vectores (R)
 
@@ -58,20 +44,6 @@ v3 = v1+v2
 print("El resultado de sumar v1 y v2 es ",v1+v2)
 ```
 
-## Resta de Vectores
-
-La resta de vectores consiste en restar a cada elemento del primer vector, el valor del elemento correspondiente del segundo vector. 
-
-$\begin{bmatrix}
-		1\\2\\3
-		\end{bmatrix}
-		-
-		\begin{bmatrix}
-		6\\7\\8
-		\end{bmatrix}		=
-		\begin{bmatrix}
-		-5\\-5\\-5
-		\end{bmatrix}$
 
 ## Resta de Vectores (R)
 
@@ -102,77 +74,119 @@ print("El resultado de restar v2 de v1 es ",v3)
 
 
 
-## Norma de Vector
-
-
-
 ## Norma de Vector (R) 
 
+La norma de un vector se calcula con la funcion _norm()_
+
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-as.matrix(c(1,2,3))
+cat("La norma Euclideana de v1 es ",n<-norm(v1,type = "f"),sep=" ")
+cat("La norma Valor maximo de v1 es ",norm(v1,"m"),sep=" ")
+cat("La norma manhattan de v1 es ",norm(v1,"o"),sep=" ")
+
+```
 
 
 ## Norma de Vector (Python)
 
-
-
-## Vector Multiplicado por Escalar
-
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+print("La norma Euclideana de v1 es ",np.linalg.norm(v1))
+print("La norma Valor maximo de v1 es ",np.linalg.norm(v1,np.inf))
+print("La norma manhattan de v1 es ",np.linalg.norm(v1,1))
+```
 
 
 ## Vector Multiplicado por Escalar (R) 
 
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-c(1,2,3)
+k<-2
+kv1<-2*v1
+cat("k*v1 =[",kv1,"]",sep=" ")
+
+```
 
 
 ## Vector Multiplicado por Escalar (Python)
 
-
-
-## Multiplicacion por Componentes
-
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+k = 2
+kv1 = 2*v1 
+print("k*v1 = ",kv1)
+```
 
 
 ## Multiplicacion por Componentes (R) 
 
+```{r echo=TRUE, tidy=TRUE,cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-c(1,2,3)
+v2<-c(6,7,8)
+v3<-v1*v2
 
+cat("El resultado de v1 .x v2  es [",v3,"]",sep=" ")
+```
 
 ## Multiplicacion por Componentes (Python)
 
-
-
-## Division por Componentes
-
-
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+v2 = np.array([6,7,8,9,10])
+v3 = v1*v2
+print("El resultado de v1 .x v2 es ",v3)
+```
 
 ## Division por Componentes (R) 
 
 
+```{r echo=TRUE, tidy=TRUE,cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+v1<-c(1,2,3)
+v2<-c(6,7,8)
+v3<-v2/v1
+
+cat("El resultado de v2 ./ v1  es [",v3,"]",sep=" ")
+```
 
 ## Division por Componentes (Python)
 
-
-
-## Normalizar Vector
-
-
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+v1 = np.array([1,2,3,4,5])
+v2 = np.array([6,7,8,9,10])
+v3 = v2/v1
+print("El resultado de v2 ./ v1 es ",v3)
+```
 
 ## Normalizar Vector (R) 
 
+En este caso es mejor escribir la funcion dado que no hay una funcion base.
 
+```{r echo=TRUE, cache=FALSE, prompt=TRUE, highlight=TRUE,background="gray50"}
+normalizar <- function(v) {v / sqrt(sum(v^2))}
+v1<-c(1,2,3)
+normv1<-normalizar(v1)
+cat("v1 normalizado es [",normv1,"]",sep=" ")
+
+```
 
 ## Normalizar Vector (Python)
 
+Mismo caso en Python
 
-
-## Producto Punto
-
-El producto punto entre dos vectores se obtiene sumando los productos de las correspondientes entradas de los vectores:
-
-$$\begin{bmatrix}
-		1\\2\\3\\4\\5
-		\end{bmatrix}
-		\cdot
-		\begin{bmatrix}
-		6\\7\\8\\9\\10
-		\end{bmatrix} = 6+14+24+36+50 = 130$$
+```{python  echo=TRUE,cache=FALSE, highlight=TRUE,background="gray50"}
+import numpy as np
+def normalizar(v):
+    norm = np.linalg.norm(v)
+    if norm == 0: 
+       return v
+    return v / norm
+v1 = np.array([1,2,3])
+print("v1 normalizado es ",normalizar(v1))
+```
 
 ## Producto Punto (R) 
 
@@ -196,18 +210,6 @@ v2 = np.array([6,7,8,9,10])
 d = np.dot(v1,v2)
 print("El producto punto de v1 y v2 es",d)
 ```
-
-
-## Producto Cruz
-
-El producto de los vectores $\vec(a)$ y $\vec(b)$, de tres dimensiones se define de la siguiente forma:
-
-$$\vec(a)=\begin{bmatrix}
-a_1\\a_2\\a_3
-\end{bmatrix} \times
-\vec(b)=\begin{bmatrix}
-b_2\\b_2\\b_3
-\end{bmatrix} = (a_2b_3 – a_3b_2 , a_3b_1 – a_1b_3 , a_1b_2 – a_2b_1)$$
 
 
 ## Producto Cruz (R) 
@@ -236,29 +238,6 @@ print("El producto cruz de v1 y v2 es",d)
 ```
 
 
-## Multiplicacion de Matrices
-
-$$\begin{pmatrix}
-a_{11} &\ldots  &a_{1n}\\
-\vdots& \ddots &\vdots\\
-a_{i1} & \rightarrow &a_{in}\\
-\vdots&  \ddots &\vdots\\
-a_{m1} & \ldots &a_{mn}
-\end{pmatrix}\begin{pmatrix}
-b_{11}&\ldots &b_{1j} &\ldots &b_{1p}\\
-\vdots& \ddots & \downarrow &  \ddots  &\vdots\\
-b_{n1}&\ldots &b_{nj}&\ldots &b_{np}
-\end{pmatrix}=\begin{pmatrix}
-c_{11}&\ldots& c_{1j} &\ldots &c_{1p}\\
-\vdots&  \ddots & & &\vdots\\
-c_{i1}& & c_{ij} & &c_{ip}\\
-\vdots& &  & \ddots &\vdots\\
-c_{m1} &\ldots& c_{mj} &\ldots &c_{mp}
-\end{pmatrix}$$
-
-Donde $$c_{ij}  =  a_{i1}b_{1j}  + a_{i2}b_{2j}  +  \cdots  + a_{in}b_{nj}$$
-
-
 ## Multiplicacion de Matrices (R) 
 
 En R 
@@ -283,19 +262,11 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 ```
 
 
-## Suma de Matrices
-
-
-
 ## Suma de Matrices (R) 
 
 
 
 ## Suma de Matrices (Python)
-
-
-
-## Resta de Matrices
 
 
 
@@ -307,9 +278,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 
 
-## Transpuesta de Matriz
-
-
 
 ## Transpuesta de Matriz (R) 
 
@@ -317,9 +285,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 ## Transpuesta de Matriz (Python)
 
-
-
-## Traza de Matriz
 
 
 
@@ -331,9 +296,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 
 
-## Inversa de Matriz
-
-
 
 ## Inversa de Matriz (R) 
 
@@ -341,9 +303,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 ## Inversa de Matriz (Python)
 
-
-
-## Determinante de Matriz
 
 
 
@@ -355,9 +314,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 
 
-## EigenVectors
-
-
 
 ## EigenVectors (R) 
 
@@ -365,9 +321,6 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 ## EigenVectors (Python)
 
-
-
-## EigenValues
 
 
 
@@ -379,20 +332,11 @@ print("El resultado de multiplicar a y b es ",np.matmul(a, b))
 
 
 
-## Potencia de Matrices
-
-
-
 ## Potencia de Matrices (R) 
 
 
 
 ## Potencia de Matrices (Python)
-
-
-
-## Descomposicion de Matrices
-
 
 
 ## Descomposicion de Matrices (R) 
