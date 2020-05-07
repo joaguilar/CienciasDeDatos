@@ -68,7 +68,7 @@ El conjunto de datos encuesta.csv contiene los siguientes campos:
 ## Verificación de la calidad de datos 
 
 ```{r warning=FALSE}
-setwd('C:/Development/ITCR/Tarea3')
+setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Tarea3')
 dataset<-read.csv('Encuesta.csv', sep = ',',dec = '.')
 str(dataset)
 #summary(dataset)
@@ -81,7 +81,7 @@ La primera conversión sería convertir las columnas Trabaja y Familia a un valo
 
 ```{r warning=FALSE}
 # Lo convertimos usando as.integer(), pero debemos restarle 1 para que quede con dos valores 0 y 1, en vez de 1 y 2 como funciona al convertir de factor a entero
-dataset$Trabaja <- as.integer(dataset$Trabaja)-1
+dataset$Trabaja1 <- as.integer(dataset$Trabaja)-1
 dataset$Familia <- as.integer(dataset$Familia)-1
 dataset$Familia<- factor(dataset$Familia,labels=c("NoFamilia","SiFamilia"))
 dataset$Trabaja<- factor(dataset$Trabaja,labels=c("NoTrabaja","SiTrabaja"))
@@ -183,9 +183,8 @@ Si la preparación de los datos la realiza en un lenguaje de programación disti
 
 ```{r warning=FALSE}
 
-# transacciones<- ddply(dataset,c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia",
-#                                 "Hobbies","Club_Social","Politica","Profesional","Medioambiente","Grupo_Apoyo"),
-#                       function(dataset) paste(dataset$item,collapse = ','))
+transacciones<- ddply(dataset,c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia",
+                                 "Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
 
 #transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
 #                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
@@ -194,21 +193,22 @@ Si la preparación de los datos la realiza en un lenguaje de programación disti
 dataset$Tiempo_Respuesta<-NULL
 dataset$Edad<-NULL
 
-transacciones <- col_concat(dataset,sep=",")
+#transacciones <- col_concat(dataset,sep=",")
+transacciones<-as(dataset,Class = "transactions")
 
 head(transacciones)
 
 
  
  # se guardan los datos como archivo csv en formato transaccion
- write.csv(transacciones,'transacciones.csv',quote = FALSE)
+write(transacciones,'transaccionesOR2.csv',quote = FALSE,sep=',')
+#write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)
 
 ```
 
 ```{r warning=FALSE}
 # se leerá el archivo como transacciones formato basket
- 
- transacciones<- read.transactions('transacciones.csv',sep=',',format = 'basket')
+ transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
  
  
 ```
