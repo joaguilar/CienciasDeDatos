@@ -1,0 +1,268 @@
+---
+title: "Tarea 3"
+author: "Jose Aguilar, Eilyn Salazer, Crisia Piedra"
+date: "May 6, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(arules)
+if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library("readxl")
+library(dplyr)
+library(ggplot2)
+library(knitr)
+if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(kableExtra)
+library(arules)
+library(arulesViz)
+
+library(tidyverse)
+if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
+library(plyr)
+library(ggplot2)
+library(knitr)
+library(lubridate)
+if(!require(assertr)) install.packages("assertr",dependencies = TRUE)
+library(assertr)
+if(!require(reshape2)) install.packages("reshape2",dependencies = TRUE)
+library(reshape2)
+
+```
+
+# Entendimiento del negocio
+
+## Determinar los objetivos de minería de datos 
+
+###	Determine el objetivo de minería de datos 
+
+### 	Defina al menos un criterio de éxito desde la perspectiva de minería de datos 
+
+#	Entendimiento de los datos 
+
+## Exploración de los datos 
+
+El conjunto de datos encuesta.csv contiene los siguientes campos:
+
+| Campo  | Descripción | Tipo  |
+|---|---|---|
+| Tiempo_Respuesta | Cantidad en minutos que la persona tardó completando la encuesta | Numérico | 
+| Tiempo_comunidad | Tiempo en años que y 2 años),  Medio (entre 3 y 9 años), Largo(10 o más años) | Numérico | 
+| Sexo | Sexo de la persona encuestada | Numérico | 
+| Trabaja | Sí/No, indica si la persona actualmente tiene un trabajo remunerado | Numérico | 
+| Edad | Edad en años del encuestado | Numérico | 
+| Familia | Sí/No, indica si la persona pertenece a algún grupo orientado a la familia, por ejemplo: deportes, recreación infantil, genealogía, etc | Numérico | 
+| Hobbies | Sí/No, indica si la persona pertenece a un grupo relativo a pasatiempos: motociclismo, recreación al aire libre, etc | Numérico |
+| Club_Social | Sí/No, indica si la persona pertenece a algún club, por ejemplo: Club de Leones, etc | Numérico | 
+| Política | Sí/No, indica si la persona pertenece a un grupo propio de un partido político | Numérico | 
+| Profesional | Sí/No, indica si la persona pertenece a un grupo relacionado con su profesión | Numérico | 
+| Medioambiente | Sí/No, indica si la persona pertenece a un grupo para rescate o cuidado del medio ambiente | Numérico | 
+| Grupo_Apoyo | Sí/No, indica si la persona pertenece a un grupo de apoyo, por ejemplo Alcohólicos anónimos, Narcóticos anónimos, manejo de la ira, etc | Numérico |
+
+
+
+
+
+## Verificación de la calidad de datos 
+
+```{r warning=FALSE}
+setwd('C:/Development/ITCR/Tarea3')
+dataset<-read.csv('Encuesta.csv', sep = ',',dec = '.')
+str(dataset)
+#summary(dataset)
+
+```
+ 
+#	Preparación de los datos 
+
+La primera conversión sería convertir las columnas Trabaja y Familia a un valor numérico para que sea consistente con las demás variables:
+
+```{r warning=FALSE}
+# Lo convertimos usando as.integer(), pero debemos restarle 1 para que quede con dos valores 0 y 1, en vez de 1 y 2 como funciona al convertir de factor a entero
+dataset$Trabaja <- as.integer(dataset$Trabaja)-1
+dataset$Familia <- as.integer(dataset$Familia)-1
+dataset$Familia<- factor(dataset$Familia,labels=c("NoFamilia","SiFamilia"))
+dataset$Trabaja<- factor(dataset$Trabaja,labels=c("NoTrabaja","SiTrabaja"))
+dataset$Hobbies<- factor(dataset$Hobbies,labels=c("NoHobbies","SiHobbies"))
+dataset$Club_Social<- factor(dataset$Club_Social,labels=c("NoClub_Social","SiClub_Social"))
+dataset$Politica<- factor(dataset$Politica,labels=c("NoPolitica","SiPolitica"))
+dataset$Profesional<- factor(dataset$Profesional,labels=c("NoProfesional","SiProfesional"))
+dataset$Medioambiente<- factor(dataset$Medioambiente,labels=c("NoMedioambiente","SiMedioambiente"))
+dataset$Grupo_Apoyo<- factor(dataset$Grupo_Apoyo,labels=c("NoGrupo_Apoyo","SiGrupo_Apoyo"))
+str(dataset)
+
+```
+
+Renombramos los valores de las variables Sexo y Tiempo_Comunidad:
+```{r warning=FALSE}
+
+dataset$Tiempo_comunidad<-revalue(dataset$Tiempo_comunidad,c("Corto"="Tiempo_comunidad_Corto","Largo"="Tiempo_comunidad_Largo","Medio"="Tiempo_comunidad_Medio"))
+
+dataset$Sexo<-revalue(dataset$Sexo,c("F"="Sexo_F","M"="Sexo_M"))
+summary(dataset)
+
+```
+
+Graficos de distribucion de los valores de las variables que son factores:
+
+```{r warning=FALSE}
+
+dataset_factors =dataset[,sapply(dataset, is.factor)]
+
+for (f_name in colnames(dataset[,sapply(dataset, is.factor)])){
+  print(f_name)
+  barplot(prop.table(table(dataset[,f_name])),main = paste("Distribución de ",f_name),
+          space = 1.2, axisnames = TRUE)
+}
+
+
+```
+
+## Selección de los datos 
+
+Para seleccionar los datos a utilizar, vamos a revisar la distribución de los valores en las diferentes columnas utilizando el comando summary:
+
+```{r warning=FALSE}
+summary(dataset)
+```
+
+Revisando los datos, podemos observar que en dos variables _Club_Social_ y _Politica_ existe un desbalance importante en la distribución de los valores, con mas del 80% de las observaciones con un solo valor:
+
+| Variable | Si (%) | No (%) |
+|---|---|---|
+| Club_Social | 10.36 | 89.64 |
+| Politica | 18.87 | 81.13 |
+
+Debido a esto, no seran consideramos para el análisis.
+
+```{r warning=FALSE}
+dataset$Club_Social <- NULL
+dataset$Politica <- NULL
+```
+
+
+## Limpieza de los datos 
+
+Para asegurar el correcto funcionamiento del algoritmo, vamos a eliminar las filas que contengan valores nulos.
+
+```{r warning=FALSE}
+dataset<- na.omit(dataset)
+```
+
+## Construcción de nuevos datos (atributos) 
+
+Se crearon dos nuevas variables como el rango de edad y el timepo de respuesta para agrupar los datos
+
+```{r warning=FALSE}
+dataset$Grupo_Edad<-discretize(dataset$Edad,method="frequency",breaks = 3, labels = c("Edad_Joven","Edad_Media","Edad_Mayor"))
+levels(dataset$Grupo_Edad)
+
+dataset$Grupo_Tiempo_Respuesta<-discretize(dataset$Tiempo_Respuesta,method="frequency",breaks = 3, 
+                                           labels = c("Tiempo_Respuesta_Rapida","Tiempo_Respuesta_Media","Tiempo_Respuesta_Lenta"))
+levels(dataset$Grupo_Tiempo_Respuesta)
+
+str(dataset)
+
+colnames(dataset)
+
+```
+
+## Transformaciones aplicadas a los datos 
+ 
+Si la preparación de los datos la realiza en un lenguaje de programación distinto a R, debe documentar los cambios o transformaciones aplicadas a los datos, aportando screenshots y agregándolos como imágenes en el documento RMarkdown. 
+ 
+#	Fase de modelado  
+
+(estas actividades debe realizarlas para cada conjunto de reglas generado) 
+
+## Selección de técnicas   (en este caso A priori) 
+
+## Construcción del modelo (en este caso serán conjuntos de reglas) 
+
+```{r warning=FALSE}
+
+# transacciones<- ddply(dataset,c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia",
+#                                 "Hobbies","Club_Social","Politica","Profesional","Medioambiente","Grupo_Apoyo"),
+#                       function(dataset) paste(dataset$item,collapse = ','))
+
+#transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
+#                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
+#                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
+
+dataset$Tiempo_Respuesta<-NULL
+dataset$Edad<-NULL
+
+transacciones <- col_concat(dataset,sep=",")
+
+head(transacciones)
+
+
+ 
+ # se guardan los datos como archivo csv en formato transaccion
+ write.csv(transacciones,'transacciones.csv',quote = FALSE)
+
+```
+
+```{r warning=FALSE}
+# se leerá el archivo como transacciones formato basket
+ 
+ transacciones<- read.transactions('transacciones.csv',sep=',',format = 'basket')
+ 
+ 
+```
+
+### Exploración de las transacciones
+```{r}
+summary(transacciones)
+```
+
+### Generación de las reglas usando A priori
+
+```{r}
+ # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.8
+
+reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=10))
+  
+  inspect(reglas[1:10])
+
+   # Generar menos reglas
+  #reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=3))
+  #inspect(reglas[1:10])
+ 
+  # eliminar reglas que son subconjuntos de otras 
+  subconjuntos<- which(colSums(is.subset(reglas,reglas))>1)
+  
+  reglasFinal<- reglas[-subconjuntos]
+  #inspect(reglasFinal[1:10])
+  
+  # se ordena por soporte y se observan las primeras 10 reglas
+  inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[1:10])
+  
+  # se filtran las reglas con confianza superior a 0.25
+  mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.25]
+  
+```
+
+### Visualización de las 5 mejores reglas (según confianza) - grafo
+```{r fig.align='center'}
+   cincoMejoresReglas<- head(mejoresReglas,n=10,by='lift')
+  
+   plot(cincoMejoresReglas,method = 'graph',engine = 'htmlwidget')
+
+```
+
+##	Selección de los parámetros    
+
+##	Ejecución
+
+(generación de reglas, eliminación de subconjuntos,etc) 
+
+##	Descripción general de las reglas obtenidas 
+
+(incluya al menos un gráfico) 
+
+## Evaluación de los modelos 
+
+##	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
