@@ -1,0 +1,13 @@
+ Campo  , Descripción, Tipo  
+ Tiempo_Respuesta , Cantidad en minutos que la persona tardó completando la encuesta , Numérico 
+ Tiempo_comunidad ," Tiempo en años que y 2 años),  Medio (entre 3 y 9 años), Largo(10 o más años) ", Numérico 
+ Sexo , Sexo de la persona encuestada , Numérico 
+ Trabaja ," Sí/No, indica si la persona actualmente tiene un trabajo remunerado ", Numérico 
+ Edad , Edad en años del encuestado , Numérico 
+ Familia ," Sí/No, indica si la persona pertenece a algún grupo orientado a la familia, por ejemplo: deportes, recreación infantil, genealogía, etc ", Numérico 
+ Hobbies ," Sí/No, indica si la persona pertenece a un grupo relativo a pasatiempos: motociclismo, recreación al aire libre, etc ", Numérico 
+ Club_Social ," Sí/No, indica si la persona pertenece a algún club, por ejemplo: Club de Leones, etc ", Numérico 
+ Política ," Sí/No, indica si la persona pertenece a un grupo propio de un partido político ", Numérico 
+ Profesional ," Sí/No, indica si la persona pertenece a un grupo relacionado con su profesión ", Numérico 
+ Medioambiente ," Sí/No, indica si la persona pertenece a un grupo para rescate o cuidado del medio ambiente ", Numérico 
+ Grupo_Apoyo ," Sí/No, indica si la persona pertenece a un grupo de apoyo, por ejemplo Alcohólicos anónimos, Narcóticos anónimos, manejo de la ira, etc ", Numérico 

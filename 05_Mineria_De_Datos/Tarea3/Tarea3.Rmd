@@ -2,7 +2,9 @@
 title: "Tarea 3"
 author: "Jose Aguilar, Eilyn Salazer, Crisia Piedra"
 date: "May 6, 2020"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -11,7 +13,6 @@ if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN=
 library(arules)
 if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
 library("readxl")
-library(dplyr)
 library(ggplot2)
 library(knitr)
 if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
@@ -21,7 +22,7 @@ library(arulesViz)
 
 library(tidyverse)
 if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
-library(plyr)
+library(plyr); library(dplyr)
 library(ggplot2)
 library(knitr)
 library(lubridate)
@@ -34,45 +35,39 @@ library(reshape2)
 
 # Entendimiento del negocio
 
-## Determinar los objetivos de minería de datos 
+## Objetivos de minería de datos 
 
-###	Determine el objetivo de minería de datos 
+*	Identificar los 3 clústers de datos más comunes entre los miembros de la comunidad.
+*	Determinar las 3 caracteristicas más comunes entre los miembros de la comunidad para la participación en grupos.
 
-### 	Defina al menos un criterio de éxito desde la perspectiva de minería de datos 
+## Criterios de éxito desde la perspectiva de minería de datos
 
-#	Entendimiento de los datos 
+* Evaluar la confianza del modelo priori con el fin de validar que la confianza de las reglas seleccionadas sea mayor al 90%.
+
+#	Entendimiento de los datos
+
+El conjunto de datos seleccionado cuenta con 3484 observaciones capturadas a través de la entrevista realizada por el alcalde el cual evalua 12 atributos o variables, las caracteristicas de estos datos recopilados se describen a continuación.
 
 ## Exploración de los datos 
 
 El conjunto de datos encuesta.csv contiene los siguientes campos:
 
-| Campo  | Descripción | Tipo  |
-|---|---|---|
-| Tiempo_Respuesta | Cantidad en minutos que la persona tardó completando la encuesta | Numérico | 
-| Tiempo_comunidad | Tiempo en años que y 2 años),  Medio (entre 3 y 9 años), Largo(10 o más años) | Numérico | 
-| Sexo | Sexo de la persona encuestada | Numérico | 
-| Trabaja | Sí/No, indica si la persona actualmente tiene un trabajo remunerado | Numérico | 
-| Edad | Edad en años del encuestado | Numérico | 
-| Familia | Sí/No, indica si la persona pertenece a algún grupo orientado a la familia, por ejemplo: deportes, recreación infantil, genealogía, etc | Numérico | 
-| Hobbies | Sí/No, indica si la persona pertenece a un grupo relativo a pasatiempos: motociclismo, recreación al aire libre, etc | Numérico |
-| Club_Social | Sí/No, indica si la persona pertenece a algún club, por ejemplo: Club de Leones, etc | Numérico | 
-| Política | Sí/No, indica si la persona pertenece a un grupo propio de un partido político | Numérico | 
-| Profesional | Sí/No, indica si la persona pertenece a un grupo relacionado con su profesión | Numérico | 
-| Medioambiente | Sí/No, indica si la persona pertenece a un grupo para rescate o cuidado del medio ambiente | Numérico | 
-| Grupo_Apoyo | Sí/No, indica si la persona pertenece a un grupo de apoyo, por ejemplo Alcohólicos anónimos, Narcóticos anónimos, manejo de la ira, etc | Numérico |
-
-
-
-
-
-## Verificación de la calidad de datos 
-
 ```{r warning=FALSE}
 setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Tarea3')
+atributos<-read.csv('descripcion_atributos.csv', sep = ',',dec = '.')
+kable(atributos[,0:3])
+
+```
+
+## Verificación de la calidad de datos
+
+Para la evaluación de la calidad de los datos, se emplea la función summary para identificar la presencia de valores nulos, así como valores minimos y máximos de las variables númericas a fin de validar,
+si a simple vista es posible encontrat outliers o valores fuera de rango, como valores negativos.
+
+```{r warning=FALSE}
 dataset<-read.csv('Encuesta.csv', sep = ',',dec = '.')
 str(dataset)
-#summary(dataset)
-
+summary(dataset)
 ```
  
 #	Preparación de los datos 
@@ -92,14 +87,12 @@ dataset$Profesional<- factor(dataset$Profesional,labels=c("NoProfesional","SiPro
 dataset$Medioambiente<- factor(dataset$Medioambiente,labels=c("NoMedioambiente","SiMedioambiente"))
 dataset$Grupo_Apoyo<- factor(dataset$Grupo_Apoyo,labels=c("NoGrupo_Apoyo","SiGrupo_Apoyo"))
 str(dataset)
-
 ```
 
 Renombramos los valores de las variables Sexo y Tiempo_Comunidad:
+
 ```{r warning=FALSE}
-
 dataset$Tiempo_comunidad<-revalue(dataset$Tiempo_comunidad,c("Corto"="Tiempo_comunidad_Corto","Largo"="Tiempo_comunidad_Largo","Medio"="Tiempo_comunidad_Medio"))
-
 dataset$Sexo<-revalue(dataset$Sexo,c("F"="Sexo_F","M"="Sexo_M"))
 summary(dataset)
 
@@ -114,7 +107,7 @@ dataset_factors =dataset[,sapply(dataset, is.factor)]
 for (f_name in colnames(dataset[,sapply(dataset, is.factor)])){
   print(f_name)
   barplot(prop.table(table(dataset[,f_name])),main = paste("Distribución de ",f_name),
-          space = 1.2, axisnames = TRUE)
+          space = 1.2, axisnames = TRUE, col = rainbow(3))
 }
 
 
@@ -140,6 +133,7 @@ Debido a esto, no seran consideramos para el análisis.
 ```{r warning=FALSE}
 dataset$Club_Social <- NULL
 dataset$Politica <- NULL
+dataset$Trabaja1 <- NULL
 ```
 
 
@@ -171,59 +165,56 @@ colnames(dataset)
 
 ## Transformaciones aplicadas a los datos 
  
-Si la preparación de los datos la realiza en un lenguaje de programación distinto a R, debe documentar los cambios o transformaciones aplicadas a los datos, aportando screenshots y agregándolos como imágenes en el documento RMarkdown. 
+(Si la preparación de los datos la realiza en un lenguaje de programación distinto a R, debe documentar los cambios o transformaciones aplicadas a los datos, aportando screenshots y agregándolos como imágenes en el documento RMarkdown.)
+
+En este caso todo el desarrollo de la tarea se realiza a través de R.
  
 #	Fase de modelado  
 
 (estas actividades debe realizarlas para cada conjunto de reglas generado) 
 
-## Selección de técnicas   (en este caso A priori) 
+## Selección de técnicas (en este caso A priori)
 
 ## Construcción del modelo (en este caso serán conjuntos de reglas) 
 
-```{r warning=FALSE}
+###	Selección de los parámetros 
 
-transacciones<- ddply(dataset,c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia",
-                                 "Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
+Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y  Club Social) a fin de explorar los resultados de las reglas generadas.
+
+```{r warning=FALSE}
+todasvariables <- dataset[,1:10]
+transacciones<- ddply(dataset, c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia","Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
 
 #transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
 #                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
 #                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
-
-dataset$Tiempo_Respuesta<-NULL
-dataset$Edad<-NULL
+#dataset$Tiempo_Respuesta<-NULL
+#dataset$Edad<-NULL
 
 #transacciones <- col_concat(dataset,sep=",")
 transacciones<-as(dataset,Class = "transactions")
-
 head(transacciones)
-
-
  
  # se guardan los datos como archivo csv en formato transaccion
-write(transacciones,'transaccionesOR2.csv',quote = FALSE,sep=',')
+write(transacciones,'transaccionesOR2.csv',sep=',')
 #write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)
 
 ```
 
-```{r warning=FALSE}
-# se leerá el archivo como transacciones formato basket
- transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
- 
- 
-```
 
-### Exploración de las transacciones
+#### Exploración de las transacciones
 ```{r}
 summary(transacciones)
 ```
 
-### Generación de las reglas usando A priori
+###	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
+
+#### Generación de las reglas usando A priori
 
 ```{r}
- # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.8
+ # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
 
-reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=10))
+  reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.9,maxlen=10))
   
   inspect(reglas[1:10])
 
@@ -241,28 +232,38 @@ reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=10))
   inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[1:10])
   
   # se filtran las reglas con confianza superior a 0.25
-  mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.25]
+  mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.90]
   
 ```
 
-### Visualización de las 5 mejores reglas (según confianza) - grafo
+```{r warning=FALSE}
+# se leerá el archivo como transacciones formato basket
+ transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
+ 
+```
+###	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
+
+#### Visualización de las 3 mejores reglas (según confianza) - grafo
 ```{r fig.align='center'}
-   cincoMejoresReglas<- head(mejoresReglas,n=10,by='lift')
-  
-   plot(cincoMejoresReglas,method = 'graph',engine = 'htmlwidget')
-
+   tresMejoresReglas<- head(mejoresReglas,n=3,by='lift')
+   plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')
+```
+#### Visualización de  20 reglas - gráfico paracoord
+```{r}
+# graficar 10 reglas individuales para observar lhs y rhs
+  Top3<-head(mejoresReglas,n=3,by='confidence')
+  plot(Top3,method ='paracoord')
 ```
 
-##	Selección de los parámetros    
-
-##	Ejecución
-
-(generación de reglas, eliminación de subconjuntos,etc) 
-
-##	Descripción general de las reglas obtenidas 
-
-(incluya al menos un gráfico) 
 
 ## Evaluación de los modelos 
 
-##	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+###	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+
+Las mejores reglas al utilizar todas las siguientes:
+
+```{r}
+inspect(Top3)
+```
+
+La primera regla nos indica que si la persona tiene poco tiempo en la comunidad, tiene hobbies, pertenece a un grupo de apoyo, y respondió la encuesta en el grupo más largo, significa que la persona trabaja.
