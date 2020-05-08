@@ -177,13 +177,14 @@ En este caso todo el desarrollo de la tarea se realiza a través de R.
 
 ## Construcción del modelo (en este caso serán conjuntos de reglas) 
 
-###	Selección de los parámetros 
+### Modelo 1
+####	Selección de los parámetros 
 
 Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y  Club Social) a fin de explorar los resultados de las reglas generadas.
 
 ```{r warning=FALSE}
 todasvariables <- dataset[,1:10]
-transacciones<- ddply(dataset, c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia","Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
+transacciones<- ddply(todasvariables, c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia","Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(todasvariables) paste(todasvariables$item,collapse = ','))
 
 #transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
 #                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
@@ -202,14 +203,14 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 ```
 
 
-#### Exploración de las transacciones
+##### Exploración de las transacciones
 ```{r}
 summary(transacciones)
 ```
 
-###	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
+####	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
 
-#### Generación de las reglas usando A priori
+##### Generación de las reglas usando A priori
 
 ```{r}
  # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
@@ -241,14 +242,14 @@ summary(transacciones)
  transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
  
 ```
-###	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
+####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
 
-#### Visualización de las 3 mejores reglas (según confianza) - grafo
+##### Visualización de las 3 mejores reglas (según confianza) - grafo
 ```{r fig.align='center'}
    tresMejoresReglas<- head(mejoresReglas,n=3,by='lift')
    plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')
 ```
-#### Visualización de  20 reglas - gráfico paracoord
+##### Visualización de  20 reglas - gráfico paracoord
 ```{r}
 # graficar 10 reglas individuales para observar lhs y rhs
   Top3<-head(mejoresReglas,n=3,by='confidence')
@@ -256,9 +257,9 @@ summary(transacciones)
 ```
 
 
-## Evaluación de los modelos 
+### Evaluación de los modelos 
 
-###	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+####	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
 
 Las mejores reglas al utilizar todas las siguientes:
 
@@ -267,3 +268,93 @@ inspect(Top3)
 ```
 
 La primera regla nos indica que si la persona tiene poco tiempo en la comunidad, tiene hobbies, pertenece a un grupo de apoyo, y respondió la encuesta en el grupo más largo, significa que la persona trabaja.
+
+### Modelo 2
+####	Selección de los parámetros 
+
+Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y  Club Social) a fin de explorar los resultados de las reglas generadas.
+
+```{r warning=FALSE}
+
+transacciones<- ddply(dataset, c("Grupo_Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Grupo_Edad","Familia","Hobbies","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
+
+#transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
+#                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
+#                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
+#dataset$Tiempo_Respuesta<-NULL
+#dataset$Edad<-NULL
+
+#transacciones <- col_concat(dataset,sep=",")
+transacciones<-as(dataset,Class = "transactions")
+head(transacciones)
+ 
+ # se guardan los datos como archivo csv en formato transaccion
+write(transacciones,'transaccionesOR2.csv',sep=',')
+#write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)
+
+```
+
+
+##### Exploración de las transacciones
+```{r}
+summary(transacciones)
+```
+
+####	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
+
+##### Generación de las reglas usando A priori
+
+```{r}
+ # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
+
+  reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.9,maxlen=10))
+  
+  inspect(reglas[1:10])
+
+   # Generar menos reglas
+  #reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=3))
+  #inspect(reglas[1:10])
+ 
+  # eliminar reglas que son subconjuntos de otras 
+  subconjuntos<- which(colSums(is.subset(reglas,reglas))>1)
+  
+  reglasFinal<- reglas[-subconjuntos]
+  #inspect(reglasFinal[1:10])
+  
+  # se ordena por soporte y se observan las primeras 10 reglas
+  inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[1:10])
+  
+  # se filtran las reglas con confianza superior a 0.25
+  mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.90]
+  
+```
+
+```{r warning=FALSE}
+# se leerá el archivo como transacciones formato basket
+ transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
+ 
+```
+####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
+
+##### Visualización de las 3 mejores reglas (según confianza) - grafo
+```{r fig.align='center'}
+   tresMejoresReglas<- head(mejoresReglas,n=3,by='lift')
+   plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')
+```
+##### Visualización de  20 reglas - gráfico paracoord
+```{r}
+# graficar 10 reglas individuales para observar lhs y rhs
+  Top3<-head(mejoresReglas,n=3,by='confidence')
+  plot(Top3,method ='paracoord')
+```
+
+
+### Evaluación de los modelos 
+
+####	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+
+Las mejores reglas al utilizar todas las siguientes:
+
+```{r}
+inspect(Top3)
+```
