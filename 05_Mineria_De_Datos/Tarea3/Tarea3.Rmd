@@ -183,22 +183,13 @@ En este caso todo el desarrollo de la tarea se realiza a través de R.
 Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y  Club Social) a fin de explorar los resultados de las reglas generadas.
 
 ```{r warning=FALSE}
-todasvariables <- dataset[,1:10]
-transacciones<- ddply(todasvariables, c("Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Edad","Familia","Hobbies","Profesional","Medioambiente","Grupo_Apoyo"),function(todasvariables) paste(todasvariables$item,collapse = ','))
-
-#transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
-#                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
-#                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
-#dataset$Tiempo_Respuesta<-NULL
-#dataset$Edad<-NULL
-
 #transacciones <- col_concat(dataset,sep=",")
 transacciones<-as(dataset,Class = "transactions")
 head(transacciones)
  
  # se guardan los datos como archivo csv en formato transaccion
-write(transacciones,'transaccionesOR2.csv',sep=',')
-#write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)
+write(transacciones,'transaccionesv1.csv',sep=',')
+#write.csv(transacciones,'transaccionesv1.csv',quote = FALSE)
 
 ```
 
@@ -239,7 +230,7 @@ summary(transacciones)
 
 ```{r warning=FALSE}
 # se leerá el archivo como transacciones formato basket
- transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
+ transacciones<- read.transactions('transaccionesv1.csv',sep=',',format = 'basket')
  
 ```
 ####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
@@ -276,28 +267,25 @@ Para la creación del primer conjunto de reglas se hace uso de todas originales 
 
 ```{r warning=FALSE}
 
-transacciones<- ddply(dataset, c("Grupo_Tiempo_Respuesta","Tiempo_comunidad","Sexo","Trabaja","Grupo_Edad","Familia","Hobbies","Grupo_Apoyo"),function(dataset) paste(dataset$item,collapse = ','))
-
-#transacciones <- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
-#                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
-#                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
-#dataset$Tiempo_Respuesta<-NULL
-#dataset$Edad<-NULL
+dataset2 <- dataset
+dataset2$Tiempo_Respuesta <- NULL
+dataset2$Edad <- NULL
+head(dataset2)
 
 #transacciones <- col_concat(dataset,sep=",")
-transacciones<-as(dataset,Class = "transactions")
-head(transacciones)
+transaccionesv2<-as(dataset2,Class = "transactions")
+head(transaccionesv2)
  
  # se guardan los datos como archivo csv en formato transaccion
-write(transacciones,'transaccionesOR2.csv',sep=',')
-#write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)
+write(transaccionesv2,'transaccionesv2.csv',sep=',')
+#write.csv(transacciones,'transaccionesv2.csv',quote = FALSE)
 
 ```
 
 
 ##### Exploración de las transacciones
 ```{r}
-summary(transacciones)
+summary(transaccionesv2)
 ```
 
 ####	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
@@ -307,45 +295,45 @@ summary(transacciones)
 ```{r}
  # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
 
-  reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.9,maxlen=10))
+  reglasv2<- apriori(transaccionesv2,parameter = list(supp=0.001,conf=0.9,maxlen=10))
   
-  inspect(reglas[1:10])
+  inspect(reglasv2[1:10])
 
    # Generar menos reglas
   #reglas<- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=3))
   #inspect(reglas[1:10])
  
   # eliminar reglas que son subconjuntos de otras 
-  subconjuntos<- which(colSums(is.subset(reglas,reglas))>1)
+  subconjuntosv2<- which(colSums(is.subset(reglasv2,reglasv2))>1)
   
-  reglasFinal<- reglas[-subconjuntos]
+  reglasFinalv2 <- reglasv2[-subconjuntosv2]
   #inspect(reglasFinal[1:10])
   
   # se ordena por soporte y se observan las primeras 10 reglas
-  inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[1:10])
+  inspect(sort(reglasFinalv2,by='lift',decreasing = TRUE)[1:10])
   
   # se filtran las reglas con confianza superior a 0.25
-  mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.90]
+  mejoresReglasv2<- reglasFinalv2[quality(reglasFinalv2)$confidence>0.90]
   
 ```
 
 ```{r warning=FALSE}
 # se leerá el archivo como transacciones formato basket
- transacciones<- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')
+ transaccionesv2 <- read.transactions('transaccionesv2.csv',sep=',',format = 'basket')
  
 ```
 ####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
 
 ##### Visualización de las 3 mejores reglas (según confianza) - grafo
 ```{r fig.align='center'}
-   tresMejoresReglas<- head(mejoresReglas,n=3,by='lift')
-   plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')
+   tresMejoresReglasv2 <- head(mejoresReglasv2,n=3,by='lift')
+   plot(tresMejoresReglasv2,method = 'graph',engine = 'htmlwidget')
 ```
 ##### Visualización de  20 reglas - gráfico paracoord
 ```{r}
 # graficar 10 reglas individuales para observar lhs y rhs
-  Top3<-head(mejoresReglas,n=3,by='confidence')
-  plot(Top3,method ='paracoord')
+  Top3v2<-head(mejoresReglasv2,n=3,by='confidence')
+  plot(Top3v2,method ='paracoord')
 ```
 
 
@@ -356,5 +344,5 @@ summary(transacciones)
 Las mejores reglas al utilizar todas las siguientes:
 
 ```{r}
-inspect(Top3)
+inspect(Top3v2)
 ```
