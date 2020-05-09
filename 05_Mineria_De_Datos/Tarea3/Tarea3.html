@@ -218,12 +218,10 @@ $(document).ready(function () {
 <li><a href="#fase-de-modelado">Fase de modelado</a><ul>
 <li><a href="#seleccion-de-tecnicas-en-este-caso-a-priori">Selección de técnicas (en este caso A priori)</a></li>
 <li><a href="#construccion-del-modelo-en-este-caso-seran-conjuntos-de-reglas">Construcción del modelo (en este caso serán conjuntos de reglas)</a><ul>
-<li><a href="#seleccion-de-los-parametros">Selección de los parámetros</a></li>
-<li><a href="#ejecucion-generacion-de-reglas-eliminacion-de-subconjuntosetc">Ejecución (generación de reglas, eliminación de subconjuntos,etc)</a></li>
-<li><a href="#descripcion-general-de-las-reglas-obtenidas-incluya-al-menos-un-grafico">Descripción general de las reglas obtenidas (incluya al menos un gráfico)</a></li>
-</ul></li>
-<li><a href="#evaluacion-de-los-modelos">Evaluación de los modelos</a><ul>
-<li><a href="#muestre-e-interprete-las-mejores-3-reglas-de-cada-conjunto-generado">Muestre e interprete las mejores 3 reglas de cada conjunto generado</a></li>
+<li><a href="#modelo-1">Modelo 1</a></li>
+<li><a href="#evaluacion-de-los-modelos">Evaluación de los modelos</a></li>
+<li><a href="#modelo-2">Modelo 2</a></li>
+<li><a href="#evaluacion-de-los-modelos-1">Evaluación de los modelos</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -648,29 +646,22 @@ levels(dataset$Grupo_Tiempo_Respuesta)</code></pre>
 </div>
 <div id="construccion-del-modelo-en-este-caso-seran-conjuntos-de-reglas" class="section level2">
 <h2>Construcción del modelo (en este caso serán conjuntos de reglas)</h2>
-<div id="seleccion-de-los-parametros" class="section level3">
-<h3>Selección de los parámetros</h3>
+<div id="modelo-1" class="section level3">
+<h3>Modelo 1</h3>
+<div id="seleccion-de-los-parametros" class="section level4">
+<h4>Selección de los parámetros</h4>
 <p>Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y Club Social) a fin de explorar los resultados de las reglas generadas.</p>
-<pre class="r"><code>todasvariables &lt;- dataset[,1:10]
-transacciones&lt;- ddply(dataset, c(&quot;Tiempo_Respuesta&quot;,&quot;Tiempo_comunidad&quot;,&quot;Sexo&quot;,&quot;Trabaja&quot;,&quot;Edad&quot;,&quot;Familia&quot;,&quot;Hobbies&quot;,&quot;Profesional&quot;,&quot;Medioambiente&quot;,&quot;Grupo_Apoyo&quot;),function(dataset) paste(dataset$item,collapse = ','))
-
-#transacciones &lt;- paste(dataset$Tiempo_Respuesta,dataset$Tiempo_comunidad,dataset$Sexo,dataset$Trabaja,
-#                       dataset$Edad,dataset$Familia,dataset$Hobbies,dataset$Club_Social,dataset$Politica,
-#                       dataset$Profesional,dataset$Medioambiente,dataset$Grupo_Apoyo,collapse=',')
-#dataset$Tiempo_Respuesta&lt;-NULL
-#dataset$Edad&lt;-NULL
-
-#transacciones &lt;- col_concat(dataset,sep=&quot;,&quot;)
+<pre class="r"><code>#transacciones &lt;- col_concat(dataset,sep=&quot;,&quot;)
 transacciones&lt;-as(dataset,Class = &quot;transactions&quot;)
 head(transacciones)</code></pre>
 <pre><code>## transactions in sparse format with
 ##  6 transactions (rows) and
 ##  29 items (columns)</code></pre>
 <pre class="r"><code> # se guardan los datos como archivo csv en formato transaccion
-write(transacciones,'transaccionesOR2.csv',sep=',')
-#write.csv(transacciones,'transaccionesOR2.csv',quote = FALSE)</code></pre>
-<div id="exploracion-de-las-transacciones" class="section level4">
-<h4>Exploración de las transacciones</h4>
+write(transacciones,'transaccionesv1.csv',sep=',')
+#write.csv(transacciones,'transaccionesv1.csv',quote = FALSE)</code></pre>
+<div id="exploracion-de-las-transacciones" class="section level5">
+<h5>Exploración de las transacciones</h5>
 <pre class="r"><code>summary(transacciones)</code></pre>
 <pre><code>## transactions as itemMatrix in sparse format with
 ##  3483 rows (elements/itemsets/transactions) and
@@ -705,10 +696,10 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 ## 3             3</code></pre>
 </div>
 </div>
-<div id="ejecucion-generacion-de-reglas-eliminacion-de-subconjuntosetc" class="section level3">
-<h3>Ejecución (generación de reglas, eliminación de subconjuntos,etc)</h3>
-<div id="generacion-de-las-reglas-usando-a-priori" class="section level4">
-<h4>Generación de las reglas usando A priori</h4>
+<div id="ejecucion-generacion-de-reglas-eliminacion-de-subconjuntosetc" class="section level4">
+<h4>Ejecución (generación de reglas, eliminación de subconjuntos,etc)</h4>
+<div id="generacion-de-las-reglas-usando-a-priori" class="section level5">
+<h5>Generación de las reglas usando A priori</h5>
 <pre class="r"><code> # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
 
   reglas&lt;- apriori(transacciones,parameter = list(supp=0.001,conf=0.9,maxlen=10))</code></pre>
@@ -734,8 +725,8 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 <pre><code>## Warning in apriori(transacciones, parameter = list(supp = 0.001, conf = 0.9, :
 ## Mining stopped (maxlen reached). Only patterns up to a length of 10 returned!</code></pre>
 <pre><code>##  done [0.21s].
-## writing ... [740297 rule(s)] done [0.22s].
-## creating S4 object  ... done [0.45s].</code></pre>
+## writing ... [740297 rule(s)] done [0.21s].
+## creating S4 object  ... done [0.47s].</code></pre>
 <pre class="r"><code>  inspect(reglas[1:10])</code></pre>
 <pre><code>##      lhs                                                 rhs                                                support confidence     lift count
 ## [1]  {Edad=[17,30)}                                   =&gt; {Grupo_Edad=Edad_Joven}                          0.3169681          1 3.154891  1104
@@ -824,17 +815,17 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 <pre class="r"><code>  # se filtran las reglas con confianza superior a 0.25
   mejoresReglas&lt;- reglasFinal[quality(reglasFinal)$confidence&gt;0.90]</code></pre>
 <pre class="r"><code># se leerá el archivo como transacciones formato basket
- transacciones&lt;- read.transactions('transaccionesOR2.csv',sep=',',format = 'basket')</code></pre>
+ transacciones&lt;- read.transactions('transaccionesv1.csv',sep=',',format = 'basket')</code></pre>
 </div>
 </div>
-<div id="descripcion-general-de-las-reglas-obtenidas-incluya-al-menos-un-grafico" class="section level3">
-<h3>Descripción general de las reglas obtenidas (incluya al menos un gráfico)</h3>
-<div id="visualizacion-de-las-3-mejores-reglas-segun-confianza---grafo" class="section level4">
-<h4>Visualización de las 3 mejores reglas (según confianza) - grafo</h4>
+<div id="descripcion-general-de-las-reglas-obtenidas-incluya-al-menos-un-grafico" class="section level4">
+<h4>Descripción general de las reglas obtenidas (incluya al menos un gráfico)</h4>
+<div id="visualizacion-de-las-3-mejores-reglas-segun-confianza---grafo" class="section level5">
+<h5>Visualización de las 3 mejores reglas (según confianza) - grafo</h5>
 <pre class="r"><code>   tresMejoresReglas&lt;- head(mejoresReglas,n=3,by='lift')
    plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')</code></pre>
-<p><div id="htmlwidget-593868143b2197f96133" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-593868143b2197f96133">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12],"label":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Edad=[43,57]","Tiempo_Respuesta=[4.56,7.24)","Tiempo_comunidad=Tiempo_comunidad_Corto","rule 1","rule 2","rule 3"],"group":["item","item","item","item","item","item","item","item","item","rule","rule","rule"],"value":[1,1,1,1,1,1,1,1,1,50.5,50.5,50.5],"color":["#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#EE9797","#EE9797","#EE9797"],"title":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Edad=[43,57]","Tiempo_Respuesta=[4.56,7.24)","Tiempo_comunidad=Tiempo_comunidad_Corto","<B>[1]<\/B><BR><B>{Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Mayor,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7","<B>[2]<\/B><BR><B>{Edad=[43,57],<BR>&nbsp;&nbsp;Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7","<B>[3]<\/B><BR><B>{Tiempo_Respuesta=[4.56,7.24),<BR>&nbsp;&nbsp;Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Mayor}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7"],"shape":["box","box","box","box","box","box","box","box","box","circle","circle","circle"],"x":[0.45738370227019,-0.300188419868097,-0.0151540140602707,-0.422924413264338,-0.0185508710747075,1,0.731949303243432,-1,0.62784378360032,0.205307661250655,0.3886762477621,-0.239246035393867],"y":[0.539465193056667,-0.216182473948798,-0.0578685830353045,0.0891712523906463,0.979498752154506,-0.151168260496124,-1,1,0.261079663091589,0.255830651229779,-0.242775958206622,0.49490009218805]},"edges":{"from":[1,2,3,4,5,6,7,1,2,3,4,6,8,1,2,3,4,5,10,11,12],"to":[10,10,10,10,10,10,11,11,11,11,11,11,12,12,12,12,12,12,9,9,9],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","scaling":{"label":{"enabled":true}},"physics":false},"manipulation":{"enabled":false},"edges":{"smooth":false},"physics":{"stabilization":false},"interaction":{"hover":true}},"groups":["item","rule"],"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","igraphlayout":{"type":"square"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":true,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"}},"evals":[],"jsHooks":[]}</script> #### Visualización de 20 reglas - gráfico paracoord</p>
+<p><div id="htmlwidget-9966d07c38decbbcd849" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9966d07c38decbbcd849">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12],"label":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Edad=[43,57]","Tiempo_Respuesta=[4.56,7.24)","Tiempo_comunidad=Tiempo_comunidad_Corto","rule 1","rule 2","rule 3"],"group":["item","item","item","item","item","item","item","item","item","rule","rule","rule"],"value":[1,1,1,1,1,1,1,1,1,50.5,50.5,50.5],"color":["#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#EE9797","#EE9797","#EE9797"],"title":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Edad=[43,57]","Tiempo_Respuesta=[4.56,7.24)","Tiempo_comunidad=Tiempo_comunidad_Corto","<B>[1]<\/B><BR><B>{Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Mayor,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7","<B>[2]<\/B><BR><B>{Edad=[43,57],<BR>&nbsp;&nbsp;Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7","<B>[3]<\/B><BR><B>{Tiempo_Respuesta=[4.56,7.24),<BR>&nbsp;&nbsp;Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Mayor}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7"],"shape":["box","box","box","box","box","box","box","box","box","circle","circle","circle"],"x":[0.037180328870978,-0.26805574728902,0.189578914566271,-0.152622552183477,-0.701034934319392,0.442471247685319,1,-1,-0.0173848445698169,-0.0658339844629969,0.315465244889597,-0.40782339935772],"y":[-0.913475308739629,0.65860935823351,-0.50655000040006,-0.605999607111321,0.401576005695722,1,0.0696638560506742,-1,0.822285860644506,0.178187784483479,0.112328950232316,-0.276788713702864]},"edges":{"from":[1,2,3,4,5,6,7,1,2,3,4,6,8,1,2,3,4,5,10,11,12],"to":[10,10,10,10,10,10,11,11,11,11,11,11,12,12,12,12,12,12,9,9,9],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","scaling":{"label":{"enabled":true}},"physics":false},"manipulation":{"enabled":false},"edges":{"smooth":false},"physics":{"stabilization":false},"interaction":{"hover":true}},"groups":["item","rule"],"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","igraphlayout":{"type":"square"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":true,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"}},"evals":[],"jsHooks":[]}</script> ##### Visualización de 20 reglas - gráfico paracoord</p>
 <pre class="r"><code># graficar 10 reglas individuales para observar lhs y rhs
   Top3&lt;-head(mejoresReglas,n=3,by='confidence')
   plot(Top3,method ='paracoord')</code></pre>
@@ -842,10 +833,10 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 </div>
 </div>
 </div>
-<div id="evaluacion-de-los-modelos" class="section level2">
-<h2>Evaluación de los modelos</h2>
-<div id="muestre-e-interprete-las-mejores-3-reglas-de-cada-conjunto-generado" class="section level3">
-<h3>Muestre e interprete las mejores 3 reglas de cada conjunto generado</h3>
+<div id="evaluacion-de-los-modelos" class="section level3">
+<h3>Evaluación de los modelos</h3>
+<div id="muestre-e-interprete-las-mejores-3-reglas-de-cada-conjunto-generado" class="section level4">
+<h4>Muestre e interprete las mejores 3 reglas de cada conjunto generado</h4>
 <p>Las mejores reglas al utilizar todas las siguientes:</p>
 <pre class="r"><code>inspect(Top3)</code></pre>
 <pre><code>##     lhs                                                rhs                                 support confidence     lift count
@@ -862,6 +853,241 @@ write(transacciones,'transaccionesOR2.csv',sep=',')
 ##      Grupo_Apoyo=SiGrupo_Apoyo,                                                                                             
 ##      Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta} =&gt; {Medioambiente=NoMedioambiente} 0.001435544          1 1.720000     5</code></pre>
 <p>La primera regla nos indica que si la persona tiene poco tiempo en la comunidad, tiene hobbies, pertenece a un grupo de apoyo, y respondió la encuesta en el grupo más largo, significa que la persona trabaja.</p>
+</div>
+</div>
+<div id="modelo-2" class="section level3">
+<h3>Modelo 2</h3>
+<div id="seleccion-de-los-parametros-1" class="section level4">
+<h4>Selección de los parámetros</h4>
+<p>Para la creación del primer conjunto de reglas se hace uso de todas originales (excepto Politica y Club Social) a fin de explorar los resultados de las reglas generadas.</p>
+<pre class="r"><code>dataset2 &lt;- dataset
+dataset2$Tiempo_Respuesta &lt;- NULL
+dataset2$Edad &lt;- NULL
+head(dataset2)</code></pre>
+<pre><code>##         Tiempo_comunidad   Sexo   Trabaja   Familia   Hobbies   Profesional
+## 1 Tiempo_comunidad_Corto Sexo_M NoTrabaja SiFamilia NoHobbies NoProfesional
+## 2 Tiempo_comunidad_Medio Sexo_F NoTrabaja NoFamilia NoHobbies NoProfesional
+## 3 Tiempo_comunidad_Medio Sexo_M NoTrabaja SiFamilia SiHobbies SiProfesional
+## 4 Tiempo_comunidad_Largo Sexo_F NoTrabaja NoFamilia NoHobbies NoProfesional
+## 5 Tiempo_comunidad_Largo Sexo_M SiTrabaja NoFamilia NoHobbies SiProfesional
+## 6 Tiempo_comunidad_Largo Sexo_F NoTrabaja NoFamilia NoHobbies SiProfesional
+##     Medioambiente   Grupo_Apoyo Grupo_Edad  Grupo_Tiempo_Respuesta
+## 1 NoMedioambiente NoGrupo_Apoyo Edad_Mayor  Tiempo_Respuesta_Lenta
+## 2 SiMedioambiente SiGrupo_Apoyo Edad_Media  Tiempo_Respuesta_Media
+## 3 NoMedioambiente NoGrupo_Apoyo Edad_Media Tiempo_Respuesta_Rapida
+## 4 NoMedioambiente NoGrupo_Apoyo Edad_Media  Tiempo_Respuesta_Media
+## 5 NoMedioambiente SiGrupo_Apoyo Edad_Joven Tiempo_Respuesta_Rapida
+## 6 NoMedioambiente NoGrupo_Apoyo Edad_Media  Tiempo_Respuesta_Lenta</code></pre>
+<pre class="r"><code>#transacciones &lt;- col_concat(dataset,sep=&quot;,&quot;)
+transaccionesv2&lt;-as(dataset2,Class = &quot;transactions&quot;)
+head(transaccionesv2)</code></pre>
+<pre><code>## transactions in sparse format with
+##  6 transactions (rows) and
+##  23 items (columns)</code></pre>
+<pre class="r"><code> # se guardan los datos como archivo csv en formato transaccion
+write(transaccionesv2,'transaccionesv2.csv',sep=',')
+#write.csv(transacciones,'transaccionesv2.csv',quote = FALSE)</code></pre>
+<div id="exploracion-de-las-transacciones-1" class="section level5">
+<h5>Exploración de las transacciones</h5>
+<pre class="r"><code>summary(transaccionesv2)</code></pre>
+<pre><code>## transactions as itemMatrix in sparse format with
+##  3483 rows (elements/itemsets/transactions) and
+##  23 columns (items) and a density of 0.4347826 
+## 
+## most frequent items:
+##     Grupo_Apoyo=NoGrupo_Apoyo             Hobbies=NoHobbies 
+##                          2930                          2438 
+##     Profesional=NoProfesional             Familia=NoFamilia 
+##                          2353                          2125 
+## Medioambiente=NoMedioambiente                       (Other) 
+##                          2025                         22959 
+## 
+## element (itemset/transaction) length distribution:
+## sizes
+##   10 
+## 3483 
+## 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      10      10      10      10      10      10 
+## 
+## includes extended item information - examples:
+##                                    labels        variables
+## 1 Tiempo_comunidad=Tiempo_comunidad_Corto Tiempo_comunidad
+## 2 Tiempo_comunidad=Tiempo_comunidad_Largo Tiempo_comunidad
+## 3 Tiempo_comunidad=Tiempo_comunidad_Medio Tiempo_comunidad
+##                   levels
+## 1 Tiempo_comunidad_Corto
+## 2 Tiempo_comunidad_Largo
+## 3 Tiempo_comunidad_Medio
+## 
+## includes extended transaction information - examples:
+##   transactionID
+## 1             1
+## 2             2
+## 3             3</code></pre>
+</div>
+</div>
+<div id="ejecucion-generacion-de-reglas-eliminacion-de-subconjuntosetc-1" class="section level4">
+<h4>Ejecución (generación de reglas, eliminación de subconjuntos,etc)</h4>
+<div id="generacion-de-las-reglas-usando-a-priori-1" class="section level5">
+<h5>Generación de las reglas usando A priori</h5>
+<pre class="r"><code> # se generarn las reglas usando el algoritmo a priori, con un soporte del 1% y una confianza de 0.9 o 90%
+
+  reglasv2&lt;- apriori(transaccionesv2,parameter = list(supp=0.001,conf=0.9,maxlen=10))</code></pre>
+<pre><code>## Apriori
+## 
+## Parameter specification:
+##  confidence minval smax arem  aval originalSupport maxtime support minlen
+##         0.9    0.1    1 none FALSE            TRUE       5   0.001      1
+##  maxlen target   ext
+##      10  rules FALSE
+## 
+## Algorithmic control:
+##  filter tree heap memopt load sort verbose
+##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
+## 
+## Absolute minimum support count: 3 
+## 
+## set item appearances ...[0 item(s)] done [0.00s].
+## set transactions ...[23 item(s), 3483 transaction(s)] done [0.00s].
+## sorting and recoding items ... [23 item(s)] done [0.00s].
+## creating transaction tree ... done [0.00s].
+## checking subsets of size 1 2 3 4 5 6 7 8 9 10 done [0.03s].
+## writing ... [23533 rule(s)] done [0.01s].
+## creating S4 object  ... done [0.01s].</code></pre>
+<pre class="r"><code>  inspect(reglasv2[1:10])</code></pre>
+<pre><code>##      lhs                                                 rhs                            support confidence     lift count
+## [1]  {Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Edad=Edad_Joven}                          =&gt; {Hobbies=NoHobbies}         0.16738444  0.9024768 1.289305   583
+## [2]  {Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Rapida} =&gt; {Hobbies=NoHobbies}         0.17571059  0.9066667 1.295291   612
+## [3]  {Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta}  =&gt; {Hobbies=NoHobbies}         0.17628481  0.9029412 1.289969   614
+## [4]  {Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Edad=Edad_Media}                          =&gt; {Hobbies=NoHobbies}         0.17886879  0.9002890 1.286180   623
+## [5]  {Familia=NoFamilia,                                                                                                 
+##       Medioambiente=NoMedioambiente}                  =&gt; {Hobbies=NoHobbies}         0.38702268  0.9302968 1.329050  1348
+## [6]  {Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Apoyo=NoGrupo_Apoyo}                      =&gt; {Hobbies=NoHobbies}         0.44243468  0.9001168 1.285934  1541
+## [7]  {Profesional=SiProfesional,                                                                                         
+##       Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Apoyo=SiGrupo_Apoyo}                      =&gt; {Hobbies=NoHobbies}         0.03387884  0.9007634 1.286858   118
+## [8]  {Familia=NoFamilia,                                                                                                 
+##       Medioambiente=NoMedioambiente,                                                                                     
+##       Grupo_Apoyo=SiGrupo_Apoyo}                      =&gt; {Hobbies=NoHobbies}         0.05742176  0.9259259 1.322806   200
+## [9]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                           
+##       Hobbies=SiHobbies,                                                                                                 
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta}  =&gt; {Grupo_Apoyo=NoGrupo_Apoyo} 0.01607809  0.9032258 1.073698    56
+## [10] {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                           
+##       Grupo_Edad=Edad_Joven,                                                                                             
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta}  =&gt; {Grupo_Apoyo=NoGrupo_Apoyo} 0.01665231  0.9206349 1.094393    58</code></pre>
+<pre class="r"><code>   # Generar menos reglas
+  #reglas&lt;- apriori(transacciones,parameter = list(supp=0.001,conf=0.8,maxlen=3))
+  #inspect(reglas[1:10])
+ 
+  # eliminar reglas que son subconjuntos de otras 
+  subconjuntosv2&lt;- which(colSums(is.subset(reglasv2,reglasv2))&gt;1)
+  
+  reglasFinalv2 &lt;- reglasv2[-subconjuntosv2]
+  #inspect(reglasFinal[1:10])
+  
+  # se ordena por soporte y se observan las primeras 10 reglas
+  inspect(sort(reglasFinalv2,by='lift',decreasing = TRUE)[1:10])</code></pre>
+<pre><code>##      lhs                                                rhs                                           support confidence     lift count
+## [1]  {Familia=NoFamilia,                                                                                                               
+##       Hobbies=SiHobbies,                                                                                                               
+##       Profesional=NoProfesional,                                                                                                       
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Mayor,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Tiempo_comunidad=Tiempo_comunidad_Corto} 0.001148435          1 4.878151     4
+## [2]  {Trabaja=NoTrabaja,                                                                                                               
+##       Familia=SiFamilia,                                                                                                               
+##       Hobbies=NoHobbies,                                                                                                               
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Media,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Tiempo_comunidad=Tiempo_comunidad_Corto} 0.001435544          1 4.878151     5
+## [3]  {Familia=SiFamilia,                                                                                                               
+##       Hobbies=NoHobbies,                                                                                                               
+##       Profesional=NoProfesional,                                                                                                       
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Media,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Tiempo_comunidad=Tiempo_comunidad_Corto} 0.001148435          1 4.878151     4
+## [4]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                                         
+##       Profesional=SiProfesional,                                                                                                       
+##       Medioambiente=SiMedioambiente,                                                                                                   
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Joven}                         =&gt; {Hobbies=SiHobbies}                       0.001435544          1 3.333014     5
+## [5]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                                         
+##       Medioambiente=SiMedioambiente,                                                                                                   
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Joven,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Hobbies=SiHobbies}                       0.001148435          1 3.333014     4
+## [6]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                                         
+##       Sexo=Sexo_F,                                                                                                                     
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Joven,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Hobbies=SiHobbies}                       0.001435544          1 3.333014     5
+## [7]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                                         
+##       Familia=SiFamilia,                                                                                                               
+##       Medioambiente=SiMedioambiente,                                                                                                   
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Joven}                         =&gt; {Hobbies=SiHobbies}                       0.001722653          1 3.333014     6
+## [8]  {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                                         
+##       Sexo=Sexo_F,                                                                                                                     
+##       Medioambiente=SiMedioambiente,                                                                                                   
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Joven}                         =&gt; {Hobbies=SiHobbies}                       0.001435544          1 3.333014     5
+## [9]  {Tiempo_comunidad=Tiempo_comunidad_Medio,                                                                                         
+##       Familia=SiFamilia,                                                                                                               
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Media,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Hobbies=SiHobbies}                       0.001148435          1 3.333014     4
+## [10] {Familia=SiFamilia,                                                                                                               
+##       Medioambiente=SiMedioambiente,                                                                                                   
+##       Grupo_Apoyo=SiGrupo_Apoyo,                                                                                                       
+##       Grupo_Edad=Edad_Media,                                                                                                           
+##       Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media} =&gt; {Hobbies=SiHobbies}                       0.003732415          1 3.333014    13</code></pre>
+<pre class="r"><code>  # se filtran las reglas con confianza superior a 0.25
+  mejoresReglasv2&lt;- reglasFinalv2[quality(reglasFinalv2)$confidence&gt;0.90]</code></pre>
+<pre class="r"><code># se leerá el archivo como transacciones formato basket
+ transaccionesv2 &lt;- read.transactions('transaccionesv2.csv',sep=',',format = 'basket')</code></pre>
+</div>
+</div>
+<div id="descripcion-general-de-las-reglas-obtenidas-incluya-al-menos-un-grafico-1" class="section level4">
+<h4>Descripción general de las reglas obtenidas (incluya al menos un gráfico)</h4>
+<div id="visualizacion-de-las-3-mejores-reglas-segun-confianza---grafo-1" class="section level5">
+<h5>Visualización de las 3 mejores reglas (según confianza) - grafo</h5>
+<pre class="r"><code>   tresMejoresReglasv2 &lt;- head(mejoresReglasv2,n=3,by='lift')
+   plot(tresMejoresReglasv2,method = 'graph',engine = 'htmlwidget')</code></pre>
+<p><div id="htmlwidget-194697f8474c4f14ef11" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-194697f8474c4f14ef11">{"x":{"nodes":{"id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"label":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Trabaja=NoTrabaja","Familia=SiFamilia","Hobbies=NoHobbies","Grupo_Edad=Edad_Media","Tiempo_comunidad=Tiempo_comunidad_Corto","rule 1","rule 2","rule 3"],"group":["item","item","item","item","item","item","item","item","item","item","item","rule","rule","rule"],"value":[1,1,1,1,1,1,1,1,1,1,1,1,100,1],"color":["#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#CBD2FC","#EE9797","#EE9797","#EE9797"],"title":["Familia=NoFamilia","Hobbies=SiHobbies","Profesional=NoProfesional","Grupo_Apoyo=SiGrupo_Apoyo","Grupo_Edad=Edad_Mayor","Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media","Trabaja=NoTrabaja","Familia=SiFamilia","Hobbies=NoHobbies","Grupo_Edad=Edad_Media","Tiempo_comunidad=Tiempo_comunidad_Corto","<B>[1]<\/B><BR><B>{Familia=NoFamilia,<BR>&nbsp;&nbsp;Hobbies=SiHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Mayor,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7","<B>[2]<\/B><BR><B>{Trabaja=NoTrabaja,<BR>&nbsp;&nbsp;Familia=SiFamilia,<BR>&nbsp;&nbsp;Hobbies=NoHobbies,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Media,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00144<BR>confidence = 1<BR>lift = 4.88<BR>count = 5<BR>order = 7","<B>[3]<\/B><BR><B>{Familia=SiFamilia,<BR>&nbsp;&nbsp;Hobbies=NoHobbies,<BR>&nbsp;&nbsp;Profesional=NoProfesional,<BR>&nbsp;&nbsp;Grupo_Apoyo=SiGrupo_Apoyo,<BR>&nbsp;&nbsp;Grupo_Edad=Edad_Media,<BR>&nbsp;&nbsp;Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Media}<\/B><BR>&nbsp;&nbsp; => <B>{Tiempo_comunidad=Tiempo_comunidad_Corto}<\/B><BR><BR>support = 0.00115<BR>confidence = 1<BR>lift = 4.88<BR>count = 4<BR>order = 7"],"shape":["box","box","box","box","box","box","box","box","box","box","box","circle","circle","circle"],"x":[-0.120225119922214,-1,-0.552720163954134,0.0400558933462163,-0.641995019216012,0.282984314959038,1,0.75326630372703,-0.0480880334297035,0.345739966968827,-0.184694624732656,-0.33435376801149,0.37486467306655,0.0691300836803448],"y":[1,0.640060310416683,-0.103190043067539,-0.0525791018830227,0.976894955709812,-0.0065207687967046,-0.991808389669609,-0.519684621467382,-0.955682845967735,-1,-0.222042593223172,0.39245818614044,-0.573658777184632,-0.47694896431193]},"edges":{"from":[1,2,3,4,5,6,7,8,9,4,10,6,8,9,3,4,10,6,12,13,14],"to":[12,12,12,12,12,12,13,13,13,13,13,13,14,14,14,14,14,14,11,11,11],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","scaling":{"label":{"enabled":true}},"physics":false},"manipulation":{"enabled":false},"edges":{"smooth":false},"physics":{"stabilization":false},"interaction":{"hover":true}},"groups":["item","rule"],"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","igraphlayout":{"type":"square"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","highlight":{"enabled":true,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"}},"evals":[],"jsHooks":[]}</script> ##### Visualización de 20 reglas - gráfico paracoord</p>
+<pre class="r"><code># graficar 10 reglas individuales para observar lhs y rhs
+  Top3v2&lt;-head(mejoresReglasv2,n=3,by='confidence')
+  plot(Top3v2,method ='paracoord')</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="evaluacion-de-los-modelos-1" class="section level3">
+<h3>Evaluación de los modelos</h3>
+<div id="muestre-e-interprete-las-mejores-3-reglas-de-cada-conjunto-generado-1" class="section level4">
+<h4>Muestre e interprete las mejores 3 reglas de cada conjunto generado</h4>
+<p>Las mejores reglas al utilizar todas las siguientes:</p>
+<pre class="r"><code>inspect(Top3v2)</code></pre>
+<pre><code>##     lhs                                                rhs                                 support confidence     lift count
+## [1] {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                               
+##      Hobbies=SiHobbies,                                                                                                     
+##      Grupo_Apoyo=SiGrupo_Apoyo,                                                                                             
+##      Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta} =&gt; {Trabaja=SiTrabaja}             0.001722653          1 1.997133     6
+## [2] {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                               
+##      Grupo_Apoyo=SiGrupo_Apoyo,                                                                                             
+##      Grupo_Edad=Edad_Joven,                                                                                                 
+##      Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta} =&gt; {Medioambiente=NoMedioambiente} 0.001435544          1 1.720000     5
+## [3] {Tiempo_comunidad=Tiempo_comunidad_Corto,                                                                               
+##      Grupo_Apoyo=SiGrupo_Apoyo,                                                                                             
+##      Grupo_Edad=Edad_Joven,                                                                                                 
+##      Grupo_Tiempo_Respuesta=Tiempo_Respuesta_Lenta} =&gt; {Hobbies=NoHobbies}             0.001435544          1 1.428630     5</code></pre>
+</div>
 </div>
 </div>
 </div>

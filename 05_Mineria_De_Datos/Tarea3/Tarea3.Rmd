@@ -35,14 +35,15 @@ library(reshape2)
 
 # Entendimiento del negocio
 
+El problema a evaluar consiste en identificar patrones o caracteristicas en común de los miembros del cantón #21 de San José y basado en estás caracteristicas crear grupos de trabajo para sacar adelante los proyectos de interés del cantón.
+
 ## Objetivos de minería de datos 
 
-*	Identificar los 3 clústers de datos más comunes entre los miembros de la comunidad.
-*	Determinar las 3 caracteristicas más comunes entre los miembros de la comunidad para la participación en grupos.
+*	Identificar las 3 mejores reglas que describen que atributos suelen reunir determinados miembros de la comunidad.
 
 ## Criterios de éxito desde la perspectiva de minería de datos
 
-* Evaluar la confianza del modelo priori con el fin de validar que la confianza de las reglas seleccionadas sea mayor al 90%.
+* Evaluar la confianza del modelo priori con el fin de validar que la confianza de las reglas seleccionadas tenga al menos un 90% de que exista la relación entre las variables seleccionadas.
 
 #	Entendimiento de los datos
 
@@ -240,7 +241,7 @@ summary(transacciones)
    tresMejoresReglas<- head(mejoresReglas,n=3,by='lift')
    plot(tresMejoresReglas,method = 'graph',engine = 'htmlwidget')
 ```
-##### Visualización de  20 reglas - gráfico paracoord
+##### Visualización de  3 reglas - gráfico paracoord
 ```{r}
 # graficar 10 reglas individuales para observar lhs y rhs
   Top3<-head(mejoresReglas,n=3,by='confidence')
@@ -309,8 +310,8 @@ summary(transaccionesv2)
   reglasFinalv2 <- reglasv2[-subconjuntosv2]
   #inspect(reglasFinal[1:10])
   
-  # se ordena por soporte y se observan las primeras 10 reglas
-  inspect(sort(reglasFinalv2,by='lift',decreasing = TRUE)[1:10])
+  # se ordena por soporte y se observan las primeras 3 reglas
+  inspect(sort(reglasFinalv2,by='lift',decreasing = TRUE)[1:3])
   
   # se filtran las reglas con confianza superior a 0.25
   mejoresReglasv2<- reglasFinalv2[quality(reglasFinalv2)$confidence>0.90]
@@ -329,7 +330,7 @@ summary(transaccionesv2)
    tresMejoresReglasv2 <- head(mejoresReglasv2,n=3,by='lift')
    plot(tresMejoresReglasv2,method = 'graph',engine = 'htmlwidget')
 ```
-##### Visualización de  20 reglas - gráfico paracoord
+##### Visualización de  3 reglas - gráfico paracoord
 ```{r}
 # graficar 10 reglas individuales para observar lhs y rhs
   Top3v2<-head(mejoresReglasv2,n=3,by='confidence')
