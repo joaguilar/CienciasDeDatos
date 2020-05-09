@@ -335,9 +335,16 @@ Las mejores reglas al utilizar todas las siguientes:
 ```{r}
 inspect(Top3v2)
 ```
-* Regla 1: En el caso de la regla 1 del segundo modelo, en principio esta regla indican que sin importar la característica (individual) en LHS, en el RHS vendrá GrupoApoyo=No
+* Regla 1: En el caso de la regla 1 del segundo modelo, en principio esta regla indican que sin importar la característica (individual) en LHS, en el RHS vendrá GrupoApoyo=No.
 
 * Regla 2: La regla 2 nos indica que hay un 79%.62 de confianza que si la persona tiene Hobbies, entonces la probabilidad de que también pertenezca a un grupo de medio ambiente es de 1.9 veces.
 
 * Regla 3: La regla 3 nos indica que si la persona tiene familia, contestó la encuesta en un periodo de tiempo lento, y tiene hobbies implica que hay un 73.71% probabilidad de que no sea profesional. 
+
+
+# Conclusiones de la comparación de los modelos
+
+Al comparar los modelos es posible notar que al flexibilizar los parámetros (soporte, confianza, maxlen o cantidad de variables consideradas por el modelo), más items son considerados en el modelo 2, que pueden ser de utilidad para la creación de los grupos y cumplir con el objetivo de negocio, esto considerando que los items del modelo 1 tienen un conjunto de variables limitado, y quizás se requiere más flexibilidad a la hora de agrupar a los diferentes miembros de la comunidad. En el primer grupo estamos restringuiendo los parametros de forma que surgen 2 items con una asociación muy fuerte (Hobbies=No y MedioAmbiente=No), sin embargo esto no puede ser de utilidad para los objetivos del negocio por lo que el segundo modelo al flexibilizar los parámetros, incluye items que pueden permitir un agrupamiento más realista de las personas de la comunidad.
+
+
 
