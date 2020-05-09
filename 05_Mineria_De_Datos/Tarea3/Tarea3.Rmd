@@ -267,7 +267,7 @@ Para el segundo modelo se utiliza un soporte más bajo de 0.02(2%), la confianza
 ```{r}
  # se generarn las reglas usando el algoritmo a priori, con un soporte del 2% y una confianza de 0.7%
 
-  reglasv2<- apriori(transaccionesv2,parameter = list(supp=0.02,conf=0.7,maxlen=5))
+  reglasv2<- apriori(transacciones,parameter = list(supp=0.02,conf=0.7,maxlen=5))
   
   inspect(reglasv2[1:10])
 
@@ -287,7 +287,7 @@ Para el segundo modelo se utiliza un soporte más bajo de 0.02(2%), la confianza
 
 ```{r warning=FALSE}
 # se leerá el archivo como transacciones formato basket
- transaccionesv2 <- read.transactions('transaccionesv2.csv',sep=',',format = 'basket')
+ transaccionesv2 <- read.transactions('transaccionesv1.csv',sep=',',format = 'basket')
  
 ```
 ####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
