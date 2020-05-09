@@ -1,6 +1,6 @@
 ---
 title: "Tarea 3"
-author: "Jose Aguilar, Eilyn Salazer, Crisia Piedra"
+author: "Jose Aguilar, Eilyn Salazar, Crisia Piedra"
 date: "May 6, 2020"
 output: 
   html_document: 
