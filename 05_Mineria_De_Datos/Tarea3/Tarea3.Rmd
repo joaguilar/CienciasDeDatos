@@ -220,17 +220,15 @@ Vamos a utilizar un soporte del 0.1 (10%) para filtrar los items que tienen una 
   #inspect(reglasFinal[1:10])
   
   # se ordena por soporte y se observan las primeras 10 reglas
-  inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[1:10])
+  inspect(sort(reglasFinal,by='lift',decreasing = TRUE)[0:10])
   
   # se filtran las reglas con confianza superior a 0.25
   mejoresReglas<- reglasFinal[quality(reglasFinal)$confidence>0.90]
-  
 ```
 
 ```{r warning=FALSE}
 # se leerá el archivo como transacciones formato basket
  transacciones<- read.transactions('transaccionesv1.csv',sep=',',format = 'basket')
- 
 ```
 ####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
 
