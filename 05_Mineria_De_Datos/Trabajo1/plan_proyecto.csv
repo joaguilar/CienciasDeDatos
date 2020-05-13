@@ -1,36 +1,46 @@
-Fases,Actividades ,Riesgos ,Contingencias,Recurso,Duraci髇/ Tiempo estimado
-Entendimiento del negocio,1.牋牋牋 Determinar los objetivos del negocio,Falta de disponibilidad de los involucrados.,Validaci髇 de los objetivos con la gerencia ejecutiva de la compa耥a.,Patrocinador,2 d韆s.
-,2.牋牋牋 Evaluaci髇 de la situaci髇,,,,
-,3.牋牋牋 Determinar los objetivos de miner韆 de datos,Objetivos definidos no alineados con las necesidades del negocio.,Coordinaci髇 a trav閟 de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones.,Experto en la gerencia de mercadeo,
-,4.牋牋牋 Generar el plan de proyecto.,,,,
-,,,Creaci髇 de un project roster para la ubicaci髇 de los involucrados y sus backups en caso de ser necesario. ,Analista de datos,
-,,,,,
-Entendimiento de los datos,1. Recopilaci髇 inicial de datos,Ausencia de productos lanzados recientemente al mercado.,"En conjunto con el analista de datos, realizar un proceso de verificaci髇 y recolecci髇 de los datos m醩 recientes en el mercado.",Experto en la gerencia de mercadeo,3 d韆s
-,2. Describir los datos,,,,
-,3. Explorar los datos,,Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.,Analista de datos,
-,4. Verificar la calidad de los datos,,,,
-,,,,Desarrollador,
-,,,,,
-,,Falta de conocimiento de negocio por parte del analista.,,,
-Preparaci髇 de los datos,1.牋牋牋 Selecci髇 de los datos.,Ausencia de valores en m鷏tiples columnas.,"Determinar la mejor t閏nica de imputaci髇 de datos, en conjunto con la gerencia de mercadeo.",Experto en la gerencia de mercadeo,7 d韆s.
-,2.牋牋牋 Limpiar los datos.,,,,
-,3.牋牋牋 Construcci髇 de datos,,"Uso de t閏nicas como an醠isis de correlaci髇, an醠isis de componentes principales para identificar las variables m醩 relevantes para el an醠isis.",Analista de datos,
-,4.牋牋牋 Integrar los datos,,,,
-,,Determinar las variables que analizar como parte del problema a resolver,,Desarrollador,
-Modelado,1. Seleccionar la t閏nica de modelado,Mal dise駉 en la implementaci髇 del modelo,Uso de m鷏tiples modelos al aplicar una misma t閏nica de miner韆.,Analista de datos,8 d韆s. 
-,2. Generar dise駉 de testing,,,,
-,3. Construir el modelo,Las t閏nicas de miner韆 seleccionados no proveen los resultados esperados,Uso de m鷏tiples t閏nicas de miner韆.,Desarrollador,
-,4. Evaluar el modelo,,,,
-,,La duraci髇 en la ejecuci髇 de los modelos y su entrenamiento tarda m醩 de lo estimado,Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento.,,
-Evaluaci髇,1. Evaluar los Resultados,Insatisfacci髇 de los involucrados con los resultados del proyecto,"Replanteamiento de las metas y objetivos de la investigaci髇 con los involucrados del proyecto, a馻diendo nuevas variables/datos adicionales",Experto en la gerencia de mercadeo,2 d韆s
-,2. Revisi髇 del proceso,,,,
-,3. Determinar Pasos a Seguir,,,Analista de datos,
-,,,,,
-,,,,Desarrollador,
-Implementaci髇 (Deployment),1. Plan de despliegue,Aumento en el costo de los recursos t閏nicos disponibles.,Comparaci髇 de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto.,Analista de datos,3 d韆s.
-,2. Plan de Monitoreo y mantenimiento,,,,
-,3. Producci髇 del reporte final,,Establecimiento de una condici髇 de cierre del proyecto y creaci髇 de un plan de administraci髇 para nuevas fases,Desarrollador,
-,4. Revisi髇 del proyecto,,,,
-,,,,,
-,,Variaci髇 en el alcance del proyecto.,,,
-,,,,,
+Fases,Actividades ,Riesgos ,Contingencias,Recurso,Duraci贸n/ Tiempo estimado
+Entendimiento del negocio,"1. Determinar los objetivos del negocio
+2. Evaluaci贸n de la situaci贸n
+3. Determinar los objetivos de miner铆a de datos
+4. Generar el plan de proyecto.","Falta de disponibilidad de los involucrados.
+Objetivos definidos no alineados con las necesidades del negocio.","Validaci贸n de los objetivos con la gerencia ejecutiva de la compa帽铆a.
+Coordinaci贸n a trav茅s de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones.
+Creaci贸n de un project roster para la ubicaci贸n de los involucrados y sus backups en caso de ser necesario. ","Patrocinador
+Experto en la gerencia de mercadeo",2 d铆as.
+Entendimiento de los datos,"1. Recopilaci贸n inicial de datos
+2. Describir los datos
+3. Explorar los datos
+4. Verificar la calidad de los datos","Ausencia de productos lanzados recientemente al mercado.
+Falta de conocimiento de negocio por parte del analista.","En conjunto con el analista de datos, realizar un proceso de verificaci贸n y recolecci贸n de los datos m谩s recientes en el mercado.
+Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",3 d铆as
+Preparaci贸n de los datos,"1. Selecci贸n de los datos.
+2. Limpiar los datos.
+3. Construcci贸n de datos
+4. Integrar los datos","Ausencia de valores en m煤ltiples columnas.
+Determinar las variables que analizar como parte del problema a resolver","Determinar la mejor t茅cnica de imputaci贸n de datos, en conjunto con la gerencia de mercadeo.
+Uso de t茅cnicas como an谩lisis de correlaci贸n, an谩lisis de componentes principales para identificar las variables m谩s relevantes para el an谩lisis.","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",7 d铆as.
+Modelado,"1. Seleccionar la t茅cnica de modelado
+2. Generar dise帽o de testing
+3. Construir el modelo
+4. Evaluar el modelo","Mal dise帽o en la implementaci贸n del modelo
+Las t茅cnicas de miner铆a seleccionados no proveen los resultados esperados
+La duraci贸n en la ejecuci贸n de los modelos y su entrenamiento tarda m谩s de lo estimado","Uso de m煤ltiples modelos al aplicar una misma t茅cnica de miner铆a.
+Uso de m煤ltiples t茅cnicas de miner铆a.","Analista de datos
+Desarrollador",8 d铆as. 
+Evaluaci贸n,"1. Evaluar los Resultados
+2. Revisi贸n del proceso
+3. Determinar Pasos a Seguir",Insatisfacci贸n de los involucrados con los resultados del proyecto,"Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento.
+Replanteamiento de las metas y objetivos de la investigaci贸n con los involucrados del proyecto, a帽adiendo nuevas variables/datos adicionales","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",2 d铆as
+Implementaci贸n (Deployment),"1. Plan de despliegue
+2. Plan de Monitoreo y mantenimiento
+3. Producci贸n del reporte final
+4. Revisi贸n del proyecto","Aumento en el costo de los recursos t茅cnicos disponibles.
+Variaci贸n en el alcance del proyecto.","Comparaci贸n de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto.
+Establecimiento de una condici贸n de cierre del proyecto y creaci贸n de un plan de administraci贸n para nuevas fases","Analista de datos
+Desarrollador",3 d铆as.
