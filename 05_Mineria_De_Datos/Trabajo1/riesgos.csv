@@ -1,0 +1,8 @@
+Tipo de Riesgo,Riesgo,Estrategia de Contingencia
+Riesgos de Negocio,Cambios en el ambiente de negocio que sean contrarios al objetivo del proyecto.,"Involucrar a las diferentes áreas e involucrados de la compañía en la toma de decisiones y presentación de avances del proyecto, para hacer los cambios o adaptaciones requeridos según la necesidad del negocio."
+Riesgos Organizacionales,Cambios organizacionales ,"Desarrollo de planes de continuidad del negocio que permitan documentar todo el proceso de desarrollo, documentar roles, responsabilidades y tareas para el manejo de personal de respaldo o backups en caso de salida de personas de la compañía."
+,Salida de involucrados clave para la compañía.,
+Riesgos Financieros,Incremento en el costo estimado del proyecto.,Creación de un presupuesto extraordinario para el manejo de imprevistos financieros durante el proyecto.
+Riesgos Técnicos,Herramientas seleccionadas para la implementación no cumplen las expectativas,Previo a la fase de implementación y desarrollo realizar una comparación de las herramientas a utilizar.
+Riesgos de los datos,Datos limitados a 1 año de ventas ,"Diseñar una estrategia de mantenimiento de los datos, para la evaluación de los objetivos de forma anual."
+,Ausencia de datos de nuevos productos del mercado,Diseñar en conjunto con el analista de datos una estrategia de sincronización de los datos periódica para la inclusión de nuevos productos

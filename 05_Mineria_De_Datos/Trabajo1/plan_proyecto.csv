@@ -1,0 +1,36 @@
+Fases,Actividades ,Riesgos ,Contingencias,Recurso,Duración/ Tiempo estimado
+Entendimiento del negocio,1.       Determinar los objetivos del negocio,Falta de disponibilidad de los involucrados.,Validación de los objetivos con la gerencia ejecutiva de la compañía.,Patrocinador,2 días.
+,2.       Evaluación de la situación,,,,
+,3.       Determinar los objetivos de minería de datos,Objetivos definidos no alineados con las necesidades del negocio.,Coordinación a través de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones.,Experto en la gerencia de mercadeo,
+,4.       Generar el plan de proyecto.,,,,
+,,,Creación de un project roster para la ubicación de los involucrados y sus backups en caso de ser necesario. ,Analista de datos,
+,,,,,
+Entendimiento de los datos,1. Recopilación inicial de datos,Ausencia de productos lanzados recientemente al mercado.,"En conjunto con el analista de datos, realizar un proceso de verificación y recolección de los datos más recientes en el mercado.",Experto en la gerencia de mercadeo,3 días
+,2. Describir los datos,,,,
+,3. Explorar los datos,,Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.,Analista de datos,
+,4. Verificar la calidad de los datos,,,,
+,,,,Desarrollador,
+,,,,,
+,,Falta de conocimiento de negocio por parte del analista.,,,
+Preparación de los datos,1.       Selección de los datos.,Ausencia de valores en múltiples columnas.,"Determinar la mejor técnica de imputación de datos, en conjunto con la gerencia de mercadeo.",Experto en la gerencia de mercadeo,7 días.
+,2.       Limpiar los datos.,,,,
+,3.       Construcción de datos,,"Uso de técnicas como análisis de correlación, análisis de componentes principales para identificar las variables más relevantes para el análisis.",Analista de datos,
+,4.       Integrar los datos,,,,
+,,Determinar las variables que analizar como parte del problema a resolver,,Desarrollador,
+Modelado,1. Seleccionar la técnica de modelado,Mal diseño en la implementación del modelo,Uso de múltiples modelos al aplicar una misma técnica de minería.,Analista de datos,8 días. 
+,2. Generar diseño de testing,,,,
+,3. Construir el modelo,Las técnicas de minería seleccionados no proveen los resultados esperados,Uso de múltiples técnicas de minería.,Desarrollador,
+,4. Evaluar el modelo,,,,
+,,La duración en la ejecución de los modelos y su entrenamiento tarda más de lo estimado,Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento.,,
+Evaluación,1. Evaluar los Resultados,Insatisfacción de los involucrados con los resultados del proyecto,"Replanteamiento de las metas y objetivos de la investigación con los involucrados del proyecto, añadiendo nuevas variables/datos adicionales",Experto en la gerencia de mercadeo,2 días
+,2. Revisión del proceso,,,,
+,3. Determinar Pasos a Seguir,,,Analista de datos,
+,,,,,
+,,,,Desarrollador,
+Implementación (Deployment),1. Plan de despliegue,Aumento en el costo de los recursos técnicos disponibles.,Comparación de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto.,Analista de datos,3 días.
+,2. Plan de Monitoreo y mantenimiento,,,,
+,3. Producción del reporte final,,Establecimiento de una condición de cierre del proyecto y creación de un plan de administración para nuevas fases,Desarrollador,
+,4. Revisión del proyecto,,,,
+,,,,,
+,,Variación en el alcance del proyecto.,,,
+,,,,,

@@ -1,0 +1,138 @@
+---
+title: "Trabajo en clase # 1"
+author: "Jose Aguilar, Eilyn Salazar, Crisia Piedra"
+date: "May 15, 2020"
+output: 
+  html_document: 
+    toc: yes
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(arules)
+if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library("readxl")
+library(ggplot2)
+library(knitr)
+if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(kableExtra)
+library(arules)
+library(arulesViz)
+
+library(tidyverse)
+if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
+library(plyr); library(dplyr)
+library(ggplot2)
+library(knitr)
+library(lubridate)
+if(!require(assertr)) install.packages("assertr",dependencies = TRUE)
+library(assertr)
+if(!require(reshape2)) install.packages("reshape2",dependencies = TRUE)
+library(reshape2)
+
+```
+
+# Fase de entendimiento del negocio
+## Determinar los objetivos de negocio
+### Objetivos de negocio
+1.	Incrementar las ventas enfocándose en los mejores clientes.
+2.	Mejorar la disponibilidad de inventarios para satisfacer la demanda de productos.
+
+### Criterios de éxito (en términos de negocio)
+1.	Identificar los 3 segmentos de mercado más rentables para la empresa a fin de orientar la estrategia de ventas.
+2.	Mejorar las estimaciones de ventas mensuales un 20% de su valor real.
+
+## Evaluación de la situación actual
+Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
+
+Por otra parte, el departamento de mercadeo de la empresa desea optimizar su presupuesto enfocando sus esfuerzos en los clientes que son más rentables para la compañía para esto está considerando crear un programa de  fidelidad, sin embargo no cuenta con información sobre el perfil de sus mejores clientes.
+
+### Inventario de recursos(datos, personal, TI)
+####	Datos
+*	Datos de ventas históricos de un año.
+
+#### Personal
+*	1 patrocinador del proyecto representando la gerencia. 
+*	1 experto del área de mercadeo para apoyar la estrategia del negocio.
+*	1 analista de datos con conocimiento de los sistemas y fuentes de datos.
+*	1 desarrollador.
+
+####	TI
+Un ambiente virtualizado en la nube con las siguientes características. 
+*	 OS: Window Server 2016
+*	 RAM: 32 GB
+*	 CPU: @2.4 GHz 2.39 GHz (8 processors)
+
+#### Software
+1.	R y  RStudio: Para análisis de datos.
+2.	MySQL y MySQL Workbench: Fuentes, almacenamiento de datos y herramientas de modelado y consulta.
+3.	Tableau: Visualización de datos
+4.	Notepad++ y Visual Studio Code: Desarrollo y revisión de logs de sistema.
+
+### Requerimientos
+
+####	Seguridad
+
+*	Solo la gerencia de mercadeo y la gerencia general tendrá acceso a los resultados de la investigación realizada.
+
+#### Legales /Confidencialidad
+*	Considerando las políticas de confidencialidad y el manejo de los datos personales de los clientes, este proyecto no debe hacer uso de datos personales para su análisis.
+
+#### Implementación y mantenimiento
+
+*	Considerando que se utilizará un ambiente virtualizado en la nube, se requiere el uso de VPNs para el acceso al área de desarrollo.
+*	Todos los equipos utilizados para el análisis deben contar con los parches de sistema operativo y antivirus actualizado.
+*	El despliegue de los resultados del modelo, y reportes generados se realizará mediante el uso de la herramienta Tableau. 
+
+#### Cronograma
+*	Se estima que la duración del proyecto no podrá exceder más de 1 mes.
+
+### Supuestos
+*	Se cuenta con acceso a datos de ventas de 1 año.
+*	La compañía cuenta con los recursos técnicos para satisfacer los requerimientos técnicos del proyecto.
+*	El proyecto cuenta con la aprobación del negocio y el personal capacitado para ser desarrollado.
+
+### Restricciones
+*	Solo se cuenta con 1 año de datos históricos. 
+*	La información de clientes es limitada por motivos de privacidad.
+*	Ausencia de información sobre las categorías de cada producto.
+
+### Riesgos y contingencias
+```{r warning=FALSE}
+setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Trabajo1')
+atributos<-read.csv('riesgos.csv', sep = ',',dec = '.')
+kable(atributos[,0:3],caption = "Riesgos y Contingencias")
+
+```
+
+### Beneficios
+*	Reducción de gastos por almacenamiento de inventarios y evitar compras innecesarias.
+*	Mejora en la tasa de retención de clientes
+*	Incremento en las ganancias gracias a la mayor disponibilidad de inventario para los productos más vendidos.
+
+## Determinar los objetivos de minería de datos
+
+### Objetivos de minería de datos
+*	Identificar segmentos de mercados minoristas a partir de las ventas.
+*	Determinar los 3 segmentos de mercado que generan más ingresos.
+*	Predecir las ventas mensuales por producto a partir de los datos históricos. 
+
+### Criterios de éxito (desde la perspectiva de minería de datos)
+1.	Identificar 3 clústeres de datos que permitan agrupar los diferentes clientes de la compañía pasado en su perfil.
+2.	Evaluar la precisión del modelo de predicción a fin de validar que la predicción se encuentre dentro de un 20% de las ventas reales.
+
+##Plan del proyecto
+
+### Evaluación inicial de herramientas y técnicas
+Para el desarrollo de este proyecto se utilizará el lenguaje de programación R, y la herramienta RStudio a fin de realizar al proceso de exploración de los datos e identificar las librerías y técnicas de minería de datos más apropiadas para la realización del mismo.
+
+### Plan del proyecto
+Se debe señalar que la estimación inicial para el desarrollo del proyecto no debe de tardar más de 1 mes y por lo cual se consideran 24 días hábiles para la implementación del mismo, los cuales son distribuidos de la siguiente manera.
+
+```{r warning=FALSE}
+setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Trabajo1')
+atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.')
+kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
+kable_styling(bootstrap_options = c("striped", "hover"))
+```
