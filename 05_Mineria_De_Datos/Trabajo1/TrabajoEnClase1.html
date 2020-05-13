@@ -463,6 +463,7 @@ Diseñar en conjunto con el analista de datos una estrategia de sincronización 
 <div id="evaluacion-inicial-de-herramientas-y-tecnicas" class="section level3">
 <h3>Evaluación inicial de herramientas y técnicas</h3>
 <p>Para el desarrollo de este proyecto se utilizará el lenguaje de programación R, y la herramienta RStudio a fin de realizar al proceso de exploración de los datos e identificar las librerías y técnicas de minería de datos más apropiadas para la realización del mismo.</p>
+<p>Para el cumplimiento de los objetivos de mineria se utilizaran las técnicas de clustering K-means, y kmedoids, de igual manera para la predicción de las ventas se usara regresión lineal simple y múltiple.</p>
 </div>
 <div id="plan-del-proyecto-1" class="section level3">
 <h3>Plan del proyecto</h3>
@@ -499,84 +500,20 @@ Recurso
 Entendimiento del negocio
 </td>
 <td style="text-align:left;">
-1.       Determinar los objetivos del negocio
+<ol style="list-style-type: decimal">
+<li>Determinar los objetivos del negocio</li>
+<li>EvaluaciÃ³n de la situaciÃ³n</li>
+<li>Determinar los objetivos de minerÃ­a de datos</li>
+<li>Generar el plan de proyecto.
 </td>
 <td style="text-align:left;">
-Falta de disponibilidad de los involucrados.
+Falta de disponibilidad de los involucrados. Objetivos definidos no alineados con las necesidades del negocio.
 </td>
 <td style="text-align:left;">
-Validación de los objetivos con la gerencia ejecutiva de la compañía.
+ValidaciÃ³n de los objetivos con la gerencia ejecutiva de la compaÃ±Ã­a. CoordinaciÃ³n a travÃ©s de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones. CreaciÃ³n de un project roster para la ubicaciÃ³n de los involucrados y sus backups en caso de ser necesario.
 </td>
 <td style="text-align:left;">
-Patrocinador
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-2.       Evaluación de la situación
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-3.       Determinar los objetivos de minería de datos
-</td>
-<td style="text-align:left;">
-Objetivos definidos no alineados con las necesidades del negocio.
-</td>
-<td style="text-align:left;">
-Coordinación a través de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones.
-</td>
-<td style="text-align:left;">
-Experto en la gerencia de mercadeo
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-4.       Generar el plan de proyecto.
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Creación de un project roster para la ubicación de los involucrados y sus backups en caso de ser necesario.
-</td>
-<td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
+Patrocinador Experto en la gerencia de mercadeo
 </td>
 </tr>
 <tr>
@@ -585,170 +522,42 @@ Entendimiento de los datos
 </td>
 <td style="text-align:left;">
 <ol style="list-style-type: decimal">
-<li>Recopilación inicial de datos
-</td>
-<td style="text-align:left;">
-Ausencia de productos lanzados recientemente al mercado.
-</td>
-<td style="text-align:left;">
-En conjunto con el analista de datos, realizar un proceso de verificación y recolección de los datos más recientes en el mercado.
-</td>
-<td style="text-align:left;">
-Experto en la gerencia de mercadeo
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="2" style="list-style-type: decimal">
-<li>Describir los datos
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="3" style="list-style-type: decimal">
-<li>Explorar los datos
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.
-</td>
-<td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="4" style="list-style-type: decimal">
+<li>RecopilaciÃ³n inicial de datos</li>
+</ol></li>
+<li>Describir los datos</li>
+<li>Explorar los datos</li>
 <li>Verificar la calidad de los datos
 </td>
 <td style="text-align:left;">
+Ausencia de productos lanzados recientemente al mercado. Falta de conocimiento de negocio por parte del analista.
 </td>
 <td style="text-align:left;">
+En conjunto con el analista de datos, realizar un proceso de verificaciÃ³n y recolecciÃ³n de los datos mÃ¡s recientes en el mercado. Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.
 </td>
 <td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Desarrollador
+Experto en la gerencia de mercadeo Analista de datos Desarrollador
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
+PreparaciÃ³n de los datos
 </td>
 <td style="text-align:left;">
+<ol style="list-style-type: decimal">
+<li>SelecciÃ³n de los datos.</li>
+</ol></li>
+<li>Limpiar los datos.</li>
+<li>ConstrucciÃ³n de datos</li>
+<li>Integrar los datos
 </td>
 <td style="text-align:left;">
+Ausencia de valores en mÃºltiples columnas. Determinar las variables que analizar como parte del problema a resolver
 </td>
 <td style="text-align:left;">
+Determinar la mejor tÃ©cnica de imputaciÃ³n de datos, en conjunto con la gerencia de mercadeo. Uso de tÃ©cnicas como anÃ¡lisis de correlaciÃ³n, anÃ¡lisis de componentes principales para identificar las variables mÃ¡s relevantes para el anÃ¡lisis.
 </td>
 <td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Falta de conocimiento de negocio por parte del analista.
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Preparación de los datos
-</td>
-<td style="text-align:left;">
-1.       Selección de los datos.
-</td>
-<td style="text-align:left;">
-Ausencia de valores en múltiples columnas.
-</td>
-<td style="text-align:left;">
-Determinar la mejor técnica de imputación de datos, en conjunto con la gerencia de mercadeo.
-</td>
-<td style="text-align:left;">
-Experto en la gerencia de mercadeo
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-2.       Limpiar los datos.
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-3.       Construcción de datos
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Uso de técnicas como análisis de correlación, análisis de componentes principales para identificar las variables más relevantes para el análisis.
-</td>
-<td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-4.       Integrar los datos
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Determinar las variables que analizar como parte del problema a resolver
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Desarrollador
+Experto en la gerencia de mercadeo Analista de datos Desarrollador
 </td>
 </tr>
 <tr>
@@ -757,246 +566,63 @@ Modelado
 </td>
 <td style="text-align:left;">
 <ol style="list-style-type: decimal">
-<li>Seleccionar la técnica de modelado
-</td>
-<td style="text-align:left;">
-Mal diseño en la implementación del modelo
-</td>
-<td style="text-align:left;">
-Uso de múltiples modelos al aplicar una misma técnica de minería.
-</td>
-<td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="2" style="list-style-type: decimal">
-<li>Generar diseño de testing
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="3" style="list-style-type: decimal">
-<li>Construir el modelo
-</td>
-<td style="text-align:left;">
-Las técnicas de minería seleccionados no proveen los resultados esperados
-</td>
-<td style="text-align:left;">
-Uso de múltiples técnicas de minería.
-</td>
-<td style="text-align:left;">
-Desarrollador
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="4" style="list-style-type: decimal">
+<li>Seleccionar la tÃ©cnica de modelado</li>
+</ol></li>
+<li>Generar diseÃ±o de testing</li>
+<li>Construir el modelo</li>
 <li>Evaluar el modelo
 </td>
 <td style="text-align:left;">
+Mal diseÃ±o en la implementaciÃ³n del modelo Las tÃ©cnicas de minerÃ­a seleccionados no proveen los resultados esperados La duraciÃ³n en la ejecuciÃ³n de los modelos y su entrenamiento tarda mÃ¡s de lo estimado
 </td>
 <td style="text-align:left;">
+Uso de mÃºltiples modelos al aplicar una misma tÃ©cnica de minerÃ­a. Uso de mÃºltiples tÃ©cnicas de minerÃ­a.
 </td>
 <td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-La duración en la ejecución de los modelos y su entrenamiento tarda más de lo estimado
-</td>
-<td style="text-align:left;">
-Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento.
-</td>
-<td style="text-align:left;">
+Analista de datos Desarrollador
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-Evaluación
+EvaluaciÃ³n
 </td>
 <td style="text-align:left;">
 <ol style="list-style-type: decimal">
-<li>Evaluar los Resultados
-</td>
-<td style="text-align:left;">
-Insatisfacción de los involucrados con los resultados del proyecto
-</td>
-<td style="text-align:left;">
-Replanteamiento de las metas y objetivos de la investigación con los involucrados del proyecto, añadiendo nuevas variables/datos adicionales
-</td>
-<td style="text-align:left;">
-Experto en la gerencia de mercadeo
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="2" style="list-style-type: decimal">
-<li>Revisión del proceso
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="3" style="list-style-type: decimal">
+<li>Evaluar los Resultados</li>
+</ol></li>
+<li>RevisiÃ³n del proceso</li>
 <li>Determinar Pasos a Seguir
 </td>
 <td style="text-align:left;">
+InsatisfacciÃ³n de los involucrados con los resultados del proyecto
 </td>
 <td style="text-align:left;">
+Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento. Replanteamiento de las metas y objetivos de la investigaciÃ³n con los involucrados del proyecto, aÃ±adiendo nuevas variables/datos adicionales
 </td>
 <td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
+Experto en la gerencia de mercadeo Analista de datos Desarrollador
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Desarrollador
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Implementación (Deployment)
+ImplementaciÃ³n (Deployment)
 </td>
 <td style="text-align:left;">
 <ol style="list-style-type: decimal">
-<li>Plan de despliegue
+<li>Plan de despliegue</li>
+</ol></li>
+<li>Plan de Monitoreo y mantenimiento</li>
+<li>ProducciÃ³n del reporte final</li>
+<li>RevisiÃ³n del proyecto
 </td>
 <td style="text-align:left;">
-Aumento en el costo de los recursos técnicos disponibles.
+Aumento en el costo de los recursos tÃ©cnicos disponibles. VariaciÃ³n en el alcance del proyecto.
 </td>
 <td style="text-align:left;">
-Comparación de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto.
+ComparaciÃ³n de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto. Establecimiento de una condiciÃ³n de cierre del proyecto y creaciÃ³n de un plan de administraciÃ³n para nuevas fases
 </td>
 <td style="text-align:left;">
-Analista de datos
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="2" style="list-style-type: decimal">
-<li>Plan de Monitoreo y mantenimiento
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="3" style="list-style-type: decimal">
-<li>Producción del reporte final
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Establecimiento de una condición de cierre del proyecto y creación de un plan de administración para nuevas fases
-</td>
-<td style="text-align:left;">
-Desarrollador
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-<ol start="4" style="list-style-type: decimal">
-<li>Revisión del proyecto
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-Variación en el alcance del proyecto.
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
-</td>
-<td style="text-align:left;">
+Analista de datos Desarrollador
 </td>
 </tr>
 </tbody>
@@ -1004,20 +630,6 @@ Variación en el alcance del proyecto.
 <h1 id="fase-de-entendimiento-de-los-datos">Fase de entendimiento de los datos</h1>
 <h2 id="recopilacion-inicial-de-datos">Recopilación inicial de datos</h2>
 <h3 id="lista-de-datasets-requeridos">Lista de datasets requeridos</h3></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
-</ol></li>
 </ol>
 <p>Para el desarrollo de este trabajo se hará uso del conjunto de datos“Online Retail”. Este es un conjunto de datos transnacionales que contiene todas las transacciones que ocurren entre el 12/01/2010 y el 12/09/2011 para un minorista en línea registrado en el Reino Unido y sin tienda. La compañía vende principalmente regalos únicos para toda ocasión.</p>
 <div id="ubicacion-de-los-datasets" class="section level4">
@@ -1148,45 +760,60 @@ Cualitativa Nominal (Alfanumérico)
 <h3>Exploración de los datos</h3>
 <p>Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos, a través de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades, identificar posibles valores default para variables como quantity como -80995.00 que es muestra este valor como mínimo. Otro de los detalles que logra observarse es como variables como CustomerID y description tienen valor NA. Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.</p>
 <pre class="r"><code>retail&lt;-read_excel(&quot;Online Retail.xlsx&quot;)
-retail$Total &lt;- retail$UnitPrice * retail$Quantity
+summary(retail)</code></pre>
+<pre><code>##   InvoiceNo          StockCode         Description           Quantity        
+##  Length:541909      Length:541909      Length:541909      Min.   :-80995.00  
+##  Class :character   Class :character   Class :character   1st Qu.:     1.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median :     3.00  
+##                                                           Mean   :     9.55  
+##                                                           3rd Qu.:    10.00  
+##                                                           Max.   : 80995.00  
+##                                                                              
+##   InvoiceDate                    UnitPrice           CustomerID    
+##  Min.   :2010-12-01 08:26:00   Min.   :-11062.06   Min.   :12346   
+##  1st Qu.:2011-03-28 11:34:00   1st Qu.:     1.25   1st Qu.:13953   
+##  Median :2011-07-19 17:17:00   Median :     2.08   Median :15152   
+##  Mean   :2011-07-04 13:34:57   Mean   :     4.61   Mean   :15288   
+##  3rd Qu.:2011-10-19 11:27:00   3rd Qu.:     4.13   3rd Qu.:16791   
+##  Max.   :2011-12-09 12:50:00   Max.   : 38970.00   Max.   :18287   
+##                                                    NA's   :135080  
+##    Country         
+##  Length:541909     
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+##                    
+## </code></pre>
+<p>De estos datos podemos crear algunos campos adicionales que nos pueden ayudar a la hora de manipularlos. Para inciar, vamos a crear estos dos campos adicionales:</p>
+<pre class="r"><code>retail$Total &lt;- retail$UnitPrice * retail$Quantity
 retail$InvoiceDay &lt;- as.Date(format(retail$InvoiceDate,&quot;%Y-%m-%d&quot;))
 retail$StockCode &lt;- as.factor(retail$StockCode)
 retail$Description &lt;- as.factor(retail$Description)
 retail$Country &lt;- as.factor(retail$Country)
-retail$CustomerID &lt;- as.factor(retail$CustomerID)
-summary(retail)</code></pre>
-<pre><code>##   InvoiceNo           StockCode     
-##  Length:541909      85123A :  2313  
-##  Class :character   22423  :  2203  
-##  Mode  :character   85099B :  2159  
-##                     47566  :  1727  
-##                     20725  :  1639  
-##                     84879  :  1502  
-##                     (Other):530366  
-##                              Description        Quantity        
-##  WHITE HANGING HEART T-LIGHT HOLDER:  2369   Min.   :-80995.00  
-##  REGENCY CAKESTAND 3 TIER          :  2200   1st Qu.:     1.00  
-##  JUMBO BAG RED RETROSPOT           :  2159   Median :     3.00  
-##  PARTY BUNTING                     :  1727   Mean   :     9.55  
-##  LUNCH BAG RED RETROSPOT           :  1638   3rd Qu.:    10.00  
-##  (Other)                           :530362   Max.   : 80995.00  
-##  NA's                              :  1454                      
-##   InvoiceDate                    UnitPrice           CustomerID    
-##  Min.   :2010-12-01 08:26:00   Min.   :-11062.06   17841  :  7983  
-##  1st Qu.:2011-03-28 11:34:00   1st Qu.:     1.25   14911  :  5903  
-##  Median :2011-07-19 17:17:00   Median :     2.08   14096  :  5128  
-##  Mean   :2011-07-04 13:34:57   Mean   :     4.61   12748  :  4642  
-##  3rd Qu.:2011-10-19 11:27:00   3rd Qu.:     4.13   14606  :  2782  
-##  Max.   :2011-12-09 12:50:00   Max.   : 38970.00   (Other):380391  
-##                                                    NA's   :135080  
-##            Country           Total              InvoiceDay        
-##  United Kingdom:495478   Min.   :-168469.60   Min.   :2010-12-01  
-##  Germany       :  9495   1st Qu.:      3.40   1st Qu.:2011-03-28  
-##  France        :  8557   Median :      9.75   Median :2011-07-19  
-##  EIRE          :  8196   Mean   :     17.99   Mean   :2011-07-04  
-##  Spain         :  2533   3rd Qu.:     17.40   3rd Qu.:2011-10-19  
-##  Netherlands   :  2371   Max.   : 168469.60   Max.   :2011-12-09  
-##  (Other)       : 15279</code></pre>
+retail$CustomerID &lt;- as.factor(retail$CustomerID)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Descripción</th>
+<th>Tipo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Total</td>
+<td>Total de la compra del producto</td>
+<td>Numérico</td>
+</tr>
+<tr class="even">
+<td>InvoiceDay</td>
+<td>Fecha de la compra sin la hora para sumarizar por día</td>
+<td>Fecha</td>
+</tr>
+</tbody>
+</table>
+<p>Ademas de realizar las siguientes conversiones: | Campo | Conversión | Nuevo Tipo | |—|—|—| | StockCode | Convertirlo a un factor | Factor | | Description | Convertirlo a un factor | Factor | | Country | Convertirlo a un factor | Factor | | CustomerID | Convertirlo a un factor | Factor |</p>
 <p>En el siguiente gráfico se muestra el resultado de la multiplicación de estas variables agrupadas por cliente.</p>
 <pre class="r"><code>por_cliente &lt;- retail[!is.na(retail$CustomerID),] %&gt;%
   group_by(CustomerID) %&gt;%

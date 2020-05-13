@@ -167,19 +167,46 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 
 Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos, a través de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades, identificar posibles valores default para variables como quantity como -80995.00 que es muestra este valor como mínimo. Otro de los detalles que logra observarse es como variables como CustomerID y description tienen valor NA. Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
 
+TODO -> Verificar que es esta sección mencionamos al menos 5 variables.
+
+InvoiceNo
+Quantity      
+UnitPrice           
+CustomerID 
+Total
+
 ```{r data}
 retail<-read_excel("Online Retail.xlsx")
+summary(retail)
+
+```
+De estos datos podemos crear algunos campos adicionales que nos pueden ayudar a la hora de manipularlos. Para inciar, vamos a crear estos dos campos adicionales:
+
+| Campo  | Descripción | Tipo  |
+|---|---|---|
+| Total | Total de la compra del producto | Numérico |
+| InvoiceDay | Fecha de la compra sin la hora para sumarizar por día | Fecha |
+Ademas de realizar las siguientes conversiones:
+| Campo  | Conversión | Nuevo Tipo  |
+|---|---|---|
+| StockCode | Convertirlo a un factor | Factor |
+| Description | Convertirlo a un factor | Factor |
+| Country | Convertirlo a un factor | Factor |
+| CustomerID | Convertirlo a un factor | Factor |
+
+
+```{r  warning=FALSE}
 retail$Total <- retail$UnitPrice * retail$Quantity
 retail$InvoiceDay <- as.Date(format(retail$InvoiceDate,"%Y-%m-%d"))
 retail$StockCode <- as.factor(retail$StockCode)
 retail$Description <- as.factor(retail$Description)
 retail$Country <- as.factor(retail$Country)
 retail$CustomerID <- as.factor(retail$CustomerID)
-summary(retail)
-
 ```
 
+
 En el siguiente gráfico se muestra el resultado de la multiplicación de estas variables agrupadas por cliente.
+
 
 ```{r  warning=FALSE}
 por_cliente <- retail[!is.na(retail$CustomerID),] %>%
@@ -217,7 +244,10 @@ en la siguiente cantidad de productos:
 print(un_cliente_productos_diferentes)
 ```
 
-Podemos analizar las compras de un cliente de estos, por ejemplo, el 14646. Podemos ver que productos compra:
+Podemos analizar las compras de un cliente de estos, por ejemplo, el 14646. 
+
+Podemos ver que productos compra:
+
 ```{r warning=FALSE}
 #Agrupamos por productos:
 un_cliente_productos <- subset(retail, CustomerID==14646) %>%
@@ -227,15 +257,21 @@ un_cliente_productos <- subset(retail, CustomerID==14646) %>%
 un_cliente_totales<-sum(un_cliente_productos$Total)
 un_cliente_productos_diferentes<-nrow(un_cliente_productos)
 ```
+
 Las compras totales del cliente son:
+
 ```{r}
 print(un_cliente_totales)
 ```
+
 en la siguiente cantidad de productos: 
+
 ```{r}
 print(un_cliente_productos_diferentes)
 ```
+
 Podemos ver algunos de ellos:
+
 ```{r warning=FALSE}
 kable(head(un_cliente_productos,10),"html", booktabs = T)%>%
 kable_styling(latex_options = "striped")
@@ -306,3 +342,8 @@ Debe describir y justificar con cuáles atributos trabajará o bien cuáles ser�
 * Country: Nos permite analizar o agrupar el comportamiento de las compras por región.
 
 * Total: Total es una variable derivada y nos permite obtener el monto total de las compras realizadas por cliente, para analizar cuales son los mejores clientes basados en las mismas.
+
+
+TODO
+Remover outliers.
+
