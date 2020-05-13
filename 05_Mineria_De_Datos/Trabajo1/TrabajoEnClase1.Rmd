@@ -102,7 +102,8 @@ Un ambiente virtualizado en la nube con las siguientes características.
 ```{r warning=FALSE}
 setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Trabajo1')
 atributos<-read.csv('riesgos.csv', sep = ',',dec = '.')
-kable(atributos[,0:3],caption = "Riesgos y Contingencias")
+kable(atributos[,0:3],caption = "Riesgos y Contingencias")%>%
+kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
@@ -118,6 +119,7 @@ kable(atributos[,0:3],caption = "Riesgos y Contingencias")
 *	Determinar los 3 segmentos de mercado que generan más ingresos.
 *	Predecir las ventas mensuales por producto a partir de los datos históricos. 
 
+
 ### Criterios de éxito (desde la perspectiva de minería de datos)
 1.	Identificar 3 clústeres de datos que permitan agrupar los diferentes clientes de la compañía pasado en su perfil.
 2.	Evaluar la precisión del modelo de predicción a fin de validar que la predicción se encuentre dentro de un 20% de las ventas reales.
@@ -127,12 +129,180 @@ kable(atributos[,0:3],caption = "Riesgos y Contingencias")
 ### Evaluación inicial de herramientas y técnicas
 Para el desarrollo de este proyecto se utilizará el lenguaje de programación R, y la herramienta RStudio a fin de realizar al proceso de exploración de los datos e identificar las librerías y técnicas de minería de datos más apropiadas para la realización del mismo.
 
+Para el cumplimiento de los objetivos de mineria se utilizaran las técnicas de clustering  K-means, y kmedoids, de igual manera para la predicción de las ventas se usara regresión lineal simple y múltiple.
+
 ### Plan del proyecto
 Se debe señalar que la estimación inicial para el desarrollo del proyecto no debe de tardar más de 1 mes y por lo cual se consideran 24 días hábiles para la implementación del mismo, los cuales son distribuidos de la siguiente manera.
 
 ```{r warning=FALSE}
-setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Trabajo1')
 atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.')
 kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+# Fase de entendimiento de los datos
+## Recopilación inicial de datos
+### Lista de datasets requeridos
+
+Para el desarrollo de este trabajo se hará uso del conjunto de datos“Online Retail”. Este es un conjunto de datos transnacionales que contiene todas las transacciones que ocurren entre el 12/01/2010 y el 12/09/2011 para un minorista en línea registrado en el Reino Unido y sin tienda. La compañía vende principalmente regalos únicos para toda ocasión. 
+
+#### Ubicación de los datasets
+
+Este conjunto de datos se encuentra disponible en el Machine Learning Repository a través del siguiente url.
+
+#### Método de acceso
+
+El conjunto de datos puede ser descargado en formato .xlsx a través del siguiente link http://archive.ics.uci.edu/ml/machine-learning-databases/00352/
+
+
+#### Descripción de los datos
+
+El conjunto de datos a utilizar cuenta “Retail Online” con 541910 observaciones de compras realizadas desde diciembre del 2010 hasta diciembre del 2011, cada una de las observaciones cuenta con 8 variables las cuales se describen a continuación.
+
+```{r warning=FALSE}
+atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
+kable(atributos[,0:3],caption = "Descripción de atributos")%>%
+kable_styling(bootstrap_options = c("striped", "hover"))
+```
+### Exploración de los datos
+
+Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos, a través de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades, identificar posibles valores default para variables como quantity como -80995.00 que es muestra este valor como mínimo. Otro de los detalles que logra observarse es como variables como CustomerID y description tienen valor NA. Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
+
+```{r data}
+retail<-read_excel("Online Retail.xlsx")
+retail$Total <- retail$UnitPrice * retail$Quantity
+retail$InvoiceDay <- as.Date(format(retail$InvoiceDate,"%Y-%m-%d"))
+retail$StockCode <- as.factor(retail$StockCode)
+retail$Description <- as.factor(retail$Description)
+retail$Country <- as.factor(retail$Country)
+retail$CustomerID <- as.factor(retail$CustomerID)
+summary(retail)
+
+```
+
+En el siguiente gráfico se muestra el resultado de la multiplicación de estas variables agrupadas por cliente.
+
+```{r  warning=FALSE}
+por_cliente <- retail[!is.na(retail$CustomerID),] %>%
+  group_by(CustomerID) %>%
+  summarise_at(vars(Total),funs(sum(.))) %>% 
+  arrange(desc(Total))
+pp<-ggplot(data=head(por_cliente,10), aes(x=CustomerID,y=Total)) +
+  geom_bar(stat="identity") +
+  scale_y_continuous(name="Total Sales (£)", labels = scales::comma)
+pp
+```
+
+A través del customerID podemos ver las compras totales del cliente por ejemplo el cliente 14646 realizó compras totales por un monto de ￡279489 en 721 productos diferentes.
+La siguiente tabla es una muestra de los productos que adquirió, la cantidad que adquirió y el total de la venta:
+
+
+```{r warning=FALSE}
+#Agrupamos por productos:
+un_cliente_productos <- subset(retail, CustomerID==14646) %>%
+  group_by(StockCode,Description) %>%
+  summarise_at(vars(Quantity,Total),list(~sum(.))) %>%
+  arrange(desc(Total))
+un_cliente_totales<-sum(un_cliente_productos$Total)
+un_cliente_productos_diferentes<-nrow(un_cliente_productos)
+```
+
+Las compras totales del cliente son:
+
+```{r}
+print(un_cliente_totales)
+```
+
+en la siguiente cantidad de productos: 
+```{r}
+print(un_cliente_productos_diferentes)
+```
+
+Podemos analizar las compras de un cliente de estos, por ejemplo, el 14646. Podemos ver que productos compra:
+```{r warning=FALSE}
+#Agrupamos por productos:
+un_cliente_productos <- subset(retail, CustomerID==14646) %>%
+  group_by(StockCode,Description) %>%
+  summarise_at(vars(Quantity,Total),list(~sum(.))) %>%
+  arrange(desc(Total))
+un_cliente_totales<-sum(un_cliente_productos$Total)
+un_cliente_productos_diferentes<-nrow(un_cliente_productos)
+```
+Las compras totales del cliente son:
+```{r}
+print(un_cliente_totales)
+```
+en la siguiente cantidad de productos: 
+```{r}
+print(un_cliente_productos_diferentes)
+```
+Podemos ver algunos de ellos:
+```{r warning=FALSE}
+kable(head(un_cliente_productos,10),"html", booktabs = T)%>%
+kable_styling(latex_options = "striped")
+```
+
+Los siguientes gráficos muestran el comportamiento de las ventas en el tiempo, así como la agrupación por país. 
+
+```{r explore3,warning = FALSE}
+invoices <- retail %>% 
+  group_by(InvoiceDay) %>%
+  summarise_at(vars(Total),funs(sum(.)))
+#kable(head(invoices,10),"latex", booktabs = T)%>%
+#  kable_styling(latex_options = "striped")
+head(invoices,10)
+
+p <- ggplot(invoices, aes(x=InvoiceDay, y=Total)) +
+  geom_line() + 
+  xlab("Fecha") +
+  ylab("Ventas Totales") +
+  ggtitle("Ventas totales por día")
+p
+
+```
+
+```{r explore4, warning=FALSE}
+por_pais <- retail %>%
+  group_by(Country) %>%
+  summarise_at(vars(Total),funs(sum(.))) %>% 
+  arrange(desc(Total))
+pp<-ggplot(data=head(por_pais,10), aes(x=Country,y=Total)) +
+  geom_bar(stat="identity") +
+  scale_y_continuous(name="Total Sales (£)", labels = scales::comma)
+pp
+```
+
+### Calidad de los datos
+
+Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no sé existe cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
+
+
+Así mismo al analizar las variables de quantity y unit price, es posible ver que existen datos que a simple vista son anómalos como se muestra en las siguientes gráficas de caja.
+
+```{r}
+boxplot(retail$Quantity,data=retail,main="Datos de Quantity")
+```
+De acuerdo con esto, existen 58619 valores “outliers”. Dado que representa un número importante de valores es importante validar estos datos con el experto del negocio a fin de comprender su validez y de no ser completamente correcto, será necesario imputarlos de alguna forma - sin embargo, hay que tener cuidado dado que puede alterar significativamente los resultados.
+Podemos hacer el mismo estudio con el campo UnitPrice
+
+```{r}
+boxplot(retail$UnitPrice,data=retail,main="Datos de UnitPrice")
+```
+
+De acuerdo con esto, existen 39627 valores “outliers” para UnitPrice. En este caso debemos hacer un tratamiento similar para los valores de la variable quantity. 
+
+# Fase de preparación de los datos
+
+## Selección de datos: 
+Debe describir y justificar con cuáles atributos trabajará o bien cuáles serán descartados, de igual forma, si se realiza una selección por filas, debe estar documentada y justificada.
+
+### Selección de variables clave
+
+* Quantity: Es la variable que nos indica cuales son las existencias que deben existir por cada producto para mejorar las existencias en inventarios basado en las ventas registradas. 
+
+* Unit Price: En conjunto con la variable quantity nos permite realizar el cálculo del valor monetario de las ventas realizadas por cliente. 
+
+* CustomerID: Nos permite agrupar las compras realizadas por el mismo cliente, esto con el fin de identificar cuáles son los mejores clientes de la compañía.
+
+* Country: Nos permite analizar o agrupar el comportamiento de las compras por región.
+
+* Total: Total es una variable derivada y nos permite obtener el monto total de las compras realizadas por cliente, para analizar cuales son los mejores clientes basados en las mismas.
