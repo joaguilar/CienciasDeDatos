@@ -100,7 +100,6 @@ Un ambiente virtualizado en la nube con las siguientes características.
 
 ### Riesgos y contingencias
 ```{r warning=FALSE}
-setwd('C:/Curso TEC/Tarea3/CienciasDeDatos/05_Mineria_De_Datos/Trabajo1')
 atributos<-read.csv('riesgos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Riesgos y Contingencias")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
@@ -135,7 +134,7 @@ Para el cumplimiento de los objetivos de mineria se utilizaran las técnicas de 
 Se debe señalar que la estimación inicial para el desarrollo del proyecto no debe de tardar más de 1 mes y por lo cual se consideran 24 días hábiles para la implementación del mismo, los cuales son distribuidos de la siguiente manera.
 
 ```{r warning=FALSE}
-atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.')
+atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.',encoding = "UTF-8")
 kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
@@ -165,7 +164,20 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 ### Exploración de los datos
 
-Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos, a través de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades, identificar posibles valores default para variables como quantity como -80995.00 que es muestra este valor como mínimo. Otro de los detalles que logra observarse es como variables como CustomerID y description tienen valor NA. Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
+Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos. Por medio de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades. 
+
+```{r data}
+retail<-read_excel("Online Retail.xlsx")
+summary(retail)
+
+```
+
+En el summary podemos ver algunas cosas interesantes, como por ejempo:
+
+* Se identifican posibles valores default para variables como quantity con -80995.00 - es un valor irreal para una cantidad, por lo que es posible que sea el valor por defecto de este campo, y se obtinene como el valor mínimo en ese campo. 
+* Otro de los detalles que logra observarse es como variables como CustomerID y Ddescription tienen valores NA. 
+
+Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
 
 TODO -> Verificar que es esta sección mencionamos al menos 5 variables.
 
@@ -175,18 +187,22 @@ UnitPrice
 CustomerID 
 Total
 
-```{r data}
-retail<-read_excel("Online Retail.xlsx")
-summary(retail)
+#### Compras de clientes
 
-```
-De estos datos podemos crear algunos campos adicionales que nos pueden ayudar a la hora de manipularlos. Para inciar, vamos a crear estos dos campos adicionales:
+De estos datos y basado en estas observaciones prelminares es posible crear algunos campos adicionales que pueden ayudar a la hora de manipularlos. Para inciar, vamos a crear estos dos campos adicionales:
 
 | Campo  | Descripción | Tipo  |
 |---|---|---|
-| Total | Total de la compra del producto | Numérico |
+| Total | Total de la compra del producto, resultado de multiplicar UnitPrice por Quantity | Numérico |
 | InvoiceDay | Fecha de la compra sin la hora para sumarizar por día | Fecha |
-Ademas de realizar las siguientes conversiones:
+
+```{r  warning=FALSE}
+retail$Total <- retail$UnitPrice * retail$Quantity
+retail$InvoiceDay <- as.Date(format(retail$InvoiceDate,"%Y-%m-%d"))
+```
+
+Ademas podemos observar que existen variables que son actualmente hileras (strings) o numeros pero en realidad representan un factor, por lo que se realizan las siguientes conversiones para estas columnas:
+
 | Campo  | Conversión | Nuevo Tipo  |
 |---|---|---|
 | StockCode | Convertirlo a un factor | Factor |
@@ -196,8 +212,6 @@ Ademas de realizar las siguientes conversiones:
 
 
 ```{r  warning=FALSE}
-retail$Total <- retail$UnitPrice * retail$Quantity
-retail$InvoiceDay <- as.Date(format(retail$InvoiceDate,"%Y-%m-%d"))
 retail$StockCode <- as.factor(retail$StockCode)
 retail$Description <- as.factor(retail$Description)
 retail$Country <- as.factor(retail$Country)
@@ -205,8 +219,7 @@ retail$CustomerID <- as.factor(retail$CustomerID)
 ```
 
 
-En el siguiente gráfico se muestra el resultado de la multiplicación de estas variables agrupadas por cliente.
-
+Podemos revisar algunas de estas variables y como se relacionan. Por ejemplo, en el siguiente gráfico se muestra el resultado de la multiplicación de las variables _UnitPrice_ y _Quantity_ (variable _Total_) agrupadas por cliente, y se muestran las compras totales de los 10 primeros clientes de la tabla:
 
 ```{r  warning=FALSE}
 por_cliente <- retail[!is.na(retail$CustomerID),] %>%
@@ -220,31 +233,7 @@ pp
 ```
 
 A través del customerID podemos ver las compras totales del cliente por ejemplo el cliente 14646 realizó compras totales por un monto de ￡279489 en 721 productos diferentes.
-La siguiente tabla es una muestra de los productos que adquirió, la cantidad que adquirió y el total de la venta:
 
-
-```{r warning=FALSE}
-#Agrupamos por productos:
-un_cliente_productos <- subset(retail, CustomerID==14646) %>%
-  group_by(StockCode,Description) %>%
-  summarise_at(vars(Quantity,Total),list(~sum(.))) %>%
-  arrange(desc(Total))
-un_cliente_totales<-sum(un_cliente_productos$Total)
-un_cliente_productos_diferentes<-nrow(un_cliente_productos)
-```
-
-Las compras totales del cliente son:
-
-```{r}
-print(un_cliente_totales)
-```
-
-en la siguiente cantidad de productos: 
-```{r}
-print(un_cliente_productos_diferentes)
-```
-
-Podemos analizar las compras de un cliente de estos, por ejemplo, el 14646. 
 
 Podemos ver que productos compra:
 
@@ -270,12 +259,15 @@ en la siguiente cantidad de productos:
 print(un_cliente_productos_diferentes)
 ```
 
-Podemos ver algunos de ellos:
+La siguiente tabla es una muestra de los productos que adquirió, la cantidad que adquirió y el total de la venta:
 
 ```{r warning=FALSE}
 kable(head(un_cliente_productos,10),"html", booktabs = T)%>%
 kable_styling(latex_options = "striped")
 ```
+
+Podemos ver que laalgunos clientes compran grandes cantidades - por ejemplo en este caso, compro 4801 unidades del producto RABBIT NIGHT LIGHT. Esto nos hace pensar que algunas de las cantidades grandes vistas anterioremente tal vez no irreales.
+
 
 Los siguientes gráficos muestran el comportamiento de las ventas en el tiempo, así como la agrupación por país. 
 
@@ -311,20 +303,56 @@ pp
 
 Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no sé existe cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
 
+```{r warning=FALSE}
+sum(is.na(retail$CustomerID))
+```
+
+Como se puede observar, hay 135080 NA - estos registros no pueden ser utilizados para el analisis de clientes a realizar, dejandonos solamente con los 406829 registros restantes.
 
 Así mismo al analizar las variables de quantity y unit price, es posible ver que existen datos que a simple vista son anómalos como se muestra en las siguientes gráficas de caja.
 
 ```{r}
 boxplot(retail$Quantity,data=retail,main="Datos de Quantity")
 ```
+
 De acuerdo con esto, existen 58619 valores “outliers”. Dado que representa un número importante de valores es importante validar estos datos con el experto del negocio a fin de comprender su validez y de no ser completamente correcto, será necesario imputarlos de alguna forma - sin embargo, hay que tener cuidado dado que puede alterar significativamente los resultados.
+
 Podemos hacer el mismo estudio con el campo UnitPrice
 
 ```{r}
 boxplot(retail$UnitPrice,data=retail,main="Datos de UnitPrice")
 ```
 
-De acuerdo con esto, existen 39627 valores “outliers” para UnitPrice. En este caso debemos hacer un tratamiento similar para los valores de la variable quantity. 
+De acuerdo con esto, existen 39627 valores “outliers” para UnitPrice. En este caso debemos hacer un tratamiento similar para los valores de la variable quantity.
+
+Adicionalmente podemos revisar para los valores que representan montos de dinero (UnitPrice) o Cantidades, que los valores tengan sentido - podemos revisar por ejemplo que sean positivos:
+
+Para Unit Price:
+
+```{r warning=FALSE}
+UnitPrice_Positivos<- nrow(retail[retail$UnitPrice >= 0,])
+UnitPrice_Positivos
+UnitPrice_Negativos<- nrow(retail[retail$UnitPrice < 0,])
+UnitPrice_Negativos
+kable(head(retail[retail$UnitPrice < 0,],10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+```
+
+Podemos ver que solamente son dos valores negativos, y que por la descripcion que tienen, probablemente pueden ser ignorados.
+
+Para Quantity:
+
+```{r warning=FALSE}
+Quantity_Positivos<- nrow(retail[retail$Quantity >= 0,])
+Quantity_Positivos
+Quantity_Negativos<- nrow(retail[retail$Quantity < 0,])
+Quantity_Negativos
+
+kable(head(retail[retail$Quantity < 0,]),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+```
+
+Para las cantidades se puede observar que son muchos mas, `r Quantity_Negativos`. Es necesario revisar esto con los analistas del negocio. Sin embargo el hecho que una de las descripciones tenga el texto "Discount" nos hace pensar que tal vez sean por proceso de negocios - una forma de dar descuentos o de realizar devoluciones de productos.
 
 # Fase de preparación de los datos
 
