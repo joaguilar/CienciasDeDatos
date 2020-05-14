@@ -174,18 +174,18 @@ summary(retail)
 
 En el summary podemos ver algunas cosas interesantes, como por ejempo:
 
-* Se identifican posibles valores default para variables como quantity con -80995.00 - es un valor irreal para una cantidad, por lo que es posible que sea el valor por defecto de este campo, y se obtinene como el valor mínimo en ese campo. 
-* Otro de los detalles que logra observarse es como variables como CustomerID y Ddescription tienen valores NA. 
+* Se identifican posibles valores default para variables como quantity con -80995.00 - es un valor irreal para una cantidad, por lo que es posible que sea el valor por defecto de este campo, y se obtiene como el valor mínimo en ese campo. 
+* Otro de los detalles que logra observarse es como variables como CustomerID y Description tienen valores NA. 
 
 Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
 
-TODO -> Verificar que es esta sección mencionamos al menos 5 variables.
+Para efectos de la tarea se le dará prioridad a los siguientes 5 campos:
 
-InvoiceNo
-Quantity      
-UnitPrice           
-CustomerID 
-Total
+* InvoiceNo: Sera utilizado para agrupar las compras.
+* Quantity: Sera utilizado para determinar el conjunto de productos mas vendidos.
+* UnitPrice: Sera utilizado para determinar, junto con Quantity. las ventas a predecir.
+* CustomerID: Sera utilizado para identificar los clientes que seran agrupados.
+* Total: Campo derivado (ver siguiente sección) que facilitará los calculos de las ventas.
 
 #### Compras de clientes
 
@@ -194,7 +194,7 @@ De estos datos y basado en estas observaciones prelminares es posible crear algu
 | Campo  | Descripción | Tipo  |
 |---|---|---|
 | Total | Total de la compra del producto, resultado de multiplicar UnitPrice por Quantity | Numérico |
-| InvoiceDay | Fecha de la compra sin la hora para sumarizar por día | Fecha |
+| InvoiceDay | Fecha de la compra sin la hora para sumarizar por día las compras | Fecha |
 
 ```{r  warning=FALSE}
 retail$Total <- retail$UnitPrice * retail$Quantity
@@ -266,19 +266,22 @@ kable(head(un_cliente_productos,10),"html", booktabs = T)%>%
 kable_styling(latex_options = "striped")
 ```
 
-Podemos ver que laalgunos clientes compran grandes cantidades - por ejemplo en este caso, compro 4801 unidades del producto RABBIT NIGHT LIGHT. Esto nos hace pensar que algunas de las cantidades grandes vistas anterioremente tal vez no irreales.
+Podemos ver que algunos clientes compran grandes cantidades - por ejemplo en este caso, el cliente compró 4801 unidades del producto RABBIT NIGHT LIGHT. Esto nos hace pensar que algunas de las cantidades grandes vistas anterioremente no son anómalas.
 
 
 Los siguientes gráficos muestran el comportamiento de las ventas en el tiempo, así como la agrupación por país. 
+
+Para observar las ventas por día, utilizamos la variable InvoiceDay, con el fin de eliminar la hora de la venta que no es de interés para este análisis.
 
 ```{r explore3,warning = FALSE}
 invoices <- retail %>% 
   group_by(InvoiceDay) %>%
   summarise_at(vars(Total),funs(sum(.)))
-#kable(head(invoices,10),"latex", booktabs = T)%>%
-#  kable_styling(latex_options = "striped")
-head(invoices,10)
+kable(head(invoices,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+```
 
+```{r warning = FALSE}
 p <- ggplot(invoices, aes(x=InvoiceDay, y=Total)) +
   geom_line() + 
   xlab("Fecha") +
@@ -295,13 +298,30 @@ por_pais <- retail %>%
   arrange(desc(Total))
 pp<-ggplot(data=head(por_pais,10), aes(x=Country,y=Total)) +
   geom_bar(stat="identity") +
-  scale_y_continuous(name="Total Sales (£)", labels = scales::comma)
+  scale_y_continuous(name="Ventas totales (£)", labels = scales::comma) +
+  ggtitle("Ventas totales por País")
 pp
 ```
 
+Y podemos ademas observar las cantidades de las ventas por país:
+
+```{r warning=FALSE}
+por_cantidad <- retail %>%
+  group_by(Country) %>%
+  summarise_at(vars(Quantity),funs(sum(.))) %>% 
+  arrange(desc(Quantity))
+pp<-ggplot(data=head(por_cantidad,10), aes(x=Country,y=Quantity)) +
+  geom_bar(stat="identity") +
+  scale_y_continuous(name="Ventas totales (Cantidad)", labels = scales::comma) +
+  ggtitle("Ventas totales (cantidad) por País")
+pp
+```
+
+
+
 ### Calidad de los datos
 
-Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no sé existe cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
+Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no se tiene la información de cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
 
 ```{r warning=FALSE}
 sum(is.na(retail$CustomerID))
@@ -372,6 +392,5 @@ Debe describir y justificar con cuáles atributos trabajará o bien cuáles ser�
 * Total: Total es una variable derivada y nos permite obtener el monto total de las compras realizadas por cliente, para analizar cuales son los mejores clientes basados en las mismas.
 
 
-TODO
-Remover outliers.
+Dado que el dataset solamente contiene 8 campos, no se descartará ninguna variable. Sin embargo si se evaluará descartar observaciones que presenten problemas como los outliers que se describen en la sección de Calidad de datos.
 
