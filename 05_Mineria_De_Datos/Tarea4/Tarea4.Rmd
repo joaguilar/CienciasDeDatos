@@ -122,6 +122,39 @@ revenue<- str_remove(revenue,'\\s*\\$')
 revenue<- str_remove(revenue,' billion.*$')
 ```
 
+
+```{r warning=FALSE}
+revenue<- str_remove(datos1m$'Lifetime revenue','est\\.')
+revenue<- str_remove(revenue,'\\s*\\$')
+revenue<- str_remove(revenue,' billion.*$')
+revenue<- as.numeric(revenue)*1000000000
+datos1m$'Lifetime revenue'<-revenue
+datos1m
+```
+
+Dejamos solamente el primer genero en el que fue clasificada la franquicia.
+
+```{r warning=FALSE}
+genres<-datos$Genero
+genres<- str_remove(genres,' .*$')
+datos$Genero <- genres
+```
+
+Dejamos solamente la primera plataforma en la que apareció la franquicia.
+
+```{r warning=FALSE}
+platfrom<-datos$Plataforma
+platfrom
+platfrom<- str_remove(platfrom,' /.*$')
+platfrom<- str_remove(platfrom,'Comm.*$')
+platfrom<- str_remove(platfrom,'HandheldPC.*$')
+platfrom<- str_remove(platfrom,'PlayStationPC$')
+platfrom<- str_remove(platfrom,'^IBM ')
+platfrom<- str_replace(platfrom,'PlayStation 3Xbox 360','PlayStation 3')
+platfrom<- str_replace(platfrom,'PS4Xbox OnePC','PS4')
+datos$Plataforma<-platfrom
+```
+
 ## Construcción de nuevos datos (atributos) 
 
 ```{r warning=FALSE}
