@@ -222,13 +222,22 @@ fviz_cluster(clusters_kmedoids,data=dataSet,palette='jco')
 
 # cluster al que se asignó cada individuo
 clusteres_medoids <- clusters_kmedoids$clustering
-
+clusteres_medoids
 # Descripción de los clusters
 medoids <- clusters_kmedoids$medoids
 medoids
 ```
 Los 3 medoides de los 3 clusteres creados corresponden a ingresos entre "6.22", "3.43", "1.50".Lo que nos permite concluir que quizás una recomendación para el sitio web que publica estos resultados es crear categorias de ingresos por billón que vayan de 0 a 2, de 3 a 4, y de 6 a N, en lugar de las categorias de 1, 2, 5 y 10.
 
+```{r warning=FALSE}
+typeof(clusteres_medoids)
+clusteres_medoidsr <- data.frame(Franquicia = names(clusteres_medoids), clusteres_medoids)
+resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, by="Franquicia")
+
+resultados_kmd %>%
+  select('Franquicia','Anno','clusteres_medoids','Ingresos') %>%
+  arrange(desc(resultados_kmd$clusteres_medoids))
+```
 ### Construcción del modelo #2 (Kmedias)
 
 Para el modelo #2 se hace uso de la técnica Kmedias.
@@ -259,6 +268,8 @@ El resultado del algoritmo de kmedias nos permite observar como los 3 clusters c
 
 
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
+
+Loa gráficos siguientes nos permiten observar como en el caso de los 3 clusteres formados, los clusters que van del año 1980 al 1990 se observan más dispersos y es posible observar un valor anormal o outlier en este rango. 
 ```{r warning=FALSE}
 ggplot(d,
        aes(d$Anno,d$Ingreso,
@@ -268,7 +279,9 @@ ggplot(d,
 # otra forma de visualizar los clusters
 fviz_cluster(clusters,data=d[,c(1,2)],palette='jco',ggtheme = theme_minimal())
 
+```
 
+```{r warning=FALSE}
 # cálculo del score Silhouette
 score_sil<- silhouette(clusters$cluster,daisy(d))
 
@@ -286,4 +299,5 @@ fviz_nbclust(d,kmeans,method = 'gap_stat',k.max = 10)
 ## Evaluación de los modelos
 
 ### Comparación de los resultados obtenidos los modelos.
+
 
