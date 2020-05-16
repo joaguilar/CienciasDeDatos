@@ -42,9 +42,28 @@ El objetivo es explorar cuales son las compañias de juegos y franquicias más r
 
 #	Entendimiento de los datos
 
-El conjunto
+La página seleccionada para realizar este análisis "List of highest-grossing video game franchises" está estructurada en 5 secciones: 
+
+* Sección 1: Introducción en donde se explica el contenido de la página. El cuál es el mostrar el listado de compañías de juegos más rentables agrupados en 4 grandes grupos basado en el rango de ingresos en los que se encuentra cada franquicia, ya sean 10,5,2 o 1 millón de dólares 
+* Sección 2: Detalle de los ingresos (Tablas). Para cada grupo se muestra una tabla la cual muestra el nombre de la Franquicia (Franchise), el año de creación (Year of inception), los ingresos de por vida (Lifetime revenue), Desglose de ingresos (Revenue breakdown), Dueño de la franquicia (Franchise owner), Plataforma Original (Original platforms), Genero Original (Original genre)
+* Sección 3: Temas relacionados: URLs a sitios que contienen información relacionada a la página seleccionada.
+* Sección 4: Notas.
+* Sección 5: Referencias.
+
+Para efectos del trabajo se hará uso únicamente de la sección 2, a continuación se presenta la caracterización de los atributos incluidos en cada tabla.
+
+
+```{r warning=FALSE}
+atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
+kable(atributos[,0:4],caption = "Descripción de los atributos")%>%
+kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
 
 ## Exploración de los datos 
+
+Se procede a realizar la extracción de los datos de cada tabla, los cuales se almacenarán en las variables, datos10m, datos5m, datos2m and datos1m.
+
 ```{r}
 dirPag<-'https://en.wikipedia.org/wiki/List_of_highest-grossing_video_game_franchises'
 pag<- read_html(dirPag,encoding = 'UTF-8')  
@@ -54,21 +73,36 @@ tablasPag<- html_table(pag,fill=TRUE)
 length(tablasPag)
 tablasPag
   
-# Se obtienen las 
+# Se obtienen las 4 tablas que agrupan los juegos de la compañia por cada uno de los juegos
 datos10m<- tablasPag[[1]]
 datos5m<- tablasPag[[2]]
 datos2m<- tablasPag[[3]]
 datos1m<- tablasPag[[4]]
-datos1m
 ```
 
+Una vez cargados los datos se preocede a hacer la exploración de los mismos. Como se puede apreciar, la mayoria de atributos al ser extraidos, son de tipo alfanumérico o caracter, en el caso del atributo "Year of inception" nos muestra que las fechas de creación de las franquicias van desde el año 1978 al año 2009.
+
+```{r}
+summary(datos10m)
+```
 ## Verificación de la calidad de datos
 
-Para la evaluación
+Al explorar los datos es posible ver que no hay valores nulos o NAs. Con respecto a la normalización de los datos, se observan oportunidades de normalización de atributos como "Revenue breakdown"
  
 #	Preparación de los datos 
 
-La primera 
+```{r warning=FALSE}
+revenue<- str_remove(datos1m$'Lifetime revenue','est\\.')
+revenue<- str_remove(revenue,'\\s*\\$')
+revenue<- str_remove(revenue,' billion.*$')
+```
+
+```{r}
+datos10m['Categoria'] <- '10m'
+datos5m['Categoria'] <- '5m'
+datos2m['Categoria'] <- '2m'
+datos2m['Categoria'] <- '1m'
+```
 
 
 ## Graficos de distribución de los valores de las variables que son factores:
