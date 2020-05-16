@@ -227,7 +227,7 @@ clusteres_medoids <- clusters_kmedoids$clustering
 medoids <- clusters_kmedoids$medoids
 medoids
 ```
-Los 3 medoides de los 3 clusteres creados corresponden a ingresos entre "6.53", "3.78", "2.03".Lo que nos permite concluir que quizás una recomendación para el sitio web que publica estos resultados es crear categorias de ingresos por billón que vayan de 0 a 3, de 3 a 4, y de 6 a N, en lugar de las categorias de 1, 2, 5 y 10.
+Los 3 medoides de los 3 clusteres creados corresponden a ingresos entre "6.22", "3.43", "1.50".Lo que nos permite concluir que quizás una recomendación para el sitio web que publica estos resultados es crear categorias de ingresos por billón que vayan de 0 a 2, de 3 a 4, y de 6 a N, en lugar de las categorias de 1, 2, 5 y 10.
 
 ### Construcción del modelo #2 (Kmedias)
 
@@ -236,11 +236,6 @@ Para el modelo #2 se hace uso de la técnica Kmedias.
 ### Selección de los parámetros modelo #2 (Kmedias)
 
 Para el segundo modelo se analizarán se usan unicamente las variables numéricas Año e Ingresos, y se hará uso de un k=3.
-
-A continuacións e hacen las transformaciones correspondientes para dejar unicamente las variables númericas del modelo
-```{r warning=FALSE}
-
-```
 
 ### Ejecución modelo #2
 
@@ -284,7 +279,7 @@ fviz_nbclust(d,kmeans,method = 'silhouette',k.max = 10)
 fviz_nbclust(d,kmeans,method = 'wss',k.max = 10)
 
 # cálculo del valor óptimo de k usando la estadística gap
-fviz_nbclust(dataSet,kmeans,method = 'gap_stat',k.max = 10)
+fviz_nbclust(d,kmeans,method = 'gap_stat',k.max = 10)
 
 ```
 
