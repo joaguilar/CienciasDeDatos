@@ -114,12 +114,20 @@ colnames(datos)<-c('Franquicia','Anno','Ingresos','Duenno','Plataforma','Genero'
 datos
 ```
 
-## Limpieza de los datos 
+## Limpieza de los datos
+
+Para el proceso de limpieza de datos el primer paso es la limpieza de la columna ingresos a la cual se le remueve el keyword "est" así como se reemplazan los signos de dólar.
 
 ```{r warning=FALSE}
-revenue<- str_remove(datos10m$'Lifetime revenue','est\\.')
+revenue<- str_remove(datos$Ingresos,'est\\.')
 revenue<- str_remove(revenue,'\\s*\\$')
 revenue<- str_remove(revenue,' billion.*$')
+datos$Ingresos <- revenue
+
+datos$Anno <- as.factor(datos$Anno)
+datos$Ingresos <- as.double(datos$Ingresos)
+str(datos)
+head(datos)
 ```
 
 ## Construcción de nuevos datos (atributos) 
