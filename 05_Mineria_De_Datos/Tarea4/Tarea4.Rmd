@@ -27,25 +27,40 @@ if(!require(assertr)) install.packages("assertr",dependencies = TRUE)
 library(assertr)
 if(!require(reshape2)) install.packages("reshape2",dependencies = TRUE)
 library(reshape2)
+if(!require(rvest)) install.packages("rvest",dependencies = TRUE)
+library(rvest)
+if(!require(FactoMineR)) install.packages("FactoMineR",dependencies = TRUE)
+library(FactoMineR)
+if(!require(ggplot2)) install.packages("ggplot2",dependencies = TRUE)
+library(ggplot2)
 ```
 # Entendimiento del negocio
 
+Para esta tarea se hará uso de la siguiente página  https://en.wikipedia.org/wiki/List_of_highest-grossing_video_game_franchises, la cual muestra las franquicias de video juegos con mayores ingresos.
 
-## Objetivos de minería de datos 
-
-*	Identificar 
-
-## Criterios de éxito desde la perspectiva de minería de datos
-
-* Evaluar 
+El objetivo es explorar cuales son las compañias de juegos y franquicias más rentables
 
 #	Entendimiento de los datos
 
 El conjunto
 
 ## Exploración de los datos 
-
-El conjunto 
+```{r}
+dirPag<-'https://en.wikipedia.org/wiki/List_of_highest-grossing_video_game_franchises'
+pag<- read_html(dirPag,encoding = 'UTF-8')  
+  
+# se extraen específicamente las tablas que contenga la página
+tablasPag<- html_table(pag,fill=TRUE)
+length(tablasPag)
+tablasPag
+  
+# Se obtienen las 
+datos10m<- tablasPag[[1]]
+datos5m<- tablasPag[[2]]
+datos2m<- tablasPag[[3]]
+datos1m<- tablasPag[[4]]
+datos1m
+```
 
 ## Verificación de la calidad de datos
 
