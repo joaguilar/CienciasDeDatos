@@ -1,0 +1,118 @@
+---
+title: "Tarea 4"
+author: "Jose Aguilar, Eilyn Salazar, Crisia Piedra"
+date: "5/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(arules)
+if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library("readxl")
+library(ggplot2)
+library(knitr)
+if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+library(kableExtra)
+library(arules)
+library(arulesViz)
+
+library(tidyverse)
+if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
+library(plyr); library(dplyr)
+library(ggplot2)
+library(knitr)
+library(lubridate)
+if(!require(assertr)) install.packages("assertr",dependencies = TRUE)
+library(assertr)
+if(!require(reshape2)) install.packages("reshape2",dependencies = TRUE)
+library(reshape2)
+```
+# Entendimiento del negocio
+
+
+## Objetivos de minería de datos 
+
+*	Identificar 
+
+## Criterios de éxito desde la perspectiva de minería de datos
+
+* Evaluar 
+
+#	Entendimiento de los datos
+
+El conjunto
+
+## Exploración de los datos 
+
+El conjunto 
+
+## Verificación de la calidad de datos
+
+Para la evaluación
+ 
+#	Preparación de los datos 
+
+La primera 
+
+
+## Graficos de distribución de los valores de las variables que son factores:
+
+A fin de 
+
+## Selección de los datos 
+
+Para 
+
+
+## Limpieza de los datos 
+
+Para asegurar 
+
+## Construcción de nuevos datos (atributos) 
+
+Se crearon 
+
+## Transformaciones aplicadas a los datos 
+ 
+En este caso 
+ 
+#	Fase de modelado  
+
+## Selección de técnicas (en este caso A priori)
+
+Para esta 
+
+## Construcción del modelo (en este caso serán conjuntos de reglas) 
+
+####	Selección de los parámetros 
+
+Para la 
+
+
+##### Exploración de las transacciones
+
+Para explorar 
+
+####	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
+
+##### Generación de las reglas usando A priori
+
+Vamos a utilizar 
+
+####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
+
+##### Visualización de las 3 mejores reglas (según confianza) - grafo
+
+##### Visualización de  3 reglas - gráfico paracoord
+
+
+#### Evaluación de los modelos 
+
+#####	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+
+
+
+
+#### Evaluación de los modelos 
+
