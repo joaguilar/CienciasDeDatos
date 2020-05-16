@@ -33,6 +33,12 @@ if(!require(FactoMineR)) install.packages("FactoMineR",dependencies = TRUE)
 library(FactoMineR)
 if(!require(ggplot2)) install.packages("ggplot2",dependencies = TRUE)
 library(ggplot2)
+
+#Librerias de Clustering
+if(!require(cluster)) install.packages("cluster",dependencies = TRUE)
+library(cluster)
+if(!require(factoextra)) install.packages("factoextra",dependencies = TRUE)
+library(factoextra)
 ```
 # Entendimiento del negocio
 
@@ -70,8 +76,8 @@ pag<- read_html(dirPag,encoding = 'UTF-8')
   
 # se extraen específicamente las tablas que contenga la página
 tablasPag<- html_table(pag,fill=TRUE)
-length(tablasPag)
-tablasPag
+#length(tablasPag)
+#tablasPag
   
 # Se obtienen las 4 tablas que agrupan los juegos de la compañia por cada uno de los juegos
 datos10m<- tablasPag[[1]]
@@ -111,71 +117,178 @@ colnames(datos)
 
 #Se renombran las nombres de las columnas
 colnames(datos)<-c('Franquicia','Anno','Ingresos','Duenno','Plataforma','Genero', 'Categoria')
-datos
+#datos
 ```
 
 ## Limpieza de los datos
 
-Para el proceso de limpieza de datos el primer paso es la limpieza de la columna ingresos a la cual se le remueve el keyword "est" así como se reemplazan los signos de dólar.
+Para el proceso de limpieza de datos se hizo uso de expresiones regulares para eliminar caracteres o palabras clave como: "$", "est." o realizar conversiones de datos a continuación se presentan las transformaciones realizadas.
 
+Para el atributo Ingresos se aplicaron las siguientes transformaciones.
 ```{r warning=FALSE}
+#Se elimina el símbolo $ y el texto est. y billions del campo Revenue
 revenue<- str_remove(datos$Ingresos,'est\\.')
 revenue<- str_remove(revenue,'\\s*\\$')
 revenue<- str_remove(revenue,' billion.*$')
-datos$Ingresos <- revenue
+# Se convierte el atributo ingresos a un dato de tipo numérico y se multiplica por el valor billón.
+revenue<- as.numeric(revenue)#*1000000000
+datos$Ingresos<-revenue
 
-datos$Anno <- as.factor(datos$Anno)
-datos$Ingresos <- as.double(datos$Ingresos)
-str(datos)
-head(datos)
+
+```
+
+Para el atributo Genero se aplicaron las siguientes transformaciones: Dejamos solamente el primer genero en el que fue clasificada la franquicia.
+```{r warning=FALSE}
+genres<-datos$Genero
+genres<- str_remove(genres,' .*$')
+datos$Genero <- genres
+```
+
+Para el atributo Plataforma se aplicaron las siguientes transformaciones: Dejamos solamente la primera plataforma en la que apareció la franquicia.
+
+```{r warning=FALSE}
+platfrom<-datos$Plataforma
+platfrom
+platfrom<- str_remove(platfrom,' /.*$')
+platfrom<- str_remove(platfrom,'Comm.*$')
+platfrom<- str_remove(platfrom,'HandheldPC.*$')
+platfrom<- str_remove(platfrom,'PlayStationPC$')
+platfrom<- str_remove(platfrom,'^IBM ')
+platfrom<- str_replace(platfrom,'PlayStation 3Xbox 360','PlayStation 3')
+platfrom<- str_replace(platfrom,'PS4Xbox OnePC','PS4')
+datos$Plataforma<-platfrom
 ```
 
 ## Construcción de nuevos datos (atributos) 
 
+Se creó un atributo nuevo llamado "Categoría" el cual es de tipo factor y fue usado para identificar el grupo al que pertenecen las franquicias basado en sus ingresos por billones. La creación de este atributo se realizó en la sección "Exploración de los datos", ya que fue necesario combinar los resultados de los datos originales para su limpieza y análisis.
+
+
+## Transformaciones aplicadas a los datos 
+ 
+Se convierten los atributos a tipos de dato factor y numeric según corresponda.
+
+```{r warning=FALSE}
+# Se realiza la conversión de atributos
+
+#Copia de los datos originales
+datosSinTransformaciones <- datos
+
+datos$Franquicia <- as.factor(datos$Franquicia)
+datos$Anno <- as.numeric(datos$Anno)
+datos$Duenno <- as.factor(datos$Duenno)
+datos$Plataforma <- as.factor(datos$Plataforma)
+datos$Genero <- as.factor(datos$Genero)
+datos$Categoria <- as.factor(datos$Categoria)
+#str(datos)
+#head(datos)
+
+#Se utiliza la función omit para excluir cualquier valor NA. Sin embargo como se mencionó anteriormente basado en una revisión preliminar de los datos no hay valores nulos.   
+datosFinal<-na.omit(datos)
+head(datosFinal)
+```
+ 
+#	Fase de modelado  
+
+## Selección de técnicas 
+
+Para esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
+
+## Construcción de cada modelo.
+
+### Construcción del modelo #1 (Kmedoids)
+
+Para el modelo #1 se hace uso de la técnica Kmedoids.
+
+### Selección de los parámetros modelo #1 (Kmedoids)
+
+Para el primer modelo se analizarán las variables Ingresos y Dueños de Franquicia, y se hará uso de un k=3
+
+### Ejecución modelo #1
+
+```{r warning=FALSE}
+# generar los clusters usando kmedoids
+datosRenombrados <- datosFinal
+row.names(datosRenombrados)<-datosRenombrados$Franquicia
+clusters_kmedoids<-pam(datosRenombrados[,2:3],3)
+```
+
+### Descripción del modelo obtenido (Incluya al menos un gráfico)
+
+En el siguiente modelo podemos observar los 3 clusters creados, 
+```{r warning=FALSE}
+# visualización de los clusters
+fviz_cluster(clusters_kmedoids,data=dataSet,palette='jco')
+
+# cluster al que se asignó cada individuo
+clusteres_medoids <- clusters_kmedoids$clustering
+
+# Descripción de los clusters
+medoids <- clusters_kmedoids$medoids
+medoids
+```
+Los 3 medoides de los 3 clusteres creados corresponden a ingresos entre "6.53", "3.78", "2.03".Lo que nos permite concluir que quizás una recomendación para el sitio web que publica estos resultados es crear categorias de ingresos por billón que vayan de 0 a 3, de 3 a 4, y de 6 a N, en lugar de las categorias de 1, 2, 5 y 10.
+
+### Construcción del modelo #2 (Kmedias)
+
+Para el modelo #2 se hace uso de la técnica Kmedias.
+
+### Selección de los parámetros modelo #2 (Kmedias)
+
+Para el segundo modelo se analizarán se usan unicamente las variables numéricas Año e Ingresos, y se hará uso de un k=3.
+
+A continuacións e hacen las transformaciones correspondientes para dejar unicamente las variables númericas del modelo
 ```{r warning=FALSE}
 
 ```
 
-## Transformaciones aplicadas a los datos 
- 
-En este caso 
- 
-#	Fase de modelado  
+### Ejecución modelo #2
 
-## Selección de técnicas (en este caso A priori)
+```{r warning=FALSE}
+d <- datosFinal[,2:3]
+clusters <- kmeans(d,3,nstart=1)
+#obtener cantidad de registros en cada cluster y los centroides
+descClusters<- data.frame(clusters$size,clusters$centers)
+descClusters
 
-Para esta 
+# crear un data frame combinando el cluster asignado y los atributos originales
+resultado <- data.frame(clusters$cluster,d)
+head(resultado)
+```
+El resultado del algoritmo de kmedias nos permite observar como los 3 clusters creados agrupan la generación de ingresos en los siguientes 3 rangos de años:
 
-## Construcción del modelo (en este caso serán conjuntos de reglas) 
-
-####	Selección de los parámetros 
-
-Para la 
-
-
-##### Exploración de las transacciones
-
-Para explorar 
-
-####	Ejecución (generación de reglas, eliminación de subconjuntos,etc) 
-
-##### Generación de las reglas usando A priori
-
-Vamos a utilizar 
-
-####	Descripción general de las reglas obtenidas (incluya al menos un gráfico) 
-
-##### Visualización de las 3 mejores reglas (según confianza) - grafo
-
-##### Visualización de  3 reglas - gráfico paracoord
-
-
-#### Evaluación de los modelos 
-
-#####	Muestre e interprete las mejores 3 reglas de cada conjunto generado 
+* Cluster 1 de 1978 a 1996
+* Cluster 2 en el año 2003 
+* Cluster 3 en el año 2006 
 
 
 
+### Descripción del modelo obtenido (Incluya al menos un gráfico)
+```{r warning=FALSE}
+ggplot(d,
+       aes(d$Anno,d$Ingreso,
+           color = clusters$cluster)) + geom_point()+
+  ggtitle(label='Distribución por cluster')
 
-#### Evaluación de los modelos 
+# otra forma de visualizar los clusters
+fviz_cluster(clusters,data=d[,c(1,2)],palette='jco',ggtheme = theme_minimal())
+
+
+# cálculo del score Silhouette
+score_sil<- silhouette(clusters$cluster,daisy(d))
+
+# cálculo del valor óptimo de k usando el score silhouette
+fviz_nbclust(d,kmeans,method = 'silhouette',k.max = 10)
+
+# cálculo del valor óptimo de k usando el método del codo
+fviz_nbclust(d,kmeans,method = 'wss',k.max = 10)
+
+# cálculo del valor óptimo de k usando la estadística gap
+fviz_nbclust(dataSet,kmeans,method = 'gap_stat',k.max = 10)
+
+```
+
+## Evaluación de los modelos
+
+### Comparación de los resultados obtenidos los modelos.
 
