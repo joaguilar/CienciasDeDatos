@@ -44,7 +44,7 @@ library(factoextra)
 
 Para esta tarea se hará uso de la siguiente página  https://en.wikipedia.org/wiki/List_of_highest-grossing_video_game_franchises, la cual muestra las franquicias de video juegos con mayores ingresos.
 
-El objetivo es explorar cuales son las compañias de juegos y franquicias más rentables
+El objetivo de negocio que se propone es identificar los clusteres o grupos en los que se ubican las diferentes compañias basados en sus ingresos y por año.
 
 #	Entendimiento de los datos
 
@@ -148,7 +148,6 @@ Para el atributo Plataforma se aplicaron las siguientes transformaciones: Dejamo
 
 ```{r warning=FALSE}
 platfrom<-datos$Plataforma
-platfrom
 platfrom<- str_remove(platfrom,' /.*$')
 platfrom<- str_remove(platfrom,'Comm.*$')
 platfrom<- str_remove(platfrom,'HandheldPC.*$')
@@ -202,102 +201,138 @@ Para el modelo #1 se hace uso de la técnica Kmedoids.
 
 ### Selección de los parámetros modelo #1 (Kmedoids)
 
-Para el primer modelo se analizarán las variables Ingresos y Dueños de Franquicia, y se hará uso de un k=3
+Para el primer modelo se analizarán las variables Ingresos y Dueños de Franquicia.
+
+Para la determinación del valor más apropiado de K se evaluaron métodos como silhouette, método del codo y estadística gap y finalmente basado en los resultados obtenidos se propone hacer uso de un k=4
+
+
+```{r warning=FALSE}
+# cálculo del score Silhouette
+#score_sil<- silhouette(clusters_kmedoids,daisy(datosFinal))
+
+# cálculo del valor óptimo de k usando el score silhouette
+fviz_nbclust(datosFinal[,2:3],pam,method = 'silhouette',k.max = 10)
+
+# cálculo del valor óptimo de k usando el método del codo
+fviz_nbclust(datosFinal[,2:3],pam,method = 'wss',k.max = 10)
+
+# cálculo del valor óptimo de k usando la estadística gap
+fviz_nbclust(datosFinal[,2:3],pam,method = 'gap_stat',k.max = 10)
+
+```
 
 ### Ejecución modelo #1
 
 ```{r warning=FALSE}
 # generar los clusters usando kmedoids
-datosRenombrados <- datosFinal
-row.names(datosRenombrados)<-datosRenombrados$Franquicia
-clusters_kmedoids<-pam(datosRenombrados[,2:3],3)
+# datosRenombrados <- datosFinal
+row.names(datosFinal)<-datosFinal$Franquicia
+clusters_kmedoids<-pam(datosFinal[,2:3],4)
+
+
+# crear un data frame combinando el cluster asignado y los atributos originales
+resultado_medoids <- data.frame(clusters_kmedoids$cluster,datosFinal[2:3])
+head(resultado_medoids)
+
+resultado_medoids %>%
+  arrange((resultado_medoids$clusters_kmedoids.cluster))
 ```
 
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
 
-En el siguiente modelo podemos observar los 3 clusters creados, 
+En el siguiente modelo podemos observar los 4 clusters creados, 
 ```{r warning=FALSE}
 # visualización de los clusters
-fviz_cluster(clusters_kmedoids,data=dataSet,palette='jco')
+fviz_cluster(clusters_kmedoids,data=datosFinal,palette='jco')
 
 # cluster al que se asignó cada individuo
 clusteres_medoids <- clusters_kmedoids$clustering
-clusteres_medoids
+#clusteres_medoids
 # Descripción de los clusters
 medoids <- clusters_kmedoids$medoids
 medoids
 ```
-Los 3 medoides de los 3 clusteres creados corresponden a ingresos entre "6.22", "3.43", "1.50".Lo que nos permite concluir que quizás una recomendación para el sitio web que publica estos resultados es crear categorias de ingresos por billón que vayan de 0 a 2, de 3 a 4, y de 6 a N, en lugar de las categorias de 1, 2, 5 y 10.
+Al analizar el gráfico anterior es posible apreciar como los clusteres creados por el algoritmo kmedoids, parecen identificar agrupar franquicias que fueron creadas en años o periodos de tiempo cercanos.
 
-```{r warning=FALSE}
-typeof(clusteres_medoids)
-clusteres_medoidsr <- data.frame(Franquicia = names(clusteres_medoids), clusteres_medoids)
-resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, by="Franquicia")
 
-resultados_kmd %>%
-  select('Franquicia','Anno','clusteres_medoids','Ingresos') %>%
-  arrange(desc(resultados_kmd$clusteres_medoids))
-```
 ### Construcción del modelo #2 (Kmedias)
 
 Para el modelo #2 se hace uso de la técnica Kmedias.
 
 ### Selección de los parámetros modelo #2 (Kmedias)
 
-Para el segundo modelo se analizarán se usan unicamente las variables numéricas Año e Ingresos, y se hará uso de un k=3.
+Para el segundo modelo se analizarán se usan unicamente las variables numéricas Año e Ingresos.
+
+Para determinar el número de clusteres optimo se analizan los 3 métodos vistos en clase, y luego de analizar los diferentes resultados, así como los resultados del número optimo para el algoritmo de kmedoids, se propone hacer uso de un k=4 a fin de comparar los resultados de los modelos.
+
+```{r warning=FALSE}
+# cálculo del score Silhouette
+#score_sil<- silhouette(clusters$cluster,daisy(d))
+
+# cálculo del valor óptimo de k usando el score silhouette
+fviz_nbclust(datosFinal[,2:3],kmeans,method = 'silhouette',k.max = 10)
+
+# cálculo del valor óptimo de k usando el método del codo
+fviz_nbclust(datosFinal[,2:3],kmeans,method = 'wss',k.max = 10)
+
+# cálculo del valor óptimo de k usando la estadística gap
+fviz_nbclust(datosFinal[,2:3],kmeans,method = 'gap_stat',k.max = 10)
+
+```
 
 ### Ejecución modelo #2
 
 ```{r warning=FALSE}
-d <- datosFinal[,2:3]
-clusters <- kmeans(d,3,nstart=1)
+clusters <- kmeans(datosFinal[,2:3],4,nstart=20)
+clusteres_kmeans <- clusters$cluster
+
 #obtener cantidad de registros en cada cluster y los centroides
 descClusters<- data.frame(clusters$size,clusters$centers)
-descClusters
 
 # crear un data frame combinando el cluster asignado y los atributos originales
-resultado <- data.frame(clusters$cluster,d)
-head(resultado)
+resultado_kmeans <- data.frame(clusters$cluster,datosFinal[,2:3])
+head(resultado_kmeans)
+
+resultado_kmeans %>%
+  arrange((resultado_kmeans$clusters.cluster))
 ```
-El resultado del algoritmo de kmedias nos permite observar como los 3 clusters creados agrupan la generación de ingresos en los siguientes 3 rangos de años:
-
-* Cluster 1 de 1978 a 1996
-* Cluster 2 en el año 2003 
-* Cluster 3 en el año 2006 
-
 
 
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
 
 Loa gráficos siguientes nos permiten observar como en el caso de los 3 clusteres formados, los clusters que van del año 1980 al 1990 se observan más dispersos y es posible observar un valor anormal o outlier en este rango. 
 ```{r warning=FALSE}
-ggplot(d,
-       aes(d$Anno,d$Ingreso,
-           color = clusters$cluster)) + geom_point()+
-  ggtitle(label='Distribución por cluster')
+d <- datosFinal[,2:3]
+ggplot(d,aes(d$Anno,d$Ingreso, color = clusters$cluster)) + geom_point()+ggtitle(label='Distribución por cluster')
 
 # otra forma de visualizar los clusters
 fviz_cluster(clusters,data=d[,c(1,2)],palette='jco',ggtheme = theme_minimal())
-
 ```
-
-```{r warning=FALSE}
-# cálculo del score Silhouette
-score_sil<- silhouette(clusters$cluster,daisy(d))
-
-# cálculo del valor óptimo de k usando el score silhouette
-fviz_nbclust(d,kmeans,method = 'silhouette',k.max = 10)
-
-# cálculo del valor óptimo de k usando el método del codo
-fviz_nbclust(d,kmeans,method = 'wss',k.max = 10)
-
-# cálculo del valor óptimo de k usando la estadística gap
-fviz_nbclust(d,kmeans,method = 'gap_stat',k.max = 10)
-
-```
+En el caso del algoritmo de kmeans, los clusteres creados se encuentran más asociados a los ingresos generados por ejemplo podemos ver como Franquicias como Mario, Pokemón y Call of Duty parecen tener comportamientos similares de ingresos y y son franquicias que se han mantenido a lo largo de los años. Las mismas fueron agrupadas en el grupo 2. En el caso de los grupos 1, 3 y 4, tienen un comportamiento similar a los clusteres generados por el método kmedoids y distribuir las franquicias a lo largo de determinados años.
 
 ## Evaluación de los modelos
 
 ### Comparación de los resultados obtenidos los modelos.
 
+A fin de comparar los resultados de los clusteres generados por ambos métodos se genera la siguiente tabla de comparación.
 
+```{r warning=FALSE}
+clusteres_medoidsr <- data.frame(Franquicia = names(clusteres_medoids), clusteres_medoids)
+resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, by="Franquicia")
+
+resultados_kmd_ordenados <- resultados_kmd %>% select('Franquicia','Anno','clusteres_medoids','Ingresos') %>% arrange(desc(resultados_kmd$clusteres_medoids))
+```
+
+
+```{r warning=FALSE}
+clusteres_medoidsr <- data.frame(Franquicia = names(clusteres_medoids), clusteres_medoids)
+clusteres_kmeansr <- data.frame(Franquicia = names(clusteres_kmeans), clusteres_kmeans)
+
+resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, z=clusteres_kmeansr, by="Franquicia")
+resultados_kmd <- merge(x=resultados_kmd,y=clusteres_kmeansr, by="Franquicia")
+
+resultados_kmd %>%
+  select('Franquicia','Ingresos', 'Anno','clusteres_medoids','clusteres_kmeans') %>%
+  arrange(desc(resultados_kmd$Anno))
+
+```
