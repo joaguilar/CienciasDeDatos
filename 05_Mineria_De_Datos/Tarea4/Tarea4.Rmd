@@ -33,6 +33,8 @@ if(!require(FactoMineR)) install.packages("FactoMineR",dependencies = TRUE)
 library(FactoMineR)
 if(!require(ggplot2)) install.packages("ggplot2",dependencies = TRUE)
 library(ggplot2)
+if(!require(viridis)) install.packages("viridis",dependencies = TRUE)
+library(viridis)
 
 #Librerias de Clustering
 if(!require(cluster)) install.packages("cluster",dependencies = TRUE)
@@ -234,8 +236,7 @@ clusters_kmedoids<-pam(datosFinal[,2:3],4)
 resultado_medoids <- data.frame(clusters_kmedoids$cluster,datosFinal[2:3])
 head(resultado_medoids)
 
-resultado_medoids %>%
-  arrange((resultado_medoids$clusters_kmedoids.cluster))
+#resultado_medoids %>% arrange((resultado_medoids$clusters_kmedoids.cluster))
 ```
 
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
@@ -263,7 +264,7 @@ Para el modelo #2 se hace uso de la técnica Kmedias.
 
 Para el segundo modelo se analizarán se usan unicamente las variables numéricas Año e Ingresos.
 
-Para determinar el número de clusteres optimo se analizan los 3 métodos vistos en clase, y luego de analizar los diferentes resultados, así como los resultados del número optimo para el algoritmo de kmedoids, se propone hacer uso de un k=4 a fin de comparar los resultados de los modelos.
+Para determinar el número de clusteres óptimo se analizan los 3 métodos vistos en clase, y luego de analizar los diferentes resultados, así como los resultados del número optimo para el algoritmo de kmedoids, se propone hacer uso de un k=4 a fin de comparar los resultados de los modelos.
 
 ```{r warning=FALSE}
 # cálculo del score Silhouette
@@ -293,8 +294,7 @@ descClusters<- data.frame(clusters$size,clusters$centers)
 resultado_kmeans <- data.frame(clusters$cluster,datosFinal[,2:3])
 head(resultado_kmeans)
 
-resultado_kmeans %>%
-  arrange((resultado_kmeans$clusters.cluster))
+#resultado_kmeans %>% arrange((resultado_kmeans$clusters.cluster))
 ```
 
 
@@ -303,8 +303,13 @@ resultado_kmeans %>%
 Loa gráficos siguientes nos permiten observar como en el caso de los 3 clusteres formados, los clusters que van del año 1980 al 1990 se observan más dispersos y es posible observar un valor anormal o outlier en este rango. 
 ```{r warning=FALSE}
 d <- datosFinal[,2:3]
-ggplot(d,aes(d$Anno,d$Ingreso, color = clusters$cluster)) + geom_point()+ggtitle(label='Distribución por cluster')
+ggplot(d,aes(d$Anno,d$Ingreso, color = clusters$cluster)) + geom_point()+ggtitle(label='Distribución por cluster') + 
+  scale_color_viridis(option = "D")
 
+```
+
+El siguiente gráfico muestra con mayor claridad el agrupamiento del cluster número 2, el cual parece agrupar a las compañias que se han mantenido por mayor tiempo en el mercado y tienen ingresos elevados.
+```{r warning=FALSE}
 # otra forma de visualizar los clusters
 fviz_cluster(clusters,data=d[,c(1,2)],palette='jco',ggtheme = theme_minimal())
 ```
@@ -323,6 +328,8 @@ resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, by="Franquicia")
 resultados_kmd_ordenados <- resultados_kmd %>% select('Franquicia','Anno','clusteres_medoids','Ingresos') %>% arrange(desc(resultados_kmd$clusteres_medoids))
 ```
 
+Como se aprecia en la siguiente tabla al comparar los resultados de los clusteres agrupados por anno que es el atributo más distintivo para realizar el agrupamiento, podemos ver como las franquicias que 
+tiene un ingreso entre 1 y 2 billones, se ubican en el mismo cluster por ende podria recomendarse unificar las categorias o tablas existentes actualmente en la fuente en una sola categoria.
 
 ```{r warning=FALSE}
 clusteres_medoidsr <- data.frame(Franquicia = names(clusteres_medoids), clusteres_medoids)
@@ -331,8 +338,20 @@ clusteres_kmeansr <- data.frame(Franquicia = names(clusteres_kmeans), clusteres_
 resultados_kmd <- merge(x=datosFinal,y=clusteres_medoidsr, z=clusteres_kmeansr, by="Franquicia")
 resultados_kmd <- merge(x=resultados_kmd,y=clusteres_kmeansr, by="Franquicia")
 
-resultados_kmd %>%
-  select('Franquicia','Ingresos', 'Anno','clusteres_medoids','clusteres_kmeans') %>%
+resultado_final_Anno <- resultados_kmd %>%
+  select('Franquicia','Categoria','Anno','clusteres_medoids','clusteres_kmeans') %>%
   arrange(desc(resultados_kmd$Anno))
 
+resultado_final_Categoria <- resultados_kmd %>%
+  select('Franquicia','Categoria','Anno','clusteres_medoids','clusteres_kmeans') %>%
+  arrange(desc(resultados_kmd$Categoria))
+
+kable(head(resultado_final_Anno,10),"html", booktabs = T)%>%  kable_styling(latex_options = "striped")
+#kable(head(resultado_final_Categoria,10),"html", booktabs = T)%>%  kable_styling(latex_options = "striped")
+
 ```
+
+* De la comparación de resultados de los métodos kmenoids y kmeans podemos observar que ambos algoritmos generan clusteres diferentes, en el caso de kmeans el cluster 2 nos permite ver como las compañías con mayores ingresos fueron agrupadas en su mayoria en el mismo cluster. Mientras que en el de kmedoids el año es el factor predominante en el agrupamiento.
+
+* También se observa consistencia en ambos métodos en donde tanto kmenoids y kmeans agrupó las franquicias con menores ingresos en el cluster 4.
+ 
