@@ -239,6 +239,12 @@ head(resultado_medoids)
 #resultado_medoids %>% arrange((resultado_medoids$clusters_kmedoids.cluster))
 ```
 
+Al analizar el valor de los medoides obtenidos por los cluster observamos como con respecto a los ingresos vemos valores de 6.22, 3.77, 3.00 y 1.5, en el caso de los clusteres que incluyen los años de 1996 y 2003, se aprecia que la diferencia en torno a los ingresos es muy cercana, en este caso si se desearan crear clusteres basados en los ingresos podrian manejarse ya sean 4 o 3 grupos, incluyendo franquicias que tengan ingresos entre 3 y 4 billones.
+
+```{r warning=FALSE}
+clusters_kmedoids$medoids
+```
+
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
 
 En el siguiente modelo podemos observar los 4 clusters creados, 
@@ -287,9 +293,6 @@ fviz_nbclust(datosFinal[,2:3],kmeans,method = 'gap_stat',k.max = 10)
 clusters <- kmeans(datosFinal[,2:3],4,nstart=20)
 clusteres_kmeans <- clusters$cluster
 
-#obtener cantidad de registros en cada cluster y los centroides
-descClusters<- data.frame(clusters$size,clusters$centers)
-
 # crear un data frame combinando el cluster asignado y los atributos originales
 resultado_kmeans <- data.frame(clusters$cluster,datosFinal[,2:3])
 head(resultado_kmeans)
@@ -297,6 +300,13 @@ head(resultado_kmeans)
 #resultado_kmeans %>% arrange((resultado_kmeans$clusters.cluster))
 ```
 
+Al analizar la media de los ingresos generados por el algoritmo kmeans, podemos observar como los centroides generados son distintos a los generados por el algoritmo de kmedoids en donde la mayoria de franquicias se agrupa en los clusteres 2 y 3 los cuales tienen ingresos con una media que va desde los 2.69 billones a los 3.43 billones. También al analizar estos centroides es posible ver una diferencia más grande en cuanto a la separación de los clusteres en relación con la variable ingresos.
+
+```{r warning=FALSE}
+#obtener cantidad de registros en cada cluster y los centroides
+descClusters<- data.frame(clusters$size,clusters$centers)
+descClusters
+```
 
 ### Descripción del modelo obtenido (Incluya al menos un gráfico)
 
@@ -313,6 +323,7 @@ El siguiente gráfico muestra con mayor claridad el agrupamiento del cluster nú
 # otra forma de visualizar los clusters
 fviz_cluster(clusters,data=d[,c(1,2)],palette='jco',ggtheme = theme_minimal())
 ```
+
 En el caso del algoritmo de kmeans, los clusteres creados se encuentran más asociados a los ingresos generados por ejemplo podemos ver como Franquicias como Mario, Pokemón y Call of Duty parecen tener comportamientos similares de ingresos y y son franquicias que se han mantenido a lo largo de los años. Las mismas fueron agrupadas en el grupo 2. En el caso de los grupos 1, 3 y 4, tienen un comportamiento similar a los clusteres generados por el método kmedoids y distribuir las franquicias a lo largo de determinados años.
 
 ## Evaluación de los modelos
