@@ -1,0 +1,9 @@
+Variable,Descripción,Tipo
+InvoiceNo,Número de factura Nominal; un número integral de 6 dígitos asignado exclusivamente a cada transacción. Si este código comienza con la letra 'c'; indica una cancelación.,Cualitativa Nominal (Alfanumérico)
+StockCode,Código de producto (artículo). Nominal; un número integral de 5 dígitos asignado exclusivamente a cada producto distinto.,Cualitativa Nominal (Alfanumérico)
+Description,Nombre del producto (artículo). Nominal.,Cualitativa Nominal (Alfanumérico)
+Quantity,Las cantidades de cada producto (artículo) por transacción. Numérico.,Cuantitativa Continua (Numérico)
+InvoiceDate,Fecha y hora de inicio. Numérico; el día y la hora en que se generó cada transacción.,Cuantitativa Discreta (Fecha)
+UnitPrice,Precio unitario. Numérico; precio del producto por unidad en libras esterlinas.,Cuantitativa Continua (Numérico)
+CustomerID, Número de cliente. Nominal; un número integral de 5 dígitos asignado exclusivamente a cada cliente.,Cualitativa Nominal (Alfanumérico)
+Country, Nombre del país. Nominal; el nombre del país donde reside cada cliente.,Cualitativa Nominal (Alfanumérico)

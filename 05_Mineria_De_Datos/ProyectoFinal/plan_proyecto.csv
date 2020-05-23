@@ -1,0 +1,46 @@
+Fases,Actividades ,Riesgos ,Contingencias,Recurso,Duración/ Tiempo estimado
+Entendimiento del negocio,"1. Determinar los objetivos del negocio
+2. Evaluación de la situación
+3. Determinar los objetivos de minería de datos
+4. Generar el plan de proyecto.","Falta de disponibilidad de los involucrados.
+Objetivos definidos no alineados con las necesidades del negocio.","Validación de los objetivos con la gerencia ejecutiva de la compañía.
+Coordinación a través de conferencias y emails para establecer la fecha de inicio del proyecto. Milestones.
+Creación de un project roster para la ubicación de los involucrados y sus backups en caso de ser necesario. ","Patrocinador
+Experto en la gerencia de mercadeo",2 días.
+Entendimiento de los datos,"1. Recopilación inicial de datos
+2. Describir los datos
+3. Explorar los datos
+4. Verificar la calidad de los datos","Ausencia de productos lanzados recientemente al mercado.
+Falta de conocimiento de negocio por parte del analista.","En conjunto con el analista de datos, realizar un proceso de verificación y recolección de los datos más recientes en el mercado.
+Trabajar de la mano con el experto en la gerencia de mercadeo y otros involucrados expertos en el manejo de los datos.","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",3 días
+Preparación de los datos,"1. Selección de los datos.
+2. Limpiar los datos.
+3. Construcción de datos
+4. Integrar los datos","Ausencia de valores en múltiples columnas.
+Determinar las variables que analizar como parte del problema a resolver","Determinar la mejor técnica de imputación de datos, en conjunto con la gerencia de mercadeo.
+Uso de técnicas como análisis de correlación, análisis de componentes principales para identificar las variables más relevantes para el análisis.","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",7 días.
+Modelado,"1. Seleccionar la técnica de modelado
+2. Generar diseño de testing
+3. Construir el modelo
+4. Evaluar el modelo","Mal diseño en la implementación del modelo
+Las técnicas de minería seleccionados no proveen los resultados esperados
+La duración en la ejecución de los modelos y su entrenamiento tarda más de lo estimado","Uso de múltiples modelos al aplicar una misma técnica de minería.
+Uso de múltiples técnicas de minería.","Analista de datos
+Desarrollador",8 días. 
+Evaluación,"1. Evaluar los Resultados
+2. Revisión del proceso
+3. Determinar Pasos a Seguir",Insatisfacción de los involucrados con los resultados del proyecto,"Aumento de las capacidades computacionales de los equipos en los que se realiza el proceso de entrenamiento.
+Replanteamiento de las metas y objetivos de la investigación con los involucrados del proyecto, añadiendo nuevas variables/datos adicionales","Experto en la gerencia de mercadeo
+Analista de datos
+Desarrollador",2 días
+Implementación (Deployment),"1. Plan de despliegue
+2. Plan de Monitoreo y mantenimiento
+3. Producción del reporte final
+4. Revisión del proyecto","Aumento en el costo de los recursos técnicos disponibles.
+Variación en el alcance del proyecto.","Comparación de proveedores que ofrecen servicios en la nube y se adecuen a las necesidades del proyecto.
+Establecimiento de una condición de cierre del proyecto y creación de un plan de administración para nuevas fases","Analista de datos
+Desarrollador",3 días.
