@@ -35,7 +35,10 @@ if(!require(cluster)) install.packages("cluster",dependencies = TRUE)
 library(cluster)
 if(!require(factoextra)) install.packages("factoextra",dependencies = TRUE)
 library(factoextra)
-
+if(!require(caTools)) install.packages("caTools",dependencies = TRUE)
+library(caTools)
+#Se establece el seed.
+set.seed(100)
 ```
 
 # Fase de entendimiento del negocio
@@ -433,9 +436,17 @@ kable(head(retail[retail$Quantity < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 ```
 
-*Manejor de Outliers*
+*Eliminación de Observaciones con valores NA*
+
+Al analizar el conjunto de datos se observa que hay algunas observaciones con valores NA en las columnas CustomerID y descripción las cuales son eliminadas.
+```{r warning=FALSE}
+retail <- retail %>% drop_na(CustomerID, Description)
+```
+
+*Manejo de Outliers*
 
 Para revisar los Outliers detectados en la sección de calidad de datos, se ejecuta un summary con el fin de determinar el mínimo, maximo, y otras caracteristicas de las columnas Quantity y UnitPrice:
+
 
 ```{r warning=FALSE}
 summary(retail)
@@ -450,13 +461,18 @@ summary(retail)
 
 Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
 
+### Regresión Logistica para la predicción del total de ventas.
+
+Para el cumplimiento del objectivo de mineria "Predecir las ventas mensuales por producto a partir de los datos históricos" se hará uso de la técnica de regresión lineal simple.
+
+
 ## Construcción de cada modelo.
 
 ### Construcción del modelo #1 (Kmedoids)
 
 Para el modelo #1 se hace uso de la técnica Kmedoids.
 
-### Selección de los parámetros modelo #1 (Kmedoids)
+#### Selección de los parámetros modelo #1 (Kmedoids)
 
 Para el primer modelo se analizarán las variables Total y Country.
 
@@ -467,8 +483,8 @@ Para la determinación del valor más apropiado de K se evaluaron métodos como 
 
 retail_limpio<-retail[complete.cases(retail),]
 retail_limpio<-retail_limpio[(retail_limpio$Country=="Germany" | retail_limpio$Country=="France" ),]
-nrow(retail_limpio[is.na(retail_limpio),])
-nrow(retail_limpio[!is.finite(retail_limpio$Total),])
+#nrow(retail_limpio[is.na(retail_limpio),])
+#nrow(retail_limpio[!is.finite(retail_limpio$Total),])
 retail_limpio$InvoiceDate<-NULL
 retail_limpio$InvoiceNo<-NULL
 
@@ -479,7 +495,6 @@ retail_limpio$Quantity<-as.double(retail_limpio$Quantity)
 retail_limpio<-retail_limpio[,c(5,6,7)]
 retail_limpio$CountryNum<-ifelse(retail_limpio$Country =="Germany", 1, 2)
 retail_limpio$Country<-NULL
-retail_limpio$CustomerID<-as.numeric()
 #retail_limpio<-retail_limpio[retail_limpio$Quantity<11,]
 #retail_limpio<-retail_limpio[retail_limpio$UnitPrice<5,]
 str(retail_limpio)
@@ -491,19 +506,20 @@ str(retail_limpio)
 #score_sil<- silhouette(clusters_kmedoids,daisy(datosFinal))
 
 # cálculo del valor óptimo de k usando el score silhouette
-fviz_nbclust(retail_limpio,pam,method = 'silhouette',k.max = 10)
+#fviz_nbclust(retail_limpio,pam,method = 'silhouette',k.max = 5)
 
 # cálculo del valor óptimo de k usando el método del codo
-fviz_nbclust(retail_limpio,pam,method = 'wss',k.max = 10)
+#fviz_nbclust(retail_limpio,pam,method = 'wss',k.max = 5)
 
 # cálculo del valor óptimo de k usando la estadística gap
-fviz_nbclust(retail_limpio,pam,method = 'gap_stat',k.max = 10)
+#fviz_nbclust(retail_limpio,pam,method = 'gap_stat',k.max = 5)
 
 ```
 
+
+
 ```{r warning=FALSE}
 clusters_kmedoids<-pam(retail_limpio,4)
-
 
 # crear un data frame combinando el cluster asignado y los atributos originales
 resultado_medoids <- data.frame(clusters_kmedoids$cluster,retail_limpio)
@@ -532,3 +548,153 @@ medoids
 Dashboard: por pais
 
 CustomerId: es un factor, no considerarlo para el clustering
+
+### Construcción del modelo #2 (Regresión Lineal)
+
+
+#### Selección de los parámetros modelo #2
+
+Considerando que la predicción de los valores que se desea realizar está asociado a las ventas totales mensuales, se procedea particionar el conjunto de datos en 2 data frames para la fase de entrenamiento y de pruebas
+
+```{r warning=FALSE}
+# Se dividen los datos en los dataframes de entrenamiento y pruebas
+retail$InvoiceNo <- as.numeric(retail$InvoiceNo)
+retail$Quantity <- as.numeric(retail$Quantity)
+retail$UnitPrice <- as.numeric(retail$UnitPrice)
+retail$CustomerID <- as.numeric(retail$CustomerID)
+retail$Total <- as.numeric(retail$Total)
+sample = sample.split(retail$Total, SplitRatio = .75)
+entrenamiento = subset(retail, sample == TRUE)
+prueba  = subset(retail, sample == FALSE)
+
+```
+
+Se realiza la verificación de los rangos de las observaciones obtenidas a fin de verificar que el conjunto de entrenamiento, abarca el rango de precios, descripciones e incluso observaciones del clientes con el mismo CustomerId.
+```{r}
+#Se comparan los datos de entrenamiento y prueba.
+summary(entrenamiento)
+summary(prueba)
+```
+```{r}
+entrenamiento.variables_numericas <- entrenamiento[,c(0,1,4,6,7,9)]
+prueba.variables_numericas <- prueba[,c(0,1,4,6,7,9)]
+str(entrenamiento.variables_numericas)
+pairs(entrenamiento)
+```
+
+
+```{r}
+cor(datos.entrenamiento)
+```
+
+
+####Modelo de Regresión lineal simple
+
+```{r}
+#Se crea la regresion lineal simple para el total
+modelo.simple <- lm(Total ~ InvoiceDate , data = entrenamiento)
+#ver detalle del modelo
+summary(modelo.simple)
+
+```
+
+
+##### Evaluación Modelo de regresión lineal simple
+````{r}
+#Distribución de los residuos del modelo basado en el peso
+hist(modelo.simple$residuals,
+     main= 'Residuos del modelo de regresión simple',
+     xlab = 'Residuos',
+     ylab = 'Observaciones',
+     breaks = 50)
+````
+
+
+````{r}
+# Ver distribución de los residuos del modelo
+plot(x = entrenamiento$Total,
+     y = modelo.simple$residuals,
+     main = 'Residuos del Modelo de Regresión simple en Entrenamiento',
+     xlab = 'Valor',
+     ylab = 'Residuos')
+````
+
+```{r}
+#Calcular el RMSE en Entrenamiento
+predicciones.entrenamiento <- predict(modelo.simple)
+entrenamiento$Prediccion <- predict(modelo.simple)
+sqrt(mean((entrenamiento$Total - entrenamiento$Prediccion)^2))
+
+# predecir valores de mpg.mpg en el conjunto de datos de prueba
+prueba$Prediccion <- predict(modelo.simple, newdata = prueba)
+#Calcular el RMSE en prueba
+sqrt(mean((prueba$Total - prueba$Prediccion)^2))
+
+```
+
+
+#### Modelo Regresión Multiple
+
+````{r}
+# Para la creación del modelo de regresión múltiple se realiza un "pre-trabajo" 
+# sobre la data a utilizar a fin de evaluar la multicolinealidad entre otros factores.
+
+#Análisis visual sin la variable de respuesta
+pairs(entrenamiento.variables_numericas)
+
+#Matriz de correlación sin la variable de respuesta
+cor(entrenamiento.variables_numéricas)
+
+```
+
+
+
+````{r}
+#Para la creación del modelo 1 se empezará por un modelo "completo" 
+entrenamiento_mm <- entrenamiento.variables_numericas
+prueba_mm <- prueba.variables_numericas
+modelo.multiple0 <- lm(Total ~ . , data = entrenamiento_mm)
+# ver el detalle del resumen
+summary(modelo.multiple0)
+
+#Para la creación del modelo 1 se empezará por un modelo "Con las variables significativas" 
+modelo.multiple1 <- lm(Total ~ CustomerID   , data = entrenamiento_mm)
+# ver el detalle del resumen
+summary(modelo.multiple1)
+
+```
+##### Evaluación Modelo de regresión lineal múltiple
+````{r}
+#Distribución de los residuos del modelo basado en el peso
+hist(modelo.multiple0$residuals,
+     main= 'Residuos del modelo de regresión simple',
+     xlab = 'Residuos',
+     ylab = 'Observaciones',
+     breaks = 50)
+````
+
+
+````{r}
+# Ver distribución de los residuos del modelo
+plot(x = entrenamiento$Total,
+     y = modelo.multiple0$residuals,
+     main = 'Residuos del Modelo de Regresión simple en Entrenamiento',
+     xlab = 'Valor',
+     ylab = 'Residuos')
+````
+
+```{r}
+#Calcular el RMSE en Entrenamiento
+predicciones.entrenamiento <- predict(modelo.multiple0)
+entrenamiento$Prediccion <- predict(modelo.multiple0)
+sqrt(mean((entrenamiento$Total - entrenamiento$Prediccion)^2))
+
+# predecir valores de mpg.mpg en el conjunto de datos de prueba
+prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba)
+#Calcular el RMSE en prueba
+sqrt(mean((prueba$Total - prueba$Prediccion)^2))
+
+```
+
+
+
