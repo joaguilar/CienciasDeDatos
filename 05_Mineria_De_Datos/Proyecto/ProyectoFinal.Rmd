@@ -584,7 +584,7 @@ pairs(entrenamiento)
 
 
 ```{r}
-cor(datos.entrenamiento)
+cor(entrenamiento.variables_numericas)
 ```
 
 
