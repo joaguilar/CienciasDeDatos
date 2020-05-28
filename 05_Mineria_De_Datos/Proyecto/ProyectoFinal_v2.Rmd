@@ -623,66 +623,45 @@ Para la determinación del valor más apropiado de K se evaluaron métodos como 
 
 *Determinar los clusters optimos*
 
-```{r warning=FALSE}
-```
-
+TODO: Hablada
 
 ```{r warning=FALSE}
+rfm_clustering<-rfm_result$rfm[,c("recency_days","amount")]
+rfm_clustering <- na.omit(rfm_clustering)
+str(rfm_clustering)
 
-retail_limpio<-retail[complete.cases(retail),]
-retail_limpio<-retail_limpio[(retail_limpio$Country=="Germany" | retail_limpio$Country=="France" ),]
-#nrow(retail_limpio[is.na(retail_limpio),])
-#nrow(retail_limpio[!is.finite(retail_limpio$Total),])
-retail_limpio$InvoiceDate<-NULL
-retail_limpio$InvoiceNo<-NULL
+clusters_kmedoids<-pam(rfm_clustering,3)
 
-#which(apply(retail_limpio, 2, var)==0)
-
-retail_limpio$Quantity<-as.double(retail_limpio$Quantity)
-
-retail_limpio<-retail_limpio[,c(5,6,7)]
-retail_limpio$CountryNum<-ifelse(retail_limpio$Country =="Germany", 1, 2)
-retail_limpio$Country<-NULL
-#retail_limpio<-retail_limpio[retail_limpio$Quantity<11,]
-#retail_limpio<-retail_limpio[retail_limpio$UnitPrice<5,]
-str(retail_limpio)
-
-```
-
-```{r warning=FALSE}
+resultado_medoids <- data.frame(clusters_kmedoids$cluster,rfm_result$rfm)
+head(resultado_medoids,20)
 # cálculo del score Silhouette
-#score_sil<- silhouette(clusters_kmedoids,daisy(datosFinal))
+score_sil<- silhouette(clusters_kmedoids,daisy(rfm_clustering))
 
 # cálculo del valor óptimo de k usando el score silhouette
-#fviz_nbclust(retail_limpio,pam,method = 'silhouette',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'silhouette',k.max = 10)
 
 # cálculo del valor óptimo de k usando el método del codo
-#fviz_nbclust(retail_limpio,pam,method = 'wss',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'wss',k.max = 10)
 
 # cálculo del valor óptimo de k usando la estadística gap
-#fviz_nbclust(retail_limpio,pam,method = 'gap_stat',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'gap_stat',k.max = 10)
 
 ```
 
+TODO: Explicar que vamos a usar 3 clusters
 
-
-```{r warning=FALSE}
-clusters_kmedoids<-pam(retail_limpio,4)
-
-# crear un data frame combinando el cluster asignado y los atributos originales
-resultado_medoids <- data.frame(clusters_kmedoids$cluster,retail_limpio)
-head(resultado_medoids)
-
-```
 
 
 ```{r warning=FALSE}
 clusters_kmedoids$medoids
 ```
 
+TODO: Explicar los medoids
+
 ```{r warning=FALSE}
 # visualización de los clusters
-fviz_cluster(clusters_kmedoids,data=retail_limpio,palette='jco')
+#which(apply(rfm_clustering, 2, var)==0)
+fviz_cluster(clusters_kmedoids,data=rfm_clustering,palette='jco')
 
 
 # cluster al que se asignó cada individuo
