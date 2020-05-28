@@ -45,11 +45,11 @@ set.seed(100)
 ## Determinar los objetivos de negocio
 ### Objetivos de negocio
 1.	Incrementar las ventas enfocándose en los mejores clientes.
-2.	Mejorar la disponibilidad de inventarios para satisfacer la demanda de productos.
+2.	Mejorar la planeacion de presupuestos mensuales a partir de los estimados de ventas a futuro.
 
 ### Criterios de éxito (en términos de negocio)
 1.	Identificar los 3 segmentos de mercado más rentables para la empresa a fin de orientar la estrategia de ventas.
-2.	Mejorar las estimaciones de ventas mensuales un 20% de su valor real.
+2.	Mejorar las estimaciones de ventas mensuales a un 20% de su valor real.
 
 ## Evaluación de la situación actual
 Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
@@ -124,7 +124,7 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 ### Objetivos de minería de datos
 *	Identificar segmentos de mercados minoristas a partir de las ventas.
 *	Determinar los 3 segmentos de mercado que generan más ingresos.
-*	Predecir las ventas mensuales por producto a partir de los datos históricos. 
+*	Predecir las ventas mensuales a partir de los datos históricos. 
 
 
 ### Criterios de éxito (desde la perspectiva de minería de datos)
@@ -187,13 +187,20 @@ En el summary podemos ver algunas cosas interesantes, como por ejempo:
 
 Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
 
-Para efectos de la tarea se le dará prioridad a los siguientes 5 campos:
+Para efectos de la tarea se le dará prioridad a los siguientes campos:
 
 * InvoiceNo: Sera utilizado para agrupar las compras.
-* Quantity: Sera utilizado para determinar el conjunto de productos mas vendidos.
-* UnitPrice: Sera utilizado para determinar, junto con Quantity. las ventas a predecir.
 * CustomerID: Sera utilizado para identificar los clientes que seran agrupados.
 * Total: Campo derivado (ver siguiente sección) que facilitará los calculos de las ventas.
+* InvoiceDay: Variable creada con la fecha del día de la compra 
+
+Nota:
+
+Las siguiente variables son utilizadas para la creacion del campo Total, mas no seran utilizadas directamente.
+
+* Quantity: Sera utilizado para determinar el conjunto de productos mas vendidos.
+* UnitPrice: Sera utilizado para determinar, junto con Quantity. las ventas a predecir.
+
 
 #### Compras de clientes
 
@@ -223,7 +230,7 @@ Ademas podemos observar que existen variables que son actualmente hileras (strin
 retail$StockCode <- as.factor(retail$StockCode)
 retail$Description <- as.factor(retail$Description)
 retail$Country <- as.factor(retail$Country)
-#retail$CustomerID <- as.factor(retail$CustomerID)
+retail$CustomerID <- as.factor(retail$CustomerID)
 ```
 
 
@@ -387,11 +394,11 @@ Para las cantidades se puede observar que son muchos mas, `r Quantity_Negativos`
 ## Selección de datos: 
 Debe describir y justificar con cuáles atributos trabajará o bien cuáles serán descartados, de igual forma, si se realiza una selección por filas, debe estar documentada y justificada.
 
-Para efectos de este trabajo solo se utilizaran datos del pais "United Kingdom"
+Para efectos de este trabajo solo se utilizaran datos del pais "Germany"
 
 ```{r warning=FALSE}
-datos_uk <- retail[retail$Country == 'United Kingdom',]
-summary(datos_uk)
+datos_ge <- retail[retail$Country == 'Germany',]
+summary(datos_ge)
 ```
 
 ### Selección de variables clave
@@ -420,15 +427,15 @@ Basados en lo observado en la seccion de _Calidad de Datos_, podemos eliminar ci
 Existen dos registros que tienen este campo, UnitPrice, en negativo:
 
 ```{r warning=FALSE}
-kable(head(datos_uk[datos_uk$UnitPrice < 0,],10),"html", booktabs = T)%>%
+kable(head(datos_ge[datos_ge$UnitPrice < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 ```
 
 Basandonos en la descricpción de estos registros, que corresponden a ajuste de deuda y no a un producto en particular, podemos eliminarlos sin problema del conjunto de datos:
 
 ```{r warning=FALSE}
-retail <- datos_uk[!(datos_uk$UnitPrice < 0),]
-kable(head(datos_uk[datos_uk$UnitPrice < 0,],10),"html", booktabs = T)%>%
+retail <- datos_ge[!(datos_ge$UnitPrice < 0),]
+kable(head(datos_ge[datos_ge$UnitPrice < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 
 ```
@@ -438,10 +445,10 @@ kable(head(datos_uk[datos_uk$UnitPrice < 0,],10),"html", booktabs = T)%>%
 Asimismo se observaron varios valores negativos en el campo Quantity que corresponden a devoluciones y consideran que este parametro no sera utilizado, se proce a removerlas del conjunto de observaciones:
 
 ```{r warning=FALSE}
-kable(head(datos_uk[datos_uk$Quantity < 0,]),"html", booktabs = T)%>%
+kable(head(datos_ge[datos_ge$Quantity < 0,]),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
-datos_uk <- datos_uk[!(datos_uk$Quantity < 0),]
-kable(head(datos_uk[datos_uk$Quantity < 0,],10),"html", booktabs = T)%>%
+datos_ge <- datos_ge[!(datos_ge$Quantity < 0),]
+kable(head(datos_ge[datos_ge$Quantity < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 ```
 
@@ -449,7 +456,7 @@ kable(head(datos_uk[datos_uk$Quantity < 0,],10),"html", booktabs = T)%>%
 
 Al analizar el conjunto de datos se observa que hay algunas observaciones con valores NA en las columnas CustomerID y descripción las cuales son eliminadas.
 ```{r warning=FALSE}
-datos_uk <- datos_uk %>% drop_na(CustomerID, Description)
+datos_ge <- datos_ge %>% drop_na(CustomerID, Description)
 ```
 
 *Manejo de Outliers*
@@ -458,18 +465,26 @@ Para revisar los Outliers detectados en la sección de calidad de datos, se ejec
 
 
 ```{r warning=FALSE}
-summary(datos_uk)
+summary(datos_ge)
 ```
 
-# Se agrupan las compras de los clientes por fecha.
+#### Agrupamiento por Fecha
+
+Se agrupan las compras de los clientes por fecha.
+
 ```{r explore3,warning = FALSE}
-historic_invoices <- datos_uk %>% 
+historic_invoices <- datos_ge %>% 
   group_by(InvoiceDay,CustomerID) %>%
   summarise_at(vars(Total),funs(sum(.))) 
 kable(head(historic_invoices,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
+
 ```
+
+
+
 Se procede a crear las varias Recency, Frecuency y Monetary
+
 ```{r explore3,warning = FALSE}
 # Se procede a obtener la fecha de la ultima compra.
 ultima_compra <- historic_invoices %>% 
@@ -478,32 +493,96 @@ ultima_compra <- historic_invoices %>%
 kable(head(ultima_compra,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 colnames(ultima_compra)= c('CustomerID','UltimaCompra')
-ultima_compra
+```
 
+Validamos que todos los clientes fueron considerados:
+
+```{r warning = FALSE}
 length(unique(historic_invoices$CustomerID))
 length(unique(ultima_compra$CustomerID))
+```
 
+
+```{r warning = FALSE}
 visitas_por_cliente <- historic_invoices %>% 
   group_by(CustomerID) %>%
   summarise_at(vars(InvoiceDay),funs(n_distinct(.)))
+colnames(visitas_por_cliente)<- c('CustomerID','CantidadVisitas')
 kable(head(visitas_por_cliente,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
-colnames(visitas_por_cliente)= c('CustomerID','CantidadVisitas')
+length(unique(visitas_por_cliente$CustomerID))
+```
 
-datos <- merge(historic_invoices, ultima_compra, by="CustomerID")
-datos <- merge(datos, visitas_por_cliente, by="CustomerID")
+Total de ventas por cliente
 
+```{r warning = FALSE}
+
+#historic_invoices
+#datos <- merge(historic_invoices, ultima_compra, by="CustomerID")
+#datos2 <- merge(datos, visitas_por_cliente, by="CustomerID")
+#head(datos)
+#head(datos2)
+
+total_por_cliente <- historic_invoices  %>% 
+  group_by(CustomerID) %>%
+  summarise_at(vars(Total),funs(sum(.)))
+kable(head(total_por_cliente,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+length(unique(total_por_cliente$CustomerID))
+
+
+```
+
+Calculamos la frescura de cada cliente:
+
+```{r warning = FALSE}
 #Se calcula la recency 
-datos['Recency'] <- as.numeric(difftime(datos$UltimaCompra ,datos$InvoiceDay , units = c("days")))
-head(datos)
-summary(datos)
+#datos['Recency'] <- as.numeric(difftime(datos$UltimaCompra ,datos$InvoiceDay , units = c("days")))
+ultima_compra$Recency <- as.numeric(difftime(max(ultima_compra$UltimaCompra) ,ultima_compra$UltimaCompra , units = c("days")))
+head(ultima_compra)
+summary(ultima_compra)
 
 
-hist(datos$Recency, 
+hist(ultima_compra$Recency, 
         main = 'Distribución de las frecuencia de las visitas', 
         ylab = 'Observaciones', 
         xlab = 'Cantidad de dias')
 ```
+
+```{r warning=FALSE}
+
+datos <-  merge(ultima_compra, visitas_por_cliente, by="CustomerID")
+datos <- merge(datos,total_por_cliente, by="CustomerID")
+head(datos)
+
+```
+
+```{r warning=FALSE}
+
+#install.packages('rfm')
+library(rfm)
+
+analysis_date <- lubridate::as_date("2006-12-31", tz = "UTC")
+rfm_result <- rfm_table_order(datos, 
+                              customer_id=CustomerID, 
+                              order_date=UltimaCompra, 
+                              revenue=Total, max(datos$UltimaCompra))
+#summary(rfm_result)
+rfm_result
+```
+
+TODO: hablada
+
+* customer_id: identificación única del cliente
+* date_most_recent: fecha de la visita más reciente
+* recency_days: días desde la visita más reciente
+* transacción_cuenta: número de transacciones del cliente
+* importe: ingresos totales generados por el cliente
+* puntaje de antigüedad: puntaje de antigüedad del cliente
+* frequency_score: puntaje de frecuencia del cliente
+* monetario_puntuación: puntaje monetario del cliente
+* rfm_score: puntaje RFM del cliente
+
 
 
 # Fase de Modelado
@@ -540,6 +619,12 @@ RFM significa Frescura(Recency) - Frecuencia - Valor monetario. Para efectos del
 Para el primer modelo se analizarán las variables Total y Country.
 
 Para la determinación del valor más apropiado de K se evaluaron métodos como silhouette, método del codo y estadística gap y finalmente basado en los resultados obtenidos se propone hacer uso de un k=4
+
+
+*Determinar los clusters optimos*
+
+```{r warning=FALSE}
+```
 
 
 ```{r warning=FALSE}
