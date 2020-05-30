@@ -152,8 +152,11 @@ atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.',encoding = "UTF-8")
 kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
 # Fase de entendimiento de los datos
+
 ## Recopilación inicial de datos
+
 ### Lista de datasets requeridos
 
 Para el desarrollo de este trabajo se hará uso del conjunto de datos“Online Retail”. Este es un conjunto de datos transnacionales que contiene todas las transacciones que ocurren entre el 12/01/2010 y el 12/09/2011 para un minorista en línea registrado en el Reino Unido y sin tienda. La compañía vende principalmente regalos únicos para toda ocasión. 
@@ -167,7 +170,7 @@ Este conjunto de datos se encuentra disponible en el Machine Learning Repository
 El conjunto de datos puede ser descargado en formato .xlsx a través del siguiente link http://archive.ics.uci.edu/ml/machine-learning-databases/00352/
 
 
-#### Descripción de los datos
+## Descripción de los datos
 
 El conjunto de datos a utilizar cuenta “Retail Online” con 541910 observaciones de compras realizadas desde diciembre del 2010 hasta diciembre del 2011, cada una de las observaciones cuenta con 8 variables las cuales se describen a continuación.
 
@@ -176,7 +179,7 @@ atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Descripción de atributos")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-### Exploración de los datos
+## Exploración de los datos
 
 Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos. Por medio de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades. 
 
@@ -340,7 +343,7 @@ pp
 
 
 
-### Calidad de los datos
+## Verificación de la calidad de datos
 
 Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no se tiene la información de cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
 
@@ -474,7 +477,45 @@ Para revisar los Outliers detectados en la sección de calidad de datos, se ejec
 summary(datos_ge)
 ```
 
-#### Agrupamiento por Fecha
+## Construcción de nuevos datos
+
+
+Para ambos modelos a construir se crearon nuevos datos basados en la información disponible.
+
+Para los modelos de clustering, se crearon las siguientes variables a através de la función RFM (https://cran.r-project.org/web/packages/rfm/rfm.pdf)
+
+* date_most_recent: fecha de la compras más reciente del cliente
+
+* recency_days: muestra que tan reciente es la ultima compra de un cliente. Es la diferencia en dias, de las ultima fecha analizada, con la fecha de la última compra.
+
+* transaction_count: que es la cantidad de compras o transacciones realizadas por el cliente
+
+* Amount: el total del valor monetario de las compras del cliente
+
+* recency_score: puntaje de antigüedad del cliente
+
+* frequency_score: puntaje de frecuencia del cliente
+
+* monetary_score: puntaje monetario del cliente
+
+* rfm_score: puntaje RFM del cliente
+
+
+Para el modelo de regresión se crearon 13 variables nuevas:
+
+* diff: diferencia del monto vendido entre la fecha y la fecha del mes anterior
+
+* lag: 12 variables de lag distribuidas a lo largo de los 13 meses, que contienen las diferencias entre las ventas distribuidas a lo largo de todos los meses.
+
+## Transformaciones aplicadas
+
+Para los modelos de clustering, se realizaron agrupaciones de los datos por cliente y por fecha, sumarizando las variables Total y el conteo de las compras realizadas por el cliente.
+
+En el caso de los modelos de regresion, se agruparon los datos por fecha, sumarizando el total de ventas para esa fecha.
+
+
+
+### Agrupamiento por Fecha
 
 Se agrupan las compras de los clientes por fecha.
 
@@ -488,6 +529,23 @@ kable(head(historic_invoices,10),"html", booktabs = T)%>%
 ```
 
 
+
+# Fase de Modelado
+
+## Selección de las técnicas a utilizar
+
+### Clustering de clientes
+
+Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
+
+### Regresión para la predicción del total de ventas.
+
+Para el cumplimiento del objectivo de mineria "Predecir las ventas mensuales por producto a partir de los datos históricos" se hará uso de la técnica de regresión lineal simple.
+
+
+## Construcción de modelos
+
+### Modelos de agrupamiento
 
 Se procede a crear las varias Recency, Frecuency y Monetary
 
@@ -574,36 +632,6 @@ rfm_result <- rfm_table_order(datos,
 rfm_result
 ```
 
-TODO: hablada
-
-* customer_id: identificación única del cliente
-* date_most_recent: fecha de la visita más reciente
-* recency_days: días desde la visita más reciente
-* transacción_cuenta: número de transacciones del cliente
-* importe: ingresos totales generados por el cliente
-* puntaje de antigüedad: puntaje de antigüedad del cliente
-* frequency_score: puntaje de frecuencia del cliente
-* monetario_puntuación: puntaje monetario del cliente
-* rfm_score: puntaje RFM del cliente
-
-
-
-# Fase de Modelado
-
-## Selección de las técnicas a utilizar
-
-### Clustering de clientes
-
-Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
-
-### Regresión para la predicción del total de ventas.
-
-Para el cumplimiento del objectivo de mineria "Predecir las ventas mensuales por producto a partir de los datos históricos" se hará uso de la técnica de regresión lineal simple.
-
-
-## Construcción de modelos
-
-### Modelos de agrupamiento
 
 ##### Construcción del modelo #1 (Kmedoids)
 
