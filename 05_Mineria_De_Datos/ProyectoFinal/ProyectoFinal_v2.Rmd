@@ -356,7 +356,8 @@ ggplot(tmp_clientes,aes(IdValido,conteo)) +
   geom_col(stat="identity")+
   scale_y_continuous(name="Observaciones", labels = scales::comma) +
   labs(x="Identificador valido de cliente?")+
-  ggtitle("NA's en el campo CustomerID")
+  ggtitle("NA's en el campo CustomerID") +
+  geom_text(aes(label=conteo))
 ```
 
 Como se puede observar, hay 135080 NA - estos registros no pueden ser utilizados para el analisis de clientes a realizar, dejandonos solamente con los 406829 registros restantes.
@@ -568,6 +569,7 @@ ultima_compra <- historic_invoices %>%
 kable(head(ultima_compra,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 colnames(ultima_compra)= c('CustomerID','UltimaCompra')
+
 ```
 
 Validamos que todos los clientes fueron considerados:
@@ -635,10 +637,16 @@ head(datos)
 ```{r warning=FALSE}
 
 analysis_date <- lubridate::as_date("2006-12-31", tz = "UTC")
-rfm_result <- rfm_table_order(datos, 
+#rfm_result <- rfm_table_order(datos, 
+#                              customer_id=CustomerID, 
+#                              order_date=UltimaCompra, 
+#                              revenue=Total,
+#                              max(datos$UltimaCompra))
+rfm_result <- rfm_table_order(historic_invoices, 
                               customer_id=CustomerID, 
-                              order_date=UltimaCompra, 
-                              revenue=Total, max(datos$UltimaCompra))
+                              order_date=InvoiceDay, 
+                              revenue=Total,
+                              max(historic_invoices$InvoiceDay))
 #summary(rfm_result)
 rfm_result
 ```
@@ -662,7 +670,7 @@ RFM significa Frescura(Recency) - Frecuencia - Valor monetario. Para efectos del
 
 Para el primer modelo se analizarán las variables Total y Country.
 
-Para la determinación del valor más apropiado de K se evaluaron métodos como silhouette, método del codo y estadística gap y finalmente basado en los resultados obtenidos se propone hacer uso de un k=4
+Para la determinación del valor más apropiado de K se evaluaron métodos como silhouette, método del codo y estadística gap y finalmente basado en los resultados obtenidos se propone hacer uso de un k=3
 
 
 *Determinar los clusters optimos*
@@ -678,7 +686,7 @@ Para la selecion del numero optimo de clusters a crear, utilizamos 3 técnicas:
 A continuación se muestran los resultados de estas técnicas:
 
 ```{r warning=FALSE}
-rfm_clustering<-rfm_result$rfm[,c("recency_days","amount")]
+rfm_clustering<-rfm_result$rfm[,c("recency_days","transaction_count","amount")]
 rfm_clustering <- na.omit(rfm_clustering)
 str(rfm_clustering)
 
@@ -709,15 +717,40 @@ clusteres_medoids <- clusters_kmedoids$clustering
 #clusteres_medoids
 # Descripción de los clusters
 medoids <- clusters_kmedoids$medoids
-medoids
+medoids_df <- data.frame(cluster=c("1","2","3"),clusters_kmedoids$medoids, stringsAsFactors = FALSE)
+
+medoids_df$Tecnica<-"KMedoids"
+
+kable(medoids_df,"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+medoids_df
 ```
 
-TODO: Explicar los medoids
+Como podemos observar en los medoides, los clientes corresponden a grandes rasgos a los siguientes 3 clusters:
+
+* Clientes de bajo valor: Corresponden a los clientes del cluster 1, que tienen pocas compras, de un monto bajo, y no compran recientemente.
+
+* Clientes de valor medio: Corresponden a los clientes del cluster 3, que tienen una cantidad media de compras, compran recientemente, y montos de compras medios
+
+* Clientes de alto valor: Corresponden a los clientes del cluster 2, que tienen una cantidad alta de compras, recientes, y de montos más altos
+
+Podemos observar la visualizacion de los clusters en el siguiente grafico:
 
 ```{r warning=FALSE}
 # visualización de los clusters
-#which(apply(rfm_clustering, 2, var)==0)
 fviz_cluster(clusters_kmedoids,data=rfm_clustering,palette='jco')
+```
+
+Adicionalmente podemos observar la cantidad de clientes asignados a cada cluster:
+
+```{r warning=FALSE}
+
+clusters_df<-data.frame(clusters=clusters_kmedoids$clustering)
+ggplot(clusters_df,aes(clusters)) +
+  geom_bar()+
+  scale_y_continuous(name="Numero de Clientes", labels = scales::comma) +
+  labs(x="Cluster Asignado")+
+  ggtitle("Clientes por Cluster")
 
 ```
 
@@ -739,18 +772,45 @@ De los clusteres anteriores se puede observar como la variable recency no parece
 
 ```{r warning=FALSE}
 #obtener cantidad de registros en cada cluster y los centroides
-descClusters<- data.frame(clusters$size,clusters$centers)
-descClusters
+centroides<- data.frame(clusters$size,clusters$centers)
+centroides$Tecnica<-"KMeans"
+centroides$clusters.size<-NULL
+centroides$cluster<-rownames(centroides)
+centroides
 ```
+
+Como podemos observar en los clusters, los clientes corresponden a grandes rasgos a los siguientes 3 clusters:
+
+* Clientes de bajo valor: Corresponden a los clientes del cluster 1, que tienen pocas compras, de un monto bajo, y no compran recientemente.
+
+* Clientes de valor medio: Corresponden a los clientes del cluster 2, que tienen una cantidad media de compras, compran recientemente, y montos de compras medios
+
+* Clientes de alto valor: Corresponden a los clientes del cluster 3, que tienen una cantidad alta de compras, no son compras tan recientes, pero de montos más altos
 
 ###### Descripción del modelo obtenido (Incluya al menos un gráfico)
 
 Loa gráficos siguientes nos permiten observar como en el caso de los 3 clusteres formados, los clusters que van del año 1980 al 1990 se observan más dispersos y es posible observar un valor anormal o outlier en este rango. 
 ```{r warning=FALSE}
-ggplot(rfm_clustering,aes(rfm_clustering$recency_days,rfm_clustering$amount, color = clusters$cluster)) + geom_point()+ggtitle(label='Distribución por cluster') + 
-  scale_color_viridis(option = "D")
+ggplot(rfm_clustering,aes(rfm_clustering$recency_days,rfm_clustering$amount, color = clusters$cluster)) + geom_point()+
+  ggtitle(label='Distribución por cluster Antiguedad vs Monto de Compras') + 
+  scale_color_viridis(option = "D") +
+  labs(y="Monto de las transacciones",x="Dias desde la compra más reciente")
+
+
+ggplot(rfm_clustering,aes(rfm_clustering$transaction_count,rfm_clustering$amount, color = clusters$cluster)) + geom_point()+
+  ggtitle(label='Distribución por cluster Monto de Compras vs Cantidad de Compras') + 
+  scale_color_viridis(option = "D") +
+  labs(y="Monto de las transacciones",x="Numero de compras totales")
+
+
+ggplot(rfm_clustering,aes(rfm_clustering$recency_days,rfm_clustering$transaction_count, color = clusters$cluster)) + geom_point()+
+  ggtitle(label='Distribución por cluster Antiguedad vs Cantidad de Compras') + 
+  scale_color_viridis(option = "D") +
+  labs(y="Numero de compras totales",x="Dias desde la compra más reciente")
 
 ```
+
+TODO: revisar grafico (clusters)
 
 El siguiente gráfico muestra con mayor claridad el agrupamiento del cluster número 2, el cual parece agrupar a las compañias que se han mantenido por mayor tiempo en el mercado y tienen ingresos elevados.
 ```{r warning=FALSE}
@@ -758,6 +818,51 @@ El siguiente gráfico muestra con mayor claridad el agrupamiento del cluster nú
 fviz_cluster(clusters,data=rfm_clustering,palette='jco',ggtheme = theme_minimal())
 ```
 
+```{r warning=FALSE}
+clusters_dfkmeans<-data.frame(clusters=clusters$cluster)
+ggplot(clusters_dfkmeans,aes(clusters)) +
+  geom_bar()+
+  scale_y_continuous(name="Numero de Clientes", labels = scales::comma) +
+  labs(x="Cluster Asignado")+
+  ggtitle("Clientes por Cluster")
+```
+
+```{r warning=FALSE}
+
+export_df<-rfm_result$rfm
+export_df$kmedoids<-clusters_kmedoids$clustering
+export_df$kmeans<-clusters$cluster
+
+export_df<-export_df %>% 
+  mutate(kmeans = replace(kmeans, kmeans == 2, "Valor Medio")) %>%
+  mutate(kmeans = replace(kmeans, kmeans == 3, "Alto Valor")) %>%
+  mutate(kmeans = replace(kmeans, kmeans == 1, "Bajo Valor")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 3, "Valor Medio")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 2, "Alto Valor")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 1, "Bajo Valor"))
+
+write.csv(export_df,"resultado_cluster.csv")
+
+
+centroides2<-centroides %>% 
+  mutate(cluster = replace(cluster, cluster == "2", "Valor Medio")) %>%
+  mutate(cluster = replace(cluster, cluster == "3", "Alto Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "1", "Bajo Valor"))
+
+
+
+
+medoids_df2 <- medoids_df %>%
+  mutate(cluster = replace(cluster, cluster == "3", "Valor Medio")) %>%
+  mutate(cluster = replace(cluster, cluster == "2", "Alto Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "1", "Bajo Valor"))
+
+export_clusters <- rbind(medoids_df2,centroides2)
+
+write.csv(export_clusters,"centros_clusters.csv")
+
+
+```
 
 ### Modelos de regresión
 
