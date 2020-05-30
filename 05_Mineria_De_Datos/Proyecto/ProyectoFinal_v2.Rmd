@@ -9,20 +9,21 @@ output:
 
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(arules)) install.packages("arules",dependencies = TRUE)
 library(arules)
-if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(readxl)) install.packages("readxl",dependencies = TRUE)
 library("readxl")
 library(ggplot2)
 library(knitr)
-if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE)
 library(kableExtra)
 library(arules)
 library(arulesViz)
 
 library(tidyverse)
 if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
-library(plyr); library(dplyr)
+library(plyr)
+library(dplyr)
 library(ggplot2)
 library(knitr)
 library(lubridate)
@@ -348,7 +349,14 @@ pp
 Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no se tiene la información de cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
 
 ```{r warning=FALSE}
-sum(is.na(retail$CustomerID))
+numclientesna <- count(is.na(retail$CustomerID))
+library(ggplot2)
+tmp_clientes<-data.frame(IdValido=c("Si", "No"), conteo=c(numclientesna[1,2],numclientesna[2,2]), index=1)
+ggplot(tmp_clientes,aes(IdValido,conteo)) +
+  geom_col(stat="identity")+
+  scale_y_continuous(name="Observaciones", labels = scales::comma) +
+  labs(x="Identificador valido de cliente?")+
+  ggtitle("NA's en el campo CustomerID")
 ```
 
 Como se puede observar, hay 135080 NA - estos registros no pueden ser utilizados para el analisis de clientes a realizar, dejandonos solamente con los 406829 registros restantes.
