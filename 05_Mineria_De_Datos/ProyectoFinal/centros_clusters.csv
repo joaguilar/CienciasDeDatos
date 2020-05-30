@@ -1,0 +1,7 @@
+"","cluster","recency_days","transaction_count","amount","Tecnica"
+"1","3 Bajo Valor",74,1,704.04,"KMedoids"
+"2","1 Alto Valor",22,6,13219.74,"KMedoids"
+"3","2 Medio Valor",22,4,4027.36,"KMedoids"
+"11","3 Bajo Valor",95.8695652173913,2.39130434782609,949.941449275362,"KMeans"
+"21","2 Medio Valor",19.15,9.65,4849.347,"KMeans"
+"31","1 Alto Valor",50.2,11.8,13266.848,"KMeans"

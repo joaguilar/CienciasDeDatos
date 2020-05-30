@@ -51,12 +51,12 @@ set.seed(100)
 # Fase de entendimiento del negocio
 ## Determinar los objetivos de negocio
 ### Objetivos de negocio
-1.	Incrementar las ventas enfocándose en los mejores clientes.
-2.	Mejorar la planeacion de presupuestos mensuales a partir de los estimados de ventas a futuro.
+1.	Incrementar las ventas enfocándose en los diferentes tipos de clientes
+2.	Mejorar la planeación de presupuestos mensuales a partir de los estimados de ventas a futuro.
 
 ### Criterios de éxito (en términos de negocio)
 1.	Identificar los 3 segmentos de mercado más rentables para la empresa a fin de orientar la estrategia de ventas.
-2.	Mejorar las estimaciones de ventas mensuales a un 20% de su valor real.
+2.	Mejorar las estimaciones de ventas mensuales en un 20% de su valor real.
 
 ## Evaluación de la situación actual
 Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
@@ -129,14 +129,13 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 ## Determinar los objetivos de minería de datos
 
 ### Objetivos de minería de datos
-*	Identificar segmentos de mercados minoristas a partir de las ventas.
-*	Determinar los 3 segmentos de mercado que generan más ingresos.
-*	Predecir las ventas mensuales a partir de los datos históricos. 
-
+*	Identificar al menos 3 segmentos de mercados minoristas a partir de las ventas.
+*	Crear un modelo de predicción de ventas.
+ 
 
 ### Criterios de éxito (desde la perspectiva de minería de datos)
-1.	Identificar 3 clústeres de datos que permitan agrupar los diferentes clientes de la compañía pasado en su perfil.
-2.	Evaluar la precisión del modelo de predicción a fin de validar que la predicción se encuentre dentro de un 20% de las ventas reales.
+1.	Identificar 3 clústeres de clientes de la compañía basados en su perfil de compras.
+2.	Evaluar el modelo de predicción a fin de validar que la predicción se encuentre dentro de un 20% de las ventas reales.
 
 ##Plan del proyecto
 
