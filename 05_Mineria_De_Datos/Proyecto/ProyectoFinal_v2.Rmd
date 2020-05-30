@@ -534,14 +534,17 @@ kable(head(historic_invoices,10),"html", booktabs = T)%>%
 
 ## Selección de las técnicas a utilizar
 
+Para cubrir los objetivos planteados, se seleccionaron dos técnicas de aprendizaje automático - clustering y regresión. A continuación se detallan ambas técnicas.
+
 ### Clustering de clientes
 
-Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
+Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedoids y Kmedias a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
+
+TODO: Teoria de RFM
 
 ### Regresión para la predicción del total de ventas.
 
 Para el cumplimiento del objectivo de mineria "Predecir las ventas mensuales por producto a partir de los datos históricos" se hará uso de la técnica de regresión lineal simple.
-
 
 ## Construcción de modelos
 
@@ -656,7 +659,15 @@ Para la determinación del valor más apropiado de K se evaluaron métodos como 
 
 *Determinar los clusters optimos*
 
-TODO: Hablada
+Para la selecion del numero optimo de clusters a crear, utilizamos 3 técnicas:
+
+* Silhoutte
+
+* Método del codo
+
+* Estadística Gap
+
+A continuación se muestran los resultados de estas técnicas:
 
 ```{r warning=FALSE}
 rfm_clustering<-rfm_result$rfm[,c("recency_days","amount")]
@@ -681,8 +692,7 @@ fviz_nbclust(rfm_clustering,pam,method = 'gap_stat',k.max = 10)
 
 ```
 
-TODO: Explicar que vamos a usar 3 clusters
-
+Como se muestra en los graficos anteriores, tanto el método de Silhoutte como el del Codo indican que el numero de clusters optimo es 3. El método de estadística de gap indica que este número sería 1. Para la creación de los clusters, vamos a utilizar 3, dado que no tiene sentido para los objetivos utilizar solo 1. Esta decisión se refuerza con el hecho que dos de los tres métodos retornan este valor.
 
 
 ```{r warning=FALSE}
