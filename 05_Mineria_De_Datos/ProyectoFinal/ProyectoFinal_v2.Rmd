@@ -9,20 +9,21 @@ output:
 
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-if(!require(arules)) install.packages("arules",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(arules)) install.packages("arules",dependencies = TRUE)
 library(arules)
-if(!require(readxl)) install.packages("readxl",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(readxl)) install.packages("readxl",dependencies = TRUE)
 library("readxl")
 library(ggplot2)
 library(knitr)
-if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE,repos=c(CRAN="https://cran.cnr.berkeley.edu/"))
+if(!require(kableExtra)) install.packages("kableExtra",dependencies = TRUE)
 library(kableExtra)
 library(arules)
 library(arulesViz)
 
 library(tidyverse)
 if(!require(plyr)) install.packages("plyr",dependencies = TRUE)
-library(plyr); library(dplyr)
+library(plyr)
+library(dplyr)
 library(ggplot2)
 library(knitr)
 library(lubridate)
@@ -37,7 +38,13 @@ if(!require(factoextra)) install.packages("factoextra",dependencies = TRUE)
 library(factoextra)
 if(!require(caTools)) install.packages("caTools",dependencies = TRUE)
 library(caTools)
+if(!require(rfm)) install.packages("rfm",dependencies = TRUE)
+library(rfm)
+if(!require(data.table)) install.packages("data.table",dependencies = TRUE)
+library(data.table)
 #Se establece el seed.
+if(!require(viridis)) install.packages("viridis",dependencies = TRUE)
+library(viridis)
 set.seed(100)
 ```
 
@@ -45,11 +52,11 @@ set.seed(100)
 ## Determinar los objetivos de negocio
 ### Objetivos de negocio
 1.	Incrementar las ventas enfocándose en los mejores clientes.
-2.	Mejorar la disponibilidad de inventarios para satisfacer la demanda de productos.
+2.	Mejorar la planeacion de presupuestos mensuales a partir de los estimados de ventas a futuro.
 
 ### Criterios de éxito (en términos de negocio)
 1.	Identificar los 3 segmentos de mercado más rentables para la empresa a fin de orientar la estrategia de ventas.
-2.	Mejorar las estimaciones de ventas mensuales un 20% de su valor real.
+2.	Mejorar las estimaciones de ventas mensuales a un 20% de su valor real.
 
 ## Evaluación de la situación actual
 Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
@@ -124,7 +131,7 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 ### Objetivos de minería de datos
 *	Identificar segmentos de mercados minoristas a partir de las ventas.
 *	Determinar los 3 segmentos de mercado que generan más ingresos.
-*	Predecir las ventas mensuales por producto a partir de los datos históricos. 
+*	Predecir las ventas mensuales a partir de los datos históricos. 
 
 
 ### Criterios de éxito (desde la perspectiva de minería de datos)
@@ -146,8 +153,11 @@ atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.',encoding = "UTF-8")
 kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
 # Fase de entendimiento de los datos
+
 ## Recopilación inicial de datos
+
 ### Lista de datasets requeridos
 
 Para el desarrollo de este trabajo se hará uso del conjunto de datos“Online Retail”. Este es un conjunto de datos transnacionales que contiene todas las transacciones que ocurren entre el 12/01/2010 y el 12/09/2011 para un minorista en línea registrado en el Reino Unido y sin tienda. La compañía vende principalmente regalos únicos para toda ocasión. 
@@ -161,7 +171,7 @@ Este conjunto de datos se encuentra disponible en el Machine Learning Repository
 El conjunto de datos puede ser descargado en formato .xlsx a través del siguiente link http://archive.ics.uci.edu/ml/machine-learning-databases/00352/
 
 
-#### Descripción de los datos
+## Descripción de los datos
 
 El conjunto de datos a utilizar cuenta “Retail Online” con 541910 observaciones de compras realizadas desde diciembre del 2010 hasta diciembre del 2011, cada una de las observaciones cuenta con 8 variables las cuales se describen a continuación.
 
@@ -170,7 +180,7 @@ atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Descripción de atributos")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-### Exploración de los datos
+## Exploración de los datos
 
 Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos. Por medio de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades. 
 
@@ -187,13 +197,20 @@ En el summary podemos ver algunas cosas interesantes, como por ejempo:
 
 Nota: En el caso de description es posible observar líneas en blanco al revisar las observaciones.   
 
-Para efectos de la tarea se le dará prioridad a los siguientes 5 campos:
+Para efectos de la tarea se le dará prioridad a los siguientes campos:
 
 * InvoiceNo: Sera utilizado para agrupar las compras.
-* Quantity: Sera utilizado para determinar el conjunto de productos mas vendidos.
-* UnitPrice: Sera utilizado para determinar, junto con Quantity. las ventas a predecir.
 * CustomerID: Sera utilizado para identificar los clientes que seran agrupados.
 * Total: Campo derivado (ver siguiente sección) que facilitará los calculos de las ventas.
+* InvoiceDay: Variable creada con la fecha del día de la compra 
+
+Nota:
+
+Las siguiente variables son utilizadas para la creacion del campo Total, mas no seran utilizadas directamente.
+
+* Quantity: Sera utilizado para determinar el conjunto de productos mas vendidos.
+* UnitPrice: Sera utilizado para determinar, junto con Quantity. las ventas a predecir.
+
 
 #### Compras de clientes
 
@@ -223,7 +240,7 @@ Ademas podemos observar que existen variables que son actualmente hileras (strin
 retail$StockCode <- as.factor(retail$StockCode)
 retail$Description <- as.factor(retail$Description)
 retail$Country <- as.factor(retail$Country)
-#retail$CustomerID <- as.factor(retail$CustomerID)
+retail$CustomerID <- as.factor(retail$CustomerID)
 ```
 
 
@@ -281,7 +298,7 @@ Los siguientes gráficos muestran el comportamiento de las ventas en el tiempo, 
 
 Para observar las ventas por día, utilizamos la variable InvoiceDay, con el fin de eliminar la hora de la venta que no es de interés para este análisis.
 
-```{r explore3,warning = FALSE}
+```{r,warning = FALSE}
 invoices <- retail %>% 
   group_by(InvoiceDay) %>%
   summarise_at(vars(Total),funs(sum(.)))
@@ -327,12 +344,19 @@ pp
 
 
 
-### Calidad de los datos
+## Verificación de la calidad de datos
 
 Uno de los problemas de calidad detectados es el gran número de observaciones en donde el CustomerID tiene un valor NA, es decir no se tiene la información de cuáles fueron los clientes que realizaron las compras, lo cual puede influir en el análisis a realizar al no contar con esta información.
 
 ```{r warning=FALSE}
-sum(is.na(retail$CustomerID))
+numclientesna <- count(is.na(retail$CustomerID))
+library(ggplot2)
+tmp_clientes<-data.frame(IdValido=c("Si", "No"), conteo=c(numclientesna[1,2],numclientesna[2,2]), index=1)
+ggplot(tmp_clientes,aes(IdValido,conteo)) +
+  geom_col(stat="identity")+
+  scale_y_continuous(name="Observaciones", labels = scales::comma) +
+  labs(x="Identificador valido de cliente?")+
+  ggtitle("NA's en el campo CustomerID")
 ```
 
 Como se puede observar, hay 135080 NA - estos registros no pueden ser utilizados para el analisis de clientes a realizar, dejandonos solamente con los 406829 registros restantes.
@@ -387,6 +411,13 @@ Para las cantidades se puede observar que son muchos mas, `r Quantity_Negativos`
 ## Selección de datos: 
 Debe describir y justificar con cuáles atributos trabajará o bien cuáles serán descartados, de igual forma, si se realiza una selección por filas, debe estar documentada y justificada.
 
+Para efectos de este trabajo solo se utilizaran datos del pais "Germany"
+
+```{r warning=FALSE}
+datos_ge <- retail[retail$Country == 'Germany',]
+summary(datos_ge)
+```
+
 ### Selección de variables clave
 
 * Quantity: Es la variable que nos indica cuales son las existencias que deben existir por cada producto para mejorar las existencias en inventarios basado en las ventas registradas. 
@@ -398,6 +429,8 @@ Debe describir y justificar con cuáles atributos trabajará o bien cuáles ser�
 * Country: Nos permite analizar o agrupar el comportamiento de las compras por país.
 
 * Total: Total es una variable derivada y nos permite obtener el monto total de las compras realizadas por cliente, para analizar cuales son los mejores clientes basados en las mismas.
+
+* InvoiceDay: Se empleara el InvoiceDate para realizar la creacion de variables adicionales asociadas a la dimensión tiempo, como la "frescura" y frecuencia de las compras realizadas por los clientes.
 
 
 Dado que el dataset solamente contiene 8 campos, no se descartará ninguna variable. Sin embargo si se evaluará descartar observaciones que presenten problemas como los outliers que se describen en la sección de Calidad de datos.
@@ -411,15 +444,15 @@ Basados en lo observado en la seccion de _Calidad de Datos_, podemos eliminar ci
 Existen dos registros que tienen este campo, UnitPrice, en negativo:
 
 ```{r warning=FALSE}
-kable(head(retail[retail$UnitPrice < 0,],10),"html", booktabs = T)%>%
+kable(head(datos_ge[datos_ge$UnitPrice < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 ```
 
 Basandonos en la descricpción de estos registros, que corresponden a ajuste de deuda y no a un producto en particular, podemos eliminarlos sin problema del conjunto de datos:
 
 ```{r warning=FALSE}
-retail <- retail[!(retail$UnitPrice < 0),]
-kable(head(retail[retail$UnitPrice < 0,],10),"html", booktabs = T)%>%
+retail <- datos_ge[!(datos_ge$UnitPrice < 0),]
+kable(head(datos_ge[datos_ge$UnitPrice < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 
 ```
@@ -429,10 +462,10 @@ kable(head(retail[retail$UnitPrice < 0,],10),"html", booktabs = T)%>%
 Asimismo se observaron varios valores negativos en el campo Quantity que corresponden a devoluciones y consideran que este parametro no sera utilizado, se proce a removerlas del conjunto de observaciones:
 
 ```{r warning=FALSE}
-kable(head(retail[retail$Quantity < 0,]),"html", booktabs = T)%>%
+kable(head(datos_ge[datos_ge$Quantity < 0,]),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
-retail <- retail[!(retail$Quantity < 0),]
-kable(head(retail[retail$Quantity < 0,],10),"html", booktabs = T)%>%
+datos_ge <- datos_ge[!(datos_ge$Quantity < 0),]
+kable(head(datos_ge[datos_ge$Quantity < 0,],10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 ```
 
@@ -440,7 +473,7 @@ kable(head(retail[retail$Quantity < 0,],10),"html", booktabs = T)%>%
 
 Al analizar el conjunto de datos se observa que hay algunas observaciones con valores NA en las columnas CustomerID y descripción las cuales son eliminadas.
 ```{r warning=FALSE}
-retail <- retail %>% drop_na(CustomerID, Description)
+datos_ge <- datos_ge %>% drop_na(CustomerID, Description)
 ```
 
 *Manejo de Outliers*
@@ -449,94 +482,228 @@ Para revisar los Outliers detectados en la sección de calidad de datos, se ejec
 
 
 ```{r warning=FALSE}
-summary(retail)
+summary(datos_ge)
 ```
+
+## Construcción de nuevos datos
+
+
+Para ambos modelos a construir se crearon nuevos datos basados en la información disponible.
+
+Para los modelos de clustering, se crearon las siguientes variables a através de la función RFM (https://cran.r-project.org/web/packages/rfm/rfm.pdf)
+
+* date_most_recent: fecha de la compras más reciente del cliente
+
+* recency_days: muestra que tan reciente es la ultima compra de un cliente. Es la diferencia en dias, de las ultima fecha analizada, con la fecha de la última compra.
+
+* transaction_count: que es la cantidad de compras o transacciones realizadas por el cliente
+
+* Amount: el total del valor monetario de las compras del cliente
+
+* recency_score: puntaje de antigüedad del cliente
+
+* frequency_score: puntaje de frecuencia del cliente
+
+* monetary_score: puntaje monetario del cliente
+
+* rfm_score: puntaje RFM del cliente
+
+
+Para el modelo de regresión se crearon 13 variables nuevas:
+
+* diff: diferencia del monto vendido entre la fecha y la fecha del mes anterior
+
+* lag: 12 variables de lag distribuidas a lo largo de los 13 meses, que contienen las diferencias entre las ventas distribuidas a lo largo de todos los meses.
+
+## Transformaciones aplicadas
+
+Para los modelos de clustering, se realizaron agrupaciones de los datos por cliente y por fecha, sumarizando las variables Total y el conteo de las compras realizadas por el cliente.
+
+En el caso de los modelos de regresion, se agruparon los datos por fecha, sumarizando el total de ventas para esa fecha.
+
+
+
+### Agrupamiento por Fecha
+
+Se agrupan las compras de los clientes por fecha.
+
+```{r,warning = FALSE}
+historic_invoices <- datos_ge %>% 
+  group_by(InvoiceDay,CustomerID) %>%
+  summarise_at(vars(Total),funs(sum(.))) 
+kable(head(historic_invoices,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+
+```
+
 
 
 # Fase de Modelado
 
 ## Selección de las técnicas a utilizar
 
+Para cubrir los objetivos planteados, se seleccionaron dos técnicas de aprendizaje automático - clustering y regresión. A continuación se detallan ambas técnicas.
+
 ### Clustering de clientes
 
-Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedias y Kmedoids a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
+Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedoids y Kmedias a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
 
-### Regresión Logistica para la predicción del total de ventas.
+TODO: Teoria de RFM
+
+### Regresión para la predicción del total de ventas.
 
 Para el cumplimiento del objectivo de mineria "Predecir las ventas mensuales por producto a partir de los datos históricos" se hará uso de la técnica de regresión lineal simple.
 
+## Construcción de modelos
 
-## Construcción de cada modelo.
+### Modelos de agrupamiento
 
-### Construcción del modelo #1 (Kmedoids)
+Se procede a crear las varias Recency, Frecuency y Monetary
+
+```{r,warning = FALSE}
+# Se procede a obtener la fecha de la ultima compra.
+ultima_compra <- historic_invoices %>% 
+  group_by(CustomerID) %>%
+  summarise_at(vars(InvoiceDay),funs(max(.)))
+kable(head(ultima_compra,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+colnames(ultima_compra)= c('CustomerID','UltimaCompra')
+```
+
+Validamos que todos los clientes fueron considerados:
+
+```{r warning = FALSE}
+length(unique(historic_invoices$CustomerID))
+length(unique(ultima_compra$CustomerID))
+```
+
+
+```{r warning = FALSE}
+visitas_por_cliente <- historic_invoices %>% 
+  group_by(CustomerID) %>%
+  summarise_at(vars(InvoiceDay),funs(n_distinct(.)))
+colnames(visitas_por_cliente)<- c('CustomerID','CantidadVisitas')
+kable(head(visitas_por_cliente,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+length(unique(visitas_por_cliente$CustomerID))
+```
+
+Total de ventas por cliente
+
+```{r warning = FALSE}
+
+#historic_invoices
+#datos <- merge(historic_invoices, ultima_compra, by="CustomerID")
+#datos2 <- merge(datos, visitas_por_cliente, by="CustomerID")
+#head(datos)
+#head(datos2)
+
+total_por_cliente <- historic_invoices  %>% 
+  group_by(CustomerID) %>%
+  summarise_at(vars(Total),funs(sum(.)))
+kable(head(total_por_cliente,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+length(unique(total_por_cliente$CustomerID))
+
+
+```
+
+Calculamos la frescura de cada cliente:
+
+```{r warning = FALSE}
+#Se calcula la recency 
+#datos['Recency'] <- as.numeric(difftime(datos$UltimaCompra ,datos$InvoiceDay , units = c("days")))
+ultima_compra$Recency <- as.numeric(difftime(max(ultima_compra$UltimaCompra) ,ultima_compra$UltimaCompra , units = c("days")))
+head(ultima_compra)
+summary(ultima_compra)
+
+
+hist(ultima_compra$Recency, 
+        main = 'Distribución de las frecuencia de las visitas', 
+        ylab = 'Observaciones', 
+        xlab = 'Cantidad de dias')
+```
+
+```{r warning=FALSE}
+
+datos <-  merge(ultima_compra, visitas_por_cliente, by="CustomerID")
+datos <- merge(datos,total_por_cliente, by="CustomerID")
+head(datos)
+
+```
+
+```{r warning=FALSE}
+
+analysis_date <- lubridate::as_date("2006-12-31", tz = "UTC")
+rfm_result <- rfm_table_order(datos, 
+                              customer_id=CustomerID, 
+                              order_date=UltimaCompra, 
+                              revenue=Total, max(datos$UltimaCompra))
+#summary(rfm_result)
+rfm_result
+```
+
+
+##### Construcción del modelo #1 (Kmedoids)
 
 Para el modelo #1 se hace uso de la técnica Kmedoids.
 
-#### Selección de los parámetros modelo #1 (Kmedoids)
+Para realizar la segmentación de cliente se empleará el análisis RFM para tratar crear variables adicionales, y tratar de agrupar a los clientes según sus caracteristicas.
+
+RFM significa Frescura(Recency) - Frecuencia - Valor monetario. Para efectos del trabajo se intentará identificar si es posible agrupar a los clientes de la compañia analizada en las siguientes categorias.
+
+* Valor bajo: clientes que son menos activos que otros, no son compradores o visitantes muy frecuentes y generan ingresos muy bajos, cero, tal vez negativos.
+
+* Valor medio: en el medio de todo. A menudo, utilizando nuestra plataforma (pero no tanto como nuestros valores altos), es bastante frecuente y genera ingresos moderados.
+
+* Alto valor: el grupo que no queremos perder. Alto ingreso, frecuencia y baja inactividad.
+
+##### Selección de los parámetros modelo #1 (Kmedoids)
 
 Para el primer modelo se analizarán las variables Total y Country.
 
 Para la determinación del valor más apropiado de K se evaluaron métodos como silhouette, método del codo y estadística gap y finalmente basado en los resultados obtenidos se propone hacer uso de un k=4
 
 
-```{r warning=FALSE}
+*Determinar los clusters optimos*
 
-retail_limpio<-retail[complete.cases(retail),]
-retail_limpio<-retail_limpio[(retail_limpio$Country=="Germany" | retail_limpio$Country=="France" ),]
-#nrow(retail_limpio[is.na(retail_limpio),])
-#nrow(retail_limpio[!is.finite(retail_limpio$Total),])
-retail_limpio$InvoiceDate<-NULL
-retail_limpio$InvoiceNo<-NULL
+Para la selecion del numero optimo de clusters a crear, utilizamos 3 técnicas:
 
-#which(apply(retail_limpio, 2, var)==0)
+* Silhoutte
 
-retail_limpio$Quantity<-as.double(retail_limpio$Quantity)
+* Método del codo
 
-retail_limpio<-retail_limpio[,c(5,6,7)]
-retail_limpio$CountryNum<-ifelse(retail_limpio$Country =="Germany", 1, 2)
-retail_limpio$Country<-NULL
-#retail_limpio<-retail_limpio[retail_limpio$Quantity<11,]
-#retail_limpio<-retail_limpio[retail_limpio$UnitPrice<5,]
-str(retail_limpio)
+* Estadística Gap
 
-```
+A continuación se muestran los resultados de estas técnicas:
 
 ```{r warning=FALSE}
+rfm_clustering<-rfm_result$rfm[,c("recency_days","amount")]
+rfm_clustering <- na.omit(rfm_clustering)
+str(rfm_clustering)
+
+clusters_kmedoids<-pam(rfm_clustering,3)
+
+resultado_medoids <- data.frame(clusters_kmedoids$cluster,rfm_result$rfm)
+head(resultado_medoids,20)
 # cálculo del score Silhouette
-#score_sil<- silhouette(clusters_kmedoids,daisy(datosFinal))
+score_sil<- silhouette(clusters_kmedoids,daisy(rfm_clustering))
 
 # cálculo del valor óptimo de k usando el score silhouette
-#fviz_nbclust(retail_limpio,pam,method = 'silhouette',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'silhouette',k.max = 10)
 
 # cálculo del valor óptimo de k usando el método del codo
-#fviz_nbclust(retail_limpio,pam,method = 'wss',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'wss',k.max = 10)
 
 # cálculo del valor óptimo de k usando la estadística gap
-#fviz_nbclust(retail_limpio,pam,method = 'gap_stat',k.max = 5)
+fviz_nbclust(rfm_clustering,pam,method = 'gap_stat',k.max = 10)
 
 ```
 
+Como se muestra en los graficos anteriores, tanto el método de Silhoutte como el del Codo indican que el numero de clusters optimo es 3. El método de estadística de gap indica que este número sería 1. Para la creación de los clusters, vamos a utilizar 3, dado que no tiene sentido para los objetivos utilizar solo 1. Esta decisión se refuerza con el hecho que dos de los tres métodos retornan este valor.
 
 
 ```{r warning=FALSE}
-clusters_kmedoids<-pam(retail_limpio,4)
-
-# crear un data frame combinando el cluster asignado y los atributos originales
-resultado_medoids <- data.frame(clusters_kmedoids$cluster,retail_limpio)
-head(resultado_medoids)
-
-```
-
-
-```{r warning=FALSE}
-clusters_kmedoids$medoids
-```
-
-```{r warning=FALSE}
-# visualización de los clusters
-fviz_cluster(clusters_kmedoids,data=retail_limpio,palette='jco')
-
-
 # cluster al que se asignó cada individuo
 clusteres_medoids <- clusters_kmedoids$clustering
 #clusteres_medoids
@@ -545,54 +712,137 @@ medoids <- clusters_kmedoids$medoids
 medoids
 ```
 
-Dashboard: por pais
-
-CustomerId: es un factor, no considerarlo para el clustering
-
-### Construcción del modelo #2 (Regresión Lineal)
-
-
-#### Selección de los parámetros modelo #2
-
-Considerando que la predicción de los valores que se desea realizar está asociado a las ventas totales mensuales, se procedea particionar el conjunto de datos en 2 data frames para la fase de entrenamiento y de pruebas
+TODO: Explicar los medoids
 
 ```{r warning=FALSE}
-# Se dividen los datos en los dataframes de entrenamiento y pruebas
-retail$InvoiceNo <- as.numeric(retail$InvoiceNo)
-retail$Quantity <- as.numeric(retail$Quantity)
-retail$UnitPrice <- as.numeric(retail$UnitPrice)
-retail$CustomerID <- as.numeric(retail$CustomerID)
-retail$Total <- as.numeric(retail$Total)
-sample = sample.split(retail$Total, SplitRatio = .75)
-entrenamiento = subset(retail, sample == TRUE)
-prueba  = subset(retail, sample == FALSE)
+# visualización de los clusters
+#which(apply(rfm_clustering, 2, var)==0)
+fviz_cluster(clusters_kmedoids,data=rfm_clustering,palette='jco')
 
 ```
 
-Se realiza la verificación de los rangos de las observaciones obtenidas a fin de verificar que el conjunto de entrenamiento, abarca el rango de precios, descripciones e incluso observaciones del clientes con el mismo CustomerId.
+
+
+##### Construcción del modelo #2 (Kmeans)
+
+```{r warning=FALSE}
+clusters <- kmeans(rfm_clustering,3,nstart=20)
+clusteres_kmeans <- clusters$cluster
+
+# crear un data frame combinando el cluster asignado y los atributos originales
+resultado_kmeans <- data.frame(clusters$cluster,rfm_clustering)
+head(resultado_kmeans)
+
+```
+
+De los clusteres anteriores se puede observar como la variable recency no parece tener tanta significancia y los grupos tienen a tener una relación en cuanto al valor monetario invertido por cada cliente.
+
+```{r warning=FALSE}
+#obtener cantidad de registros en cada cluster y los centroides
+descClusters<- data.frame(clusters$size,clusters$centers)
+descClusters
+```
+
+###### Descripción del modelo obtenido (Incluya al menos un gráfico)
+
+Loa gráficos siguientes nos permiten observar como en el caso de los 3 clusteres formados, los clusters que van del año 1980 al 1990 se observan más dispersos y es posible observar un valor anormal o outlier en este rango. 
+```{r warning=FALSE}
+ggplot(rfm_clustering,aes(rfm_clustering$recency_days,rfm_clustering$amount, color = clusters$cluster)) + geom_point()+ggtitle(label='Distribución por cluster') + 
+  scale_color_viridis(option = "D")
+
+```
+
+El siguiente gráfico muestra con mayor claridad el agrupamiento del cluster número 2, el cual parece agrupar a las compañias que se han mantenido por mayor tiempo en el mercado y tienen ingresos elevados.
+```{r warning=FALSE}
+# otra forma de visualizar los clusters
+fviz_cluster(clusters,data=rfm_clustering,palette='jco',ggtheme = theme_minimal())
+```
+
+
+### Modelos de regresión
+
+
+#### Selección de los parámetros
+
+Para la construccion de los modelos de regresion se trabajara con el campo InvoiceDay y los totales de ventas, a fin de realizar la agregacion de las ventas de forma mensual y a partir de estos datos generar otras variables que no sean de utilidad para la prediccion. 
+
+```{r warning=FALSE}
+compras <- datos_ge %>% 
+  group_by(InvoiceDay) %>%
+  summarise_at(vars(Total),funs(sum(.))) 
+colnames(compras) <- c('Fecha','ventas')
+kable(head(compras,10),"html", booktabs = T)%>%
+  kable_styling(latex_options = "striped")
+
+head(compras)
+
+plot(x = compras$Fecha, y = compras$ventas, 
+     main = 'Ventas Mensuales', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="l")
+
+```
+
+El siguiente paso a ejecutar es comparar la diferencia en ventas de u mes a otro.
+
+```{r warning=FALSE}
+compras_diferencia <- compras
+compras_diferencia['ventas_previas'] <- shift(compras_diferencia$ventas,n=1,fill=0)
+na.omit(compras_diferencia)
+# se procede a calcular la diferencia
+
+compras_diferencia['diferencia'] <- compras_diferencia$ventas - compras_diferencia$ventas_previas
+head(compras_diferencia)
+
+```
+
+Al analizar el comportamiento de la diferencia de las ventas a lo largo del tiempo se observa
+que el comportamiento de las mismas no pareciera tener un comportamiento estacionario, sino que se mantiene constante a lo largo del anno, exceptuando el mes de mayo, el cual es el mes en que se celebra el dia de la madre en la mayoria de paises y puede ser un indicador del incremento de las ventas durante este mes.
+
 ```{r}
-#Se comparan los datos de entrenamiento y prueba.
+plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia, 
+     main = 'Ventas Mensuales', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="l")
+
+```
+Posterior a esto se procede a crear las variables lag, las cuales nos permiten representar como columnas las ventas y el comportamiento de las mismas durante el periodo de un anno.
+
+```{r}
+for (mes in 1:13){
+  field_name = paste('lag_',toString(mes))
+  compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=mes,fill=0)
+}
+
+colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', 'Dic_Anno1','Ene_Anno2','Feb_Anno2','Mar_Anno2','Abr_Anno2','May_Anno2','Jun_Anno2','Jul_Anno2','Ago_Anno2','Sep_Anno2','Oct_Anno2','Nov_Anno2','Dic_Anno2')
+```
+
+```{r}
+#Se particiona el dataset en entrenamiento y prueba.
+sample = sample.split(compras_diferencia$diff, SplitRatio = .75)
+entrenamiento = subset(compras_diferencia, sample == TRUE)
+prueba  = subset(compras_diferencia, sample == FALSE)
+
 summary(entrenamiento)
 summary(prueba)
 ```
 ```{r}
-entrenamiento.variables_numericas <- entrenamiento[,c(0,1,4,6,7,9)]
-prueba.variables_numericas <- prueba[,c(0,1,4,6,7,9)]
-str(entrenamiento.variables_numericas)
-pairs(entrenamiento)
+pairs(entrenamiento[4:15])
 ```
 
 
+Se utiliza la funcion cor para identificar la correlacion entre las variables de ventas de los diferentes meses de forma numérica.
+
 ```{r}
-cor(entrenamiento.variables_numericas)
+cor(entrenamiento[4:15])
 ```
 
 
-####Modelo de Regresión lineal simple
+#### Modelo de Regresión lineal simple
 
 ```{r}
-#Se crea la regresion lineal simple para el total
-modelo.simple <- lm(Total ~ InvoiceDate , data = entrenamiento)
+#Se crea la regresion lineal simple para la diferencia de las ventas
+modelo.simple <- lm(diff ~ Dic_Anno1, data = entrenamiento)
 #ver detalle del modelo
 summary(modelo.simple)
 
@@ -612,7 +862,7 @@ hist(modelo.simple$residuals,
 
 ````{r}
 # Ver distribución de los residuos del modelo
-plot(x = entrenamiento$Total,
+plot(x = entrenamiento$diff,
      y = modelo.simple$residuals,
      main = 'Residuos del Modelo de Regresión simple en Entrenamiento',
      xlab = 'Valor',
@@ -621,53 +871,58 @@ plot(x = entrenamiento$Total,
 
 ```{r}
 #Calcular el RMSE en Entrenamiento
-predicciones.entrenamiento <- predict(modelo.simple)
 entrenamiento$Prediccion <- predict(modelo.simple)
-sqrt(mean((entrenamiento$Total - entrenamiento$Prediccion)^2))
+sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
 
-# predecir valores de mpg.mpg en el conjunto de datos de prueba
+# predecir valores de diff en el conjunto de datos de prueba
 prueba$Prediccion <- predict(modelo.simple, newdata = prueba)
 #Calcular el RMSE en prueba
-sqrt(mean((prueba$Total - prueba$Prediccion)^2))
+#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
+
+entrenamiento[,c(1,4,18)]
+prueba[,c(1,4,18)]
 
 ```
 
+```{r}
+par(mfrow = c(2,1))
+plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
+     main = 'Ventas Mensuales Reales', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
+lines(entrenamiento$Prediccion, type = "o", col = "blue")
 
-#### Modelo Regresión Multiple
-
-````{r}
-# Para la creación del modelo de regresión múltiple se realiza un "pre-trabajo" 
-# sobre la data a utilizar a fin de evaluar la multicolinealidad entre otros factores.
-
-#Análisis visual sin la variable de respuesta
-pairs(entrenamiento.variables_numericas)
-
-#Matriz de correlación sin la variable de respuesta
-cor(entrenamiento.variables_numéricas)
-
+plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
+     main = 'Ventas Mensuales Predicion', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
+#lines(entrenamiento$Prediccion, type = "o", col = "blue")
 ```
 
+#### Modelos Regresión Multiple
 
+##### Modelo de regresión lineal múltiple 0 (Modelo con las 12 variables)
+A fin de reforzar los resultados del modelo de regresion lineal, se crea un modelo de regresion multiple con las variables creadas con la diferencia de las ventas de los 13 meses analizados.
 
 ````{r}
 #Para la creación del modelo 1 se empezará por un modelo "completo" 
-entrenamiento_mm <- entrenamiento.variables_numericas
-prueba_mm <- prueba.variables_numericas
-modelo.multiple0 <- lm(Total ~ . , data = entrenamiento_mm)
+modelo.multiple0 <- lm(diff ~ . , data = entrenamiento[,4:15])
 # ver el detalle del resumen
 summary(modelo.multiple0)
 
-#Para la creación del modelo 1 se empezará por un modelo "Con las variables significativas" 
-modelo.multiple1 <- lm(Total ~ CustomerID   , data = entrenamiento_mm)
-# ver el detalle del resumen
-summary(modelo.multiple1)
-
 ```
-##### Evaluación Modelo de regresión lineal múltiple
+
+Como se observa anteriormente los resultados del modelo0 muestran como las variables mas significativas son las variables de los 6 primeros meses. Por lo que se creara un modelo 2 para comparar los resultados.
+
+Por lo que se procede a crear un segundo modelo unicamente con estas variables
+
+
+###### Evaluación Modelo 0
+
 ````{r}
 #Distribución de los residuos del modelo basado en el peso
 hist(modelo.multiple0$residuals,
-     main= 'Residuos del modelo de regresión simple',
+     main= 'Distribución de residuos Modelo de Regresión Múltiple 0',
      xlab = 'Residuos',
      ylab = 'Observaciones',
      breaks = 50)
@@ -676,25 +931,107 @@ hist(modelo.multiple0$residuals,
 
 ````{r}
 # Ver distribución de los residuos del modelo
-plot(x = entrenamiento$Total,
+plot(x = entrenamiento$diff,
      y = modelo.multiple0$residuals,
-     main = 'Residuos del Modelo de Regresión simple en Entrenamiento',
+     main = 'Residuos del Modelo de Regresión Múltiple 0',
      xlab = 'Valor',
      ylab = 'Residuos')
 ````
 
 ```{r}
 #Calcular el RMSE en Entrenamiento
-predicciones.entrenamiento <- predict(modelo.multiple0)
 entrenamiento$Prediccion <- predict(modelo.multiple0)
-sqrt(mean((entrenamiento$Total - entrenamiento$Prediccion)^2))
+sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
 
 # predecir valores de mpg.mpg en el conjunto de datos de prueba
-prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba)
+prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba[,4:15])
 #Calcular el RMSE en prueba
-sqrt(mean((prueba$Total - prueba$Prediccion)^2))
+#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
+
+entrenamiento[,c(1,4,18)]
+prueba[,c(1,4,18)]
 
 ```
 
+```{r}
+par(mfrow = c(2,1))
+plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
+     main = 'Ventas Mensuales Reales', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
+lines(entrenamiento$Prediccion, type = "o", col = "blue")
+
+plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
+     main = 'Ventas Mensuales Predicion', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
+#lines(entrenamiento$Prediccion, type = "o", col = "blue")
+```
+
+
+##### Modelo de regresión lineal múltiple 1 (Modelo con 6 variables)
+
+Por lo que se procede a crear un segundo modelo únicamente con las variables con valores significativos mostrados por el modelo 0
+
+````{r}
+#Para la creación del modelo 1 se empezará por un modelo "Con las variables significativas" 
+modelo.multiple1 <- lm(diff ~ Dic_Anno1 + Ene_Anno2 + Feb_Anno2 + Mar_Anno2 + Abr_Anno2 + May_Anno2 , data = entrenamiento[,4:15])
+# ver el detalle del resumen
+summary(modelo.multiple1)
+
+```
+
+###### Evaluación Modelo 1
+
+````{r}
+#Distribución de los residuos del modelo basado en el peso
+hist(modelo.multiple1$residuals,
+     main= 'Residuos del Modelo de Regresión Múltiple 1',
+     xlab = 'Residuos',
+     ylab = 'Observaciones',
+     breaks = 50)
+````
+
+
+````{r}
+# Ver distribución de los residuos del modelo
+plot(x = entrenamiento$diff,
+     y = modelo.multiple1$residuals,
+     main = 'Residuos del Modelo de Regresión Múltiple 1',
+     xlab = 'Valor',
+     ylab = 'Residuos')
+````
+
+```{r}
+#Calcular el RMSE en Entrenamiento
+entrenamiento$Prediccion <- predict(modelo.multiple1)
+sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
+
+# predecir valores de mpg.mpg en el conjunto de datos de prueba
+prueba$Prediccion <- predict(modelo.multiple1, newdata = prueba[,4:15])
+#Calcular el RMSE en prueba
+#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
+
+entrenamiento[,c(1,4,18)]
+prueba[,c(1,4,18)]
+```
+
+###### Comparación de ventas reales vrs prediciones
+
+
+```{r}
+par(mfrow = c(2,1))
+plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
+     main = 'Ventas Mensuales Reales', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
+lines(entrenamiento$Prediccion, type = "o", col = "blue")
+
+plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
+     main = 'Ventas Mensuales Predicion', 
+     xlab = 'Fecha', 
+     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
+#lines(entrenamiento$Prediccion, type = "o", col = "blue")
+```
 
 
