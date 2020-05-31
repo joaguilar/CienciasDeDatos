@@ -410,11 +410,12 @@ Para las cantidades se puede observar que son muchos mas, `r Quantity_Negativos`
 
 ## Selección de datos: 
 Debe describir y justificar con cuáles atributos trabajará o bien cuáles serán descartados, de igual forma, si se realiza una selección por filas, debe estar documentada y justificada.
-
+TODO
 Para efectos de este trabajo solo se utilizaran datos del pais "Germany"
 
 ```{r warning=FALSE}
-datos_ge <- retail[retail$Country == 'Germany',]
+#datos_ge <- retail[retail$Country == 'Germany',]
+datos_ge <- retail
 summary(datos_ge)
 ```
 
@@ -536,6 +537,16 @@ kable(head(historic_invoices,10),"html", booktabs = T)%>%
 
 ```
 
+### Agrupamiento de Clientes por pais
+
+Guardamos una tabla con los clientes y su pais para utilizarla mas adelante.
+
+```{r warning=FALSe,cache=TRUE}
+clientes_pais <- datos_ge %>% 
+  distinct(CustomerID, Country) %>%
+  distinct(CustomerID, .keep_all = TRUE)
+head(clientes_pais)
+```
 
 
 # Fase de Modelado
@@ -687,6 +698,7 @@ A continuación se muestran los resultados de estas técnicas:
 ```{r warning=FALSE}
 rfm_clustering<-rfm_result$rfm[,c("recency_days","transaction_count","amount")]
 rfm_clustering <- na.omit(rfm_clustering)
+
 str(rfm_clustering)
 
 clusters_kmedoids<-pam(rfm_clustering,3)
@@ -708,6 +720,7 @@ fviz_nbclust(rfm_clustering,pam,method = 'gap_stat',k.max = 10)
 ```
 
 Como se muestra en los graficos anteriores, tanto el método de Silhoutte como el del Codo indican que el numero de clusters optimo es 3. El método de estadística de gap indica que este número sería 1. Para la creación de los clusters, vamos a utilizar 3, dado que no tiene sentido para los objetivos utilizar solo 1. Esta decisión se refuerza con el hecho que dos de los tres métodos retornan este valor.
+TODO - GAP falla y el codo puede darnos 6 tambien.
 
 
 ```{r warning=FALSE}
@@ -724,6 +737,8 @@ kable(medoids_df,"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
 medoids_df
 ```
+
+TODO: Arreglarlo
 
 Como podemos observar en los medoides, los clientes corresponden a grandes rasgos a los siguientes 3 clusters:
 
@@ -777,7 +792,7 @@ centroides$clusters.size<-NULL
 centroides$cluster<-rownames(centroides)
 centroides
 ```
-
+TODO: Ajustarlos
 Como podemos observar en los clusters, los clientes corresponden a grandes rasgos a los siguientes 3 clusters:
 
 * Clientes de bajo valor: Corresponden a los clientes del cluster 1, que tienen pocas compras, de un monto bajo, y no compran recientemente.
@@ -831,6 +846,13 @@ ggplot(clusters_dfkmeans,aes(clusters)) +
 export_df<-rfm_result$rfm
 export_df$kmedoids<-clusters_kmedoids$clustering
 export_df$kmeans<-clusters$cluster
+head(export_df)
+summary(export_df)
+
+export_df<- merge(export_df,clientes_pais,by=CustomerID)
+head(export_df)
+summary(export_df)
+
 
 export_df<-export_df %>% 
   mutate(kmeans = replace(kmeans, kmeans == 2, "2 Medio Valor")) %>%
