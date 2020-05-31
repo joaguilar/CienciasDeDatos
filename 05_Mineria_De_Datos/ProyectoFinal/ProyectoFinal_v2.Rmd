@@ -114,7 +114,7 @@ Un ambiente virtualizado en la nube con las siguientes características.
 *	Ausencia de información sobre las categorías de cada producto.
 
 ### Riesgos y contingencias
-```{r warning=FALSE}
+```{r warning=FALSE,echo=FALSE}
 atributos<-read.csv('riesgos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Riesgos y Contingencias")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
@@ -147,7 +147,7 @@ Para el cumplimiento de los objetivos de mineria se utilizaran las técnicas de 
 ### Plan del proyecto
 Se debe señalar que la estimación inicial para el desarrollo del proyecto no debe de tardar más de 1 mes y por lo cual se consideran 24 días hábiles para la implementación del mismo, los cuales son distribuidos de la siguiente manera.
 
-```{r warning=FALSE}
+```{r warning=FALSE,echo=FALSE}
 atributos<-read.csv('plan_proyecto.csv', sep = ',',dec = '.',encoding = "UTF-8")
 kable(atributos[,0:5],caption = "Plan de Proyecto")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
@@ -174,7 +174,7 @@ El conjunto de datos puede ser descargado en formato .xlsx a través del siguien
 
 El conjunto de datos a utilizar cuenta “Retail Online” con 541910 observaciones de compras realizadas desde diciembre del 2010 hasta diciembre del 2011, cada una de las observaciones cuenta con 8 variables las cuales se describen a continuación.
 
-```{r warning=FALSE}
+```{r warning=FALSE,echo=FALSE}
 atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Descripción de atributos")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
