@@ -857,6 +857,7 @@ export_clusters <- rbind(medoids_df2,centroides2)
 write.csv(export_clusters,"centros_clusters.csv")
 ```
 
+
 ### Modelos de regresión
 
 Para este proyecto se emplearán las técnicas de regresión simple y regresión múltiple a fin de comparar los resultados de ambas al realizar la predicción de las ventas.
@@ -904,7 +905,7 @@ Posterior a esto se procede a crear las variables lag, las cuales nos permiten r
 La razón por la cual se crean 13 variables lag es debido a que por cada mes se tienen observaciones unicamente de alrededor de 13 dias.
 
 ```{r}
-for (inc in 1:14){
+for (inc in 1:13){
   field_name = paste('lag',toString(inc),sep = '')
   compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=inc,fill=0)
 }
@@ -915,10 +916,11 @@ colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', '
 
 ```{r}
 #Se particiona el dataset en entrenamiento y prueba.
-entrenamiento = compras_diferencia[compras_diferencia$Fecha <= '2011-10-31',]
-prueba  = compras_diferencia[compras_diferencia$Fecha >= '2011-10-31',]
-entrenamiento$Observacion <- 'Entrenamiento'
-prueba$Observacion <- 'Prueba'
+#entrenamiento = compras_diferencia[compras_diferencia$Fecha <= '2011-10-31',]
+#prueba  = compras_diferencia[compras_diferencia$Fecha >= '2011-10-31',]
+sample = sample.split(compras_diferencia$diff, SplitRatio = .75)
+entrenamiento = subset(compras_diferencia, sample == TRUE)
+prueba  = subset(compras_diferencia, sample == FALSE)
 ```
 
 Se utiliza la función cor para identificar la correlación entre las 14 variables lag y su correspondiente relación con la fecha precedente.
@@ -1076,6 +1078,15 @@ resultados_rm$Modelo <- 'Regresión Multiple'
 resultado_regresion <- rbind(resultados_rs,resultados_rm)
 write.csv(resultado_regresion, "resultado_regresion.csv")
 ```
+
+## Evaluación de los modelos y selección
+
+### Clustering - Kmedoids
+En el caso de los algoritmos de clustering se propone emplear el modelo de kmedoids, considerando que tras analizar el comportamiento de las ventas mensuales, se observa que existen observaciones fuera de rango durante el mes de mayo, que el modelo de kmedoids es capaz de procesar de mejor forma en comparación de kmeans.
+
+### Regresión - Regresión Múltiple
+
+A pesar de que los resultados obtenidos por ambos modelos, no se consideran buenos debido a la alta tasa de error, si se recomienda usar el modelo de regresión múltiple el cual es el que ofrece los mejores resultados.
 
 # Dashboard 
 
