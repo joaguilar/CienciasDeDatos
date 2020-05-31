@@ -849,7 +849,7 @@ export_df$kmeans<-clusters$cluster
 head(export_df)
 summary(export_df)
 
-export_df<- merge(export_df,clientes_pais,by=CustomerID)
+export_df<- merge(x=export_df,y=clientes_pais,by.x="customer_id",by.y="CustomerID")
 head(export_df)
 summary(export_df)
 
