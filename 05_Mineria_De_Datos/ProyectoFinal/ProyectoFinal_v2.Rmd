@@ -859,22 +859,26 @@ write.csv(export_clusters,"centros_clusters.csv")
 
 ### Modelos de regresión
 
+Para este proyecto se emplearán las técnicas de regresión simple y regresión múltiple a fin de comparar los resultados de ambas al realizar la predicción de las ventas.
 
 #### Selección de los parámetros
 
-Para la construccion de los modelos de regresion se trabajara con el campo InvoiceDay y los totales de ventas, a fin de realizar la agregacion de las ventas por la fecha de realización de las compras y poder monitorear el comportamiento mensual de las mismas y a partir de estos datos generar otras variables que no sean de utilidad para la predicción. 
+Para la construccion de los modelos de regresión se trabajara con el campo InvoiceDay y los montos de ventas, a fin de realizar la agregación de las ventas por la fecha de compras y poder monitorear el comportamiento mensual de las mismas y a partir de estos datos generar otras variables que nos sean de utilidad para la predicción. 
 
 ```{r warning=FALSE}
-datos_ge$YearMonth <- format(as.Date(datos_ge$InvoiceDay), "%Y-%m")
-compras <- datos_ge %>% 
+#datos_ge$YearMonth <- format(as.Date(datos_ge$InvoiceDay), "%Y-%m")
+compras <- retail %>% 
   group_by(InvoiceDay) %>%
   summarise_at(vars(Total),funs(sum(.)))
 
 colnames(compras) <- c('Fecha','ventas')
 kable(head(compras,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
-head(compras)
+```
 
+A continuación el siguiente gráfico muestra el comportamiento de las ventas de forma mensual.
+
+```{r warning=FALSE}
 plot(x = compras$Fecha, y = compras$ventas, main = 'Ventas Mensuales', xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
 
 ```
@@ -884,54 +888,51 @@ El siguiente paso a ejecutar es comparar la diferencia en ventas con la fecha pr
 ```{r warning=FALSE}
 compras_diferencia <- compras
 compras_diferencia['ventas_previas'] <- shift(compras_diferencia$ventas,n=1,fill=0)
-na.omit(compras_diferencia)
+compras_diferencia <- na.omit(compras_diferencia)
 # se procede a calcular la diferencia
 
 compras_diferencia['diferencia'] <- compras_diferencia$ventas - compras_diferencia$ventas_previas
-summary(compras_diferencia)
-
 ```
 
 Al analizar el comportamiento de la diferencia de las ventas a lo largo del tiempo se observa que el comportamiento de las mismas no pareciera tener un comportamiento estacionario, sino que se mantiene constante a lo largo del anno, exceptuando el mes de mayo, el cual es el mes en que se celebra el dia de la madre en la mayoria de paises y puede ser un indicador del incremento de las ventas durante este mes.
 
 ```{r}
-plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia,  main = 'Ventas Mensuales',  xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
+plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia,  main = 'Diferencia de Ventas Mensuales',  xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
 ```
-Posterior a esto se procede a crear las variables lag, las cuales nos permiten representar como columnas las ventas y el comportamiento de las mismas durante el periodo de un anno.
+Posterior a esto se procede a crear las variables lag, las cuales nos permiten representar como columnas las ventas y el comportamiento de las mismas durante el periodo de un año.
+
+La razón por la cual se crean 13 variables lag es debido a que por cada mes se tienen observaciones unicamente de alrededor de 13 dias.
 
 ```{r}
-for (inc in 1:13){
+for (inc in 1:14){
   field_name = paste('lag',toString(inc),sep = '')
   compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=inc,fill=0)
 }
 
 colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', 'lag1','lag2','lag3','lag4','lag5','lag6','lag7','lag8','lag9','lag10','lag11','lag12','lag13')
+
 ```
 
 ```{r}
 #Se particiona el dataset en entrenamiento y prueba.
-sample = sample.split(compras_diferencia$diff, SplitRatio = .75)
-entrenamiento = subset(compras_diferencia, sample == TRUE)
-prueba  = subset(compras_diferencia, sample == FALSE)
+entrenamiento = compras_diferencia[compras_diferencia$Fecha <= '2011-10-31',]
+prueba  = compras_diferencia[compras_diferencia$Fecha >= '2011-10-31',]
 entrenamiento$Observacion <- 'Entrenamiento'
 prueba$Observacion <- 'Prueba'
 ```
 
-Se utiliza la función pairs para analizar la correlación de las 6 primeras variables lag y su correlación con la diferencia de las ventas
+Se utiliza la función cor para identificar la correlación entre las 14 variables lag y su correspondiente relación con la fecha precedente.
+
+Como se puede apreciar en la matriz de correlación a continuación, la mayoria de variables no pareciera presentar una correlación fuerte, siendo alrededor de 50 y 52% las variables que presentan una mayor correlación, por ejemplo entre la variable lag1 y lag2 se observa una correlación negativa del -52.88%.
 
 ```{r}
-pairs(entrenamiento[4:10])
-```
-
-
-Se utiliza la funcion cor para identificar la correlacion entre las 12 variables lag y su correspondiente relación con la fecha precedente.
-
-```{r}
-cor(entrenamiento[4:15])
+cor(entrenamiento[4:17])
 ```
 
 
 #### Modelo de Regresión lineal simple
+
+Para le modelo de regresión simple se utilizara únicamente la variable lag1.
 
 ```{r}
 #Se crea la regresion lineal simple para la diferencia de las ventas
@@ -941,47 +942,43 @@ summary(modelo.simple)
 
 ```
 
+Al analizar la significancia estadistica de la variable lag1 se puede observar que esta presenta una alta significancia, para el modelo de predicción.
 
 ##### Evaluación Modelo de regresión lineal simple
-````{r}
-#Distribución de los residuos del modelo basado en la diferencia de los montos de compras
-hist(modelo.simple$residuals,
-     main= 'Residuos del modelo de regresión simple',
-     xlab = 'Residuos',
-     ylab = 'Observaciones',
-     breaks = 50)
-````
 
+Podemos ver que los residuos del modelo se encuentran cercanos a cero lo cual es indicador que el modelo se comporta de manera esperada.
 
 ````{r}
 # Ver distribución de los residuos del modelo
 plot(x = entrenamiento$diff,
      y = modelo.simple$residuals,
-     main = 'Residuos del Modelo de Regresión simple en entrenamiento',
+     main = 'Residuos del Modelo de regresión simple en entrenamiento',
      xlab = 'Valor',
      ylab = 'Residuos')
 ````
 
 ```{r}
-#Calcular el RMSE en Entrenamiento
+#Se realizan las predicciones empleando el conjunto de datos de entrenamiento.
 entrenamiento$Prediccion <- predict(modelo.simple)
-sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
 
 # predecir valores de diff en el conjunto de datos de prueba
 prueba$Prediccion <- predict(modelo.simple, newdata = prueba)
-#Calcular el RMSE en prueba
-#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
+```
 
-#entrenamiento[,c(1,4,18)]
-#prueba[,c(1,4,18)]
+````{r}
+confint(modelo.simple)
+#Residual Standard Error (RSE)
+sigma(modelo.simple)/mean(prueba$diff)
+````
 
+```{r}
 resultados_rs <- rbind(entrenamiento,prueba)
 resultados_rs$Modelo <- 'Regresión Simple'
 ```
 
-###### Comparación de ventas reales vrs prediciones
+##### Comparación de ventas reales vrs prediciones
 
-Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas historias. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
+Como se puede apreciar en los gráficos a continuación la predición de diferencias de las ventas se comporta de manera muy similar a las ventas históricas. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
 
 ```{r}
 par(mfrow = c(2,1))
@@ -1001,7 +998,8 @@ plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion,
 #### Modelos Regresión Multiple
 
 ##### Modelo de regresión lineal múltiple 0 (Modelo con las 12 variables)
-A fin de reforzar los resultados del modelo de regresion lineal, se crea un modelo de regresion multiple con las variables creadas con la diferencia de las ventas de los 13 meses analizados.
+
+A fin de reforzar los resultados del modelo de regresion lineal, se crea un modelo de regresion múltiple con las variables creadas con la diferencia de las ventas de las 13 fechas predecesoras a las compras realizadas.
 
 ````{r}
 #Para la creación del modelo 1 se empezará por un modelo "completo" 
@@ -1010,19 +1008,11 @@ modelo.multiple0 <- lm(diff ~ . , data = entrenamiento[,4:15])
 summary(modelo.multiple0)
 ```
 
-Como se observa anteriormente los resultados del modelo0 muestran como las variables mas significativas son las variables de los 6 fechas subsecuentes. 
+Como se observa anteriormente los resultados del modelo de regresión múltiple muestra como las variables más significativas son las variables de los 7 fechas subsecuentes. (Variables del Lag1 al Lag7)
 
 ###### Evaluación Modelo Regresión Múltiple 1
 
-````{r}
-#Distribución de los residuos del modelo basado en los montos de compras
-hist(modelo.multiple0$residuals,
-     main= 'Distribución de residuos Modelo de Regresión Múltiple 0',
-     xlab = 'Residuos',
-     ylab = 'Observaciones',
-     breaks = 50)
-````
-
+Nuevamente en este modelo se observa como la distribución de los residuos del modelo se centra en cero, lo cual es indicador de que el modelo presenta un comportamiento normal.
 
 ````{r}
 # Ver distribución de los residuos del modelo
@@ -1035,23 +1025,20 @@ plot(x = entrenamiento$diff,
 ````
 
 ```{r}
-#Calcular el RMSE en Entrenamiento
+#Predicción usando los datos de entrenamiento.
 entrenamiento$Prediccion <- predict(modelo.multiple0)
-#sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
 
-# predecir valores de la diferencia de compras
+# predecir valores de la diferencia de compras usando el dataset de pruebas
 prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba[,4:15])
-#Calcular el RMSE en prueba
-#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
 
-entrenamiento[,c(1,4,18)]
-prueba[,c(1,4,18)]
+#entrenamiento[,c(1,4,18)]
+#prueba[,c(1,4,18)]
 
 ```
 
-###### Comparación de ventas reales vrs prediciones
+##### Comparación de ventas reales vrs prediciones
 
-Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas historias, de igual manera se observa que el modelo se comporta de forma muy similar al comportamiento de regresión lineal simple.
+Como se puede apreciar en los gráficos a continuación la predición de la diferencia de las ventas se comporta de manera muy similar a las ventas históricas, de igual manera se observa que el modelo se comporta de forma muy similar al comportamiento de regresión lineal simple.
 
 ```{r}
 par(mfrow = c(2,1))
