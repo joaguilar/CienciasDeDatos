@@ -51,12 +51,12 @@ set.seed(100)
 # Fase de entendimiento del negocio
 ## Determinar los objetivos de negocio
 ### Objetivos de negocio
-1.	Incrementar las ventas enfocándose en los diferentes tipos de clientes
-2.	Mejorar la planeación de presupuestos mensuales a partir de los estimados de ventas a futuro.
+1.    Incrementar las ventas enfocándose en los diferentes tipos de clientes
+2.    Mejorar la planeación de presupuestos mensuales a partir de los estimados de ventas a futuro.
 
 ### Criterios de éxito (en términos de negocio)
 1.	Identificar los 3 segmentos de mercado más rentables para la empresa a fin de orientar la estrategia de ventas.
-2.	Mejorar las estimaciones de ventas mensuales en un 20% de su valor real.
+2.    Mejorar las estimaciones de ventas mensuales en un 20% de su valor real.
 
 ## Evaluación de la situación actual
 Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
@@ -833,34 +833,28 @@ export_df$kmedoids<-clusters_kmedoids$clustering
 export_df$kmeans<-clusters$cluster
 
 export_df<-export_df %>% 
-  mutate(kmeans = replace(kmeans, kmeans == 2, "Valor Medio")) %>%
-  mutate(kmeans = replace(kmeans, kmeans == 3, "Alto Valor")) %>%
-  mutate(kmeans = replace(kmeans, kmeans == 1, "Bajo Valor")) %>%
-  mutate(kmedoids = replace(kmedoids, kmedoids == 3, "Valor Medio")) %>%
-  mutate(kmedoids = replace(kmedoids, kmedoids == 2, "Alto Valor")) %>%
-  mutate(kmedoids = replace(kmedoids, kmedoids == 1, "Bajo Valor"))
+  mutate(kmeans = replace(kmeans, kmeans == 2, "2 Medio Valor")) %>%
+  mutate(kmeans = replace(kmeans, kmeans == 3, "1 Alto Valor")) %>%
+  mutate(kmeans = replace(kmeans, kmeans == 1, "3 Bajo Valor")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 3, "2 Medio Valor")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 2, "1 Alto Valor")) %>%
+  mutate(kmedoids = replace(kmedoids, kmedoids == 1, "3 Bajo Valor"))
 
 write.csv(export_df,"resultado_cluster.csv")
 
-
 centroides2<-centroides %>% 
-  mutate(cluster = replace(cluster, cluster == "2", "Valor Medio")) %>%
-  mutate(cluster = replace(cluster, cluster == "3", "Alto Valor")) %>%
-  mutate(cluster = replace(cluster, cluster == "1", "Bajo Valor"))
-
-
-
+  mutate(cluster = replace(cluster, cluster == "2", "2 Medio Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "3", "1 Alto Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "1", "3 Bajo Valor"))
 
 medoids_df2 <- medoids_df %>%
-  mutate(cluster = replace(cluster, cluster == "3", "Valor Medio")) %>%
-  mutate(cluster = replace(cluster, cluster == "2", "Alto Valor")) %>%
-  mutate(cluster = replace(cluster, cluster == "1", "Bajo Valor"))
+  mutate(cluster = replace(cluster, cluster == "3", "2 Medio Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "2", "1 Alto Valor")) %>%
+  mutate(cluster = replace(cluster, cluster == "1", "3 Bajo Valor"))
 
 export_clusters <- rbind(medoids_df2,centroides2)
 
 write.csv(export_clusters,"centros_clusters.csv")
-
-
 ```
 
 ### Modelos de regresión
@@ -868,26 +862,24 @@ write.csv(export_clusters,"centros_clusters.csv")
 
 #### Selección de los parámetros
 
-Para la construccion de los modelos de regresion se trabajara con el campo InvoiceDay y los totales de ventas, a fin de realizar la agregacion de las ventas de forma mensual y a partir de estos datos generar otras variables que no sean de utilidad para la prediccion. 
+Para la construccion de los modelos de regresion se trabajara con el campo InvoiceDay y los totales de ventas, a fin de realizar la agregacion de las ventas por la fecha de realización de las compras y poder monitorear el comportamiento mensual de las mismas y a partir de estos datos generar otras variables que no sean de utilidad para la predicción. 
 
 ```{r warning=FALSE}
+datos_ge$YearMonth <- format(as.Date(datos_ge$InvoiceDay), "%Y-%m")
 compras <- datos_ge %>% 
   group_by(InvoiceDay) %>%
-  summarise_at(vars(Total),funs(sum(.))) 
+  summarise_at(vars(Total),funs(sum(.)))
+
 colnames(compras) <- c('Fecha','ventas')
 kable(head(compras,10),"html", booktabs = T)%>%
   kable_styling(latex_options = "striped")
-
 head(compras)
 
-plot(x = compras$Fecha, y = compras$ventas, 
-     main = 'Ventas Mensuales', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="l")
+plot(x = compras$Fecha, y = compras$ventas, main = 'Ventas Mensuales', xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
 
 ```
 
-El siguiente paso a ejecutar es comparar la diferencia en ventas de u mes a otro.
+El siguiente paso a ejecutar es comparar la diferencia en ventas con la fecha predecesora.
 
 ```{r warning=FALSE}
 compras_diferencia <- compras
@@ -896,29 +888,24 @@ na.omit(compras_diferencia)
 # se procede a calcular la diferencia
 
 compras_diferencia['diferencia'] <- compras_diferencia$ventas - compras_diferencia$ventas_previas
-head(compras_diferencia)
+summary(compras_diferencia)
 
 ```
 
-Al analizar el comportamiento de la diferencia de las ventas a lo largo del tiempo se observa
-que el comportamiento de las mismas no pareciera tener un comportamiento estacionario, sino que se mantiene constante a lo largo del anno, exceptuando el mes de mayo, el cual es el mes en que se celebra el dia de la madre en la mayoria de paises y puede ser un indicador del incremento de las ventas durante este mes.
+Al analizar el comportamiento de la diferencia de las ventas a lo largo del tiempo se observa que el comportamiento de las mismas no pareciera tener un comportamiento estacionario, sino que se mantiene constante a lo largo del anno, exceptuando el mes de mayo, el cual es el mes en que se celebra el dia de la madre en la mayoria de paises y puede ser un indicador del incremento de las ventas durante este mes.
 
 ```{r}
-plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia, 
-     main = 'Ventas Mensuales', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="l")
-
+plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia,  main = 'Ventas Mensuales',  xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
 ```
 Posterior a esto se procede a crear las variables lag, las cuales nos permiten representar como columnas las ventas y el comportamiento de las mismas durante el periodo de un anno.
 
 ```{r}
-for (mes in 1:13){
-  field_name = paste('lag_',toString(mes))
-  compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=mes,fill=0)
+for (inc in 1:13){
+  field_name = paste('lag',toString(inc),sep = '')
+  compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=inc,fill=0)
 }
 
-colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', 'Dic_Anno1','Ene_Anno2','Feb_Anno2','Mar_Anno2','Abr_Anno2','May_Anno2','Jun_Anno2','Jul_Anno2','Ago_Anno2','Sep_Anno2','Oct_Anno2','Nov_Anno2','Dic_Anno2')
+colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', 'lag1','lag2','lag3','lag4','lag5','lag6','lag7','lag8','lag9','lag10','lag11','lag12','lag13')
 ```
 
 ```{r}
@@ -926,16 +913,18 @@ colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', '
 sample = sample.split(compras_diferencia$diff, SplitRatio = .75)
 entrenamiento = subset(compras_diferencia, sample == TRUE)
 prueba  = subset(compras_diferencia, sample == FALSE)
-
-summary(entrenamiento)
-summary(prueba)
+entrenamiento$Observacion <- 'Entrenamiento'
+prueba$Observacion <- 'Prueba'
 ```
+
+Se utiliza la función pairs para analizar la correlación de las 6 primeras variables lag y su correlación con la diferencia de las ventas
+
 ```{r}
-pairs(entrenamiento[4:15])
+pairs(entrenamiento[4:10])
 ```
 
 
-Se utiliza la funcion cor para identificar la correlacion entre las variables de ventas de los diferentes meses de forma numérica.
+Se utiliza la funcion cor para identificar la correlacion entre las 12 variables lag y su correspondiente relación con la fecha precedente.
 
 ```{r}
 cor(entrenamiento[4:15])
@@ -946,7 +935,7 @@ cor(entrenamiento[4:15])
 
 ```{r}
 #Se crea la regresion lineal simple para la diferencia de las ventas
-modelo.simple <- lm(diff ~ Dic_Anno1, data = entrenamiento)
+modelo.simple <- lm(diff ~ lag1, data = entrenamiento)
 #ver detalle del modelo
 summary(modelo.simple)
 
@@ -955,7 +944,7 @@ summary(modelo.simple)
 
 ##### Evaluación Modelo de regresión lineal simple
 ````{r}
-#Distribución de los residuos del modelo basado en el peso
+#Distribución de los residuos del modelo basado en la diferencia de los montos de compras
 hist(modelo.simple$residuals,
      main= 'Residuos del modelo de regresión simple',
      xlab = 'Residuos',
@@ -968,7 +957,7 @@ hist(modelo.simple$residuals,
 # Ver distribución de los residuos del modelo
 plot(x = entrenamiento$diff,
      y = modelo.simple$residuals,
-     main = 'Residuos del Modelo de Regresión simple en Entrenamiento',
+     main = 'Residuos del Modelo de Regresión simple en entrenamiento',
      xlab = 'Valor',
      ylab = 'Residuos')
 ````
@@ -983,10 +972,16 @@ prueba$Prediccion <- predict(modelo.simple, newdata = prueba)
 #Calcular el RMSE en prueba
 #sqrt(mean((prueba$diff - prueba$Prediccion)^2))
 
-entrenamiento[,c(1,4,18)]
-prueba[,c(1,4,18)]
+#entrenamiento[,c(1,4,18)]
+#prueba[,c(1,4,18)]
 
+resultados_rs <- rbind(entrenamiento,prueba)
+resultados_rs$Modelo <- 'Regresión Simple'
 ```
+
+###### Comparación de ventas reales vrs prediciones
+
+Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas historias. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
 
 ```{r}
 par(mfrow = c(2,1))
@@ -1013,18 +1008,14 @@ A fin de reforzar los resultados del modelo de regresion lineal, se crea un mode
 modelo.multiple0 <- lm(diff ~ . , data = entrenamiento[,4:15])
 # ver el detalle del resumen
 summary(modelo.multiple0)
-
 ```
 
-Como se observa anteriormente los resultados del modelo0 muestran como las variables mas significativas son las variables de los 6 primeros meses. Por lo que se creara un modelo 2 para comparar los resultados.
+Como se observa anteriormente los resultados del modelo0 muestran como las variables mas significativas son las variables de los 6 fechas subsecuentes. 
 
-Por lo que se procede a crear un segundo modelo unicamente con estas variables
-
-
-###### Evaluación Modelo 0
+###### Evaluación Modelo Regresión Múltiple 1
 
 ````{r}
-#Distribución de los residuos del modelo basado en el peso
+#Distribución de los residuos del modelo basado en los montos de compras
 hist(modelo.multiple0$residuals,
      main= 'Distribución de residuos Modelo de Regresión Múltiple 0',
      xlab = 'Residuos',
@@ -1035,9 +1026,10 @@ hist(modelo.multiple0$residuals,
 
 ````{r}
 # Ver distribución de los residuos del modelo
+par(mfrow = c(1,2))
 plot(x = entrenamiento$diff,
      y = modelo.multiple0$residuals,
-     main = 'Residuos del Modelo de Regresión Múltiple 0',
+     main = 'Residuos del Modelo de Regresión Múltiple entrenamiento',
      xlab = 'Valor',
      ylab = 'Residuos')
 ````
@@ -1045,9 +1037,9 @@ plot(x = entrenamiento$diff,
 ```{r}
 #Calcular el RMSE en Entrenamiento
 entrenamiento$Prediccion <- predict(modelo.multiple0)
-sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
+#sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
 
-# predecir valores de mpg.mpg en el conjunto de datos de prueba
+# predecir valores de la diferencia de compras
 prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba[,4:15])
 #Calcular el RMSE en prueba
 #sqrt(mean((prueba$diff - prueba$Prediccion)^2))
@@ -1057,71 +1049,9 @@ prueba[,c(1,4,18)]
 
 ```
 
-```{r}
-par(mfrow = c(2,1))
-plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
-     main = 'Ventas Mensuales Reales', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
-lines(entrenamiento$Prediccion, type = "o", col = "blue")
-
-plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
-     main = 'Ventas Mensuales Predicion', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
-#lines(entrenamiento$Prediccion, type = "o", col = "blue")
-```
-
-
-##### Modelo de regresión lineal múltiple 1 (Modelo con 6 variables)
-
-Por lo que se procede a crear un segundo modelo únicamente con las variables con valores significativos mostrados por el modelo 0
-
-````{r}
-#Para la creación del modelo 1 se empezará por un modelo "Con las variables significativas" 
-modelo.multiple1 <- lm(diff ~ Dic_Anno1 + Ene_Anno2 + Feb_Anno2 + Mar_Anno2 + Abr_Anno2 + May_Anno2 , data = entrenamiento[,4:15])
-# ver el detalle del resumen
-summary(modelo.multiple1)
-
-```
-
-###### Evaluación Modelo 1
-
-````{r}
-#Distribución de los residuos del modelo basado en el peso
-hist(modelo.multiple1$residuals,
-     main= 'Residuos del Modelo de Regresión Múltiple 1',
-     xlab = 'Residuos',
-     ylab = 'Observaciones',
-     breaks = 50)
-````
-
-
-````{r}
-# Ver distribución de los residuos del modelo
-plot(x = entrenamiento$diff,
-     y = modelo.multiple1$residuals,
-     main = 'Residuos del Modelo de Regresión Múltiple 1',
-     xlab = 'Valor',
-     ylab = 'Residuos')
-````
-
-```{r}
-#Calcular el RMSE en Entrenamiento
-entrenamiento$Prediccion <- predict(modelo.multiple1)
-sqrt(mean((entrenamiento$diff - entrenamiento$Prediccion)^2))
-
-# predecir valores de mpg.mpg en el conjunto de datos de prueba
-prueba$Prediccion <- predict(modelo.multiple1, newdata = prueba[,4:15])
-#Calcular el RMSE en prueba
-#sqrt(mean((prueba$diff - prueba$Prediccion)^2))
-
-entrenamiento[,c(1,4,18)]
-prueba[,c(1,4,18)]
-```
-
 ###### Comparación de ventas reales vrs prediciones
 
+Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas historias, de igual manera se observa que el modelo se comporta de forma muy similar al comportamiento de regresión lineal simple.
 
 ```{r}
 par(mfrow = c(2,1))
@@ -1135,7 +1065,37 @@ plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion,
      main = 'Ventas Mensuales Predicion', 
      xlab = 'Fecha', 
      ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
-#lines(entrenamiento$Prediccion, type = "o", col = "blue")
+
 ```
 
+Para extraer el intervalo de confianza del modelo se utiliza la función confint
 
+````{r}
+confint(modelo.multiple0)
+#Residual Standard Error (RSE)
+sigma(modelo.multiple0)/mean(prueba$diff)
+````
+
+
+
+Se procede a exportar los datos a un archivo csv para la creación de los dashboards
+
+
+```{r}
+resultados_rm <- rbind(entrenamiento,prueba)
+resultados_rm$Modelo <- 'Regresión Multiple'
+
+
+resultado_regresion <- rbind(resultados_rs,resultados_rm)
+write.csv(resultado_regresion, "resultado_regresion.csv")
+```
+
+# Dashboard 
+
+Para la representación de los resultados se crearon 2 Dashboards los cuales muestran los resultados de los modelos de clustering y responden a la pregunta de los diferentes segmentos de mercado que se encontraron a través de las caracteristicas de las compras de los clientes, basado en su antiguedad, frecuencia de compras y montos de compra.
+
+El segundo dashboard presenta los resultados del modelo de regresión multiple y lineal para la predicción de las ventas.
+
+Los dashboard publicados se encuentran disponibles a través de Tableau Public.
+
+* https://public.tableau.com/profile/eilyn.francinie.salazar.miranda#!/vizhome/ProyectoFinal_CursoMineria_EspecializacionCD/Resumensegmentosdemercado?publish=yes
