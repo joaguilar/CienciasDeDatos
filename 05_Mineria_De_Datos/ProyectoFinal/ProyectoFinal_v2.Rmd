@@ -998,11 +998,14 @@ Podemos ver que los residuos del modelo se encuentran cercanos a cero lo cual es
 
 ````{r, warning=FALSE}
 # Ver distribución de los residuos del modelo
-plot(x = entrenamiento$Ventas,
-     y = modelo.simple$residuals,
-     main = 'Residuos del Modelo de regresión simple en entrenamiento',
-     xlab = 'Valor',
-     ylab = 'Residuos')
+
+ggplot(entrenamiento,aes(x=entrenamiento$Ventas,y = modelo.simple$residuals)) +
+  geom_point(size=2) +
+  labs(x="Valor",y="Residuos")+
+  ggtitle("Residuos del Modelo de regresión simple en entrenamiento")+
+  scale_y_continuous(labels = scales::comma) 
+ 
+
 ````
 
 ```{r, warning=FALSE}
@@ -1019,6 +1022,9 @@ confint(modelo.simple)
 sigma(modelo.simple)/mean(prueba$Ventas)
 ````
 
+Podemos ver que el sigma es de `r sigma(modelo.simple)/mean(prueba$Ventas)` para el modelo de regresión múltiple.
+
+
 ```{r}
 
 entrenamiento$Observacion <- 'entrenamiento'
@@ -1034,35 +1040,17 @@ resultados_rs$Modelo <- 'Regresión Simple'
 
 Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas históricas. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
 
-```{r}
-plot1 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1)) +
-  geom_line()+
+```{r, fig.width=14, fig.height=8}
+
+p <- ggplot() +
+  geom_line(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1, colour = "Ventas")) +
+  geom_line(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1, colour = "Predicción"))+
   geom_point()+
   labs(x="Mes de Compra")+
-  ggtitle("Ventas Mensuales Reales")
+  ggtitle("Comparación de Ventas Mensuales Reales vs Predicción (Regresión Simple)")+
+  scale_colour_manual("",labels = c("Ventas", "Predicción"), values = c("blue", "red")) 
+p
 
-
-plot2 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1)) +
-  geom_line()+
-  geom_point()+
-  labs(x="Mes de Compra")+
-  ggtitle("Ventas Mensuales Predicion")
-
-
-grid.arrange(plot1, plot2)
-
-#plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
-#     main = 'Ventas Mensuales Reales', 
-#     xlab = 'Fecha', 
-#     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
-#lines(entrenamiento$Prediccion, type = "o", col = "blue")
-
-
-#plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
-#     main = 'Ventas Mensuales Predicion', 
-#     xlab = 'Fecha', 
-#     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
-#lines(entrenamiento$Prediccion, type = "o", col = "blue")
 ```
 
 #### Modelos Regresión Multiple
@@ -1085,12 +1073,14 @@ Nuevamente en este modelo se observa como la distribución de los residuos del m
 
 ````{r}
 # Ver distribución de los residuos del modelo
-par(mfrow = c(1,2))
-plot(x = entrenamiento$Ventas,
-     y = modelo.multiple0$residuals,
-     main = 'Residuos del Modelo de Regresión Múltiple entrenamiento',
-     xlab = 'Valor',
-     ylab = 'Residuos')
+
+ggplot(entrenamiento,aes(x=entrenamiento$Ventas,y = modelo.multiple0$residuals)) +
+  geom_point(size=2) +
+  labs(x="Valor",y="Residuos")+
+  ggtitle("Residuos del Modelo de Regresión Múltiple entrenamiento")+
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_continuous(labels = scales::comma) 
+
 ````
 
 ```{r}
@@ -1109,21 +1099,17 @@ prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba[,4:15])
 
 Como se puede apreciar en los gráficos a continuación la predición de la diferencia de las ventas se comporta de manera muy similar a las ventas históricas, de igual manera se observa que el modelo se comporta de forma muy similar al comportamiento de regresión lineal simple.
 
-```{r}
-plot1 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1)) +
-  geom_line()+
+```{r, fig.width=14, fig.height=8}
+
+p <- ggplot() +
+  geom_line(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1, colour = "Ventas")) +
+  geom_line(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1, colour = "Predicción"))+
   geom_point()+
   labs(x="Mes de Compra")+
-  ggtitle("Ventas Mensuales Reales")
+  ggtitle("Comparación de Ventas Mensuales Reales vs Predicción (Regresión Múltiple)")+
+  scale_colour_manual("",labels = c("Ventas", "Predicción"), values = c("blue", "red")) 
+p
 
-
-plot2 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1)) +
-  geom_line()+
-  geom_point()+
-  labs(x="Mes de Compra")+
-  ggtitle("Ventas Mensuales Predición - Regresión Múltiple")
-
-grid.arrange(plot1, plot2)
 
 ```
 
@@ -1135,7 +1121,7 @@ confint(modelo.multiple0)
 sigma(modelo.multiple0)/mean(prueba$Ventas)
 ````
 
-
+Podemos ver que el sigma es de `r sigma(modelo.multiple0)/mean(prueba$Ventas)` para el modelo de regresión múltiple.
 
 Se procede a exportar los datos a un archivo csv para la creación de los dashboards
 
