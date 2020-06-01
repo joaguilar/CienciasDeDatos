@@ -45,6 +45,10 @@ library(data.table)
 #Se establece el seed.
 if(!require(viridis)) install.packages("viridis",dependencies = TRUE)
 library(viridis)
+if(!require(caret)) install.packages("caret",dependencies = TRUE)
+library(caret)
+if(!require(gridExtra)) install.packages("gridExtra",dependencies = TRUE)
+library(gridExtra)
 set.seed(100)
 ```
 
@@ -882,7 +886,7 @@ Para este proyecto se emplearán las técnicas de regresión simple y regresión
 Para la construccion de los modelos de regresión se trabajara con el campo InvoiceDay y los montos de ventas, a fin de realizar la agregación de las ventas por la fecha de compras y poder monitorear el comportamiento mensual de las mismas y a partir de estos datos generar otras variables que nos sean de utilidad para la predicción. 
 
 ```{r warning=FALSE}
-#datos_ge$YearMonth <- format(as.Date(datos_ge$InvoiceDay), "%Y-%m")
+retail$YearMonth <- format(as.Date(retail$InvoiceDay), "%Y-%m")
 compras <- retail %>% 
   group_by(InvoiceDay) %>%
   summarise_at(vars(Total),funs(sum(.)))
@@ -895,8 +899,11 @@ kable(head(compras,10),"html", booktabs = T)%>%
 A continuación el siguiente gráfico muestra el comportamiento de las ventas de forma mensual.
 
 ```{r warning=FALSE}
-plot(x = compras$Fecha, y = compras$ventas, main = 'Ventas Mensuales', xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
-
+ggplot(data=compras, aes(x=Fecha, y=ventas, group=1)) +
+  geom_line()+
+  geom_point() +
+  labs(x="Mes de Compra")+
+  ggtitle("Comportamiento mensual de las ventas")
 ```
 
 El siguiente paso a ejecutar es comparar la diferencia en ventas con la fecha predecesora.
@@ -906,25 +913,24 @@ compras_diferencia <- compras
 compras_diferencia['ventas_previas'] <- shift(compras_diferencia$ventas,n=1,fill=0)
 compras_diferencia <- na.omit(compras_diferencia)
 # se procede a calcular la diferencia
+compras_diferencia['diff'] <- compras_diferencia$ventas - compras_diferencia$ventas_previas
 
-compras_diferencia['diferencia'] <- compras_diferencia$ventas - compras_diferencia$ventas_previas
 ```
 
-Al analizar el comportamiento de la diferencia de las ventas a lo largo del tiempo se observa que el comportamiento de las mismas no pareciera tener un comportamiento estacionario, sino que se mantiene constante a lo largo del anno, exceptuando el mes de mayo, el cual es el mes en que se celebra el dia de la madre en la mayoria de paises y puede ser un indicador del incremento de las ventas durante este mes.
+Al analizar el comportamiento de las ventas a lo largo del tiempo se observa que el comportamiento de las mismas pareciera tener un comportamiento similar a lo largo de todo el año, y se observa un incremento en las ventas a fin de mes.
 
-```{r}
-plot(x = compras_diferencia$Fecha, y = compras_diferencia$diferencia,  main = 'Diferencia de Ventas Mensuales',  xlab = 'Fecha',  ylab = 'Ventas totales mensuales', type="l")
-```
+
 Posterior a esto se procede a crear las variables lag, las cuales nos permiten representar como columnas las ventas y el comportamiento de las mismas durante el periodo de un año.
 
 La razón por la cual se crean 13 variables lag es debido a que por cada mes se tienen observaciones unicamente de alrededor de 13 dias.
 
 ```{r}
-for (inc in 1:13){
+for (inc in 0:12){
   field_name = paste('lag',toString(inc),sep = '')
-  compras_diferencia[field_name] <- shift(compras_diferencia$diferencia,n=inc,fill=0)
+  compras_diferencia[field_name] <- shift(compras_diferencia$diff,n=inc,fill=0)
 }
 
+compras_diferencia <- na.omit(compras_diferencia)
 colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', 'lag1','lag2','lag3','lag4','lag5','lag6','lag7','lag8','lag9','lag10','lag11','lag12','lag13')
 
 ```
@@ -933,7 +939,7 @@ colnames(compras_diferencia) <- c('Fecha', 'Ventas', 'Ventas_previas', 'diff', '
 #Se particiona el dataset en entrenamiento y prueba.
 #entrenamiento = compras_diferencia[compras_diferencia$Fecha <= '2011-10-31',]
 #prueba  = compras_diferencia[compras_diferencia$Fecha >= '2011-10-31',]
-sample = sample.split(compras_diferencia$diff, SplitRatio = .75)
+sample = sample.split(compras_diferencia$Ventas, SplitRatio = .75)
 entrenamiento = subset(compras_diferencia, sample == TRUE)
 prueba  = subset(compras_diferencia, sample == FALSE)
 ```
@@ -951,9 +957,9 @@ cor(entrenamiento[4:17])
 
 Para le modelo de regresión simple se utilizara únicamente la variable lag1.
 
-```{r}
+```{r, warning=FALSE}
 #Se crea la regresion lineal simple para la diferencia de las ventas
-modelo.simple <- lm(diff ~ lag1, data = entrenamiento)
+modelo.simple <- lm(Ventas ~ lag1, data = entrenamiento)
 #ver detalle del modelo
 summary(modelo.simple)
 
@@ -965,16 +971,16 @@ Al analizar la significancia estadistica de la variable lag1 se puede observar q
 
 Podemos ver que los residuos del modelo se encuentran cercanos a cero lo cual es indicador que el modelo se comporta de manera esperada.
 
-````{r}
+````{r, warning=FALSE}
 # Ver distribución de los residuos del modelo
-plot(x = entrenamiento$diff,
+plot(x = entrenamiento$Ventas,
      y = modelo.simple$residuals,
      main = 'Residuos del Modelo de regresión simple en entrenamiento',
      xlab = 'Valor',
      ylab = 'Residuos')
 ````
 
-```{r}
+```{r, warning=FALSE}
 #Se realizan las predicciones empleando el conjunto de datos de entrenamiento.
 entrenamiento$Prediccion <- predict(modelo.simple)
 
@@ -982,50 +988,71 @@ entrenamiento$Prediccion <- predict(modelo.simple)
 prueba$Prediccion <- predict(modelo.simple, newdata = prueba)
 ```
 
-````{r}
+````{r, warning=FALSE}
 confint(modelo.simple)
 #Residual Standard Error (RSE)
-sigma(modelo.simple)/mean(prueba$diff)
+sigma(modelo.simple)/mean(prueba$Ventas)
 ````
 
 ```{r}
+
+entrenamiento$Observacion <- 'entrenamiento'
+prueba$Observacion <- 'prueba'
+
 resultados_rs <- rbind(entrenamiento,prueba)
 resultados_rs$Modelo <- 'Regresión Simple'
 ```
 
+
+
 ##### Comparación de ventas reales vrs prediciones
 
-Como se puede apreciar en los gráficos a continuación la predición de diferencias de las ventas se comporta de manera muy similar a las ventas históricas. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
+Como se puede apreciar en los gráficos a continuación la predición de las ventas se comporta de manera muy similar a las ventas históricas. Durante el mes de mayo se observa una variación en las ventas reales, se observa un incremento en las ventas y posterior a esto una disminución, en el caso de las predicciones pareciera que el modelo no parecer ser capaz de predecir este comportamiento el cual podria analizarse si es una anomalia o si por el contrario se debe sobreajustar el modelo para que sea capaz de predecir estos cambios.
 
 ```{r}
-par(mfrow = c(2,1))
-plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
-     main = 'Ventas Mensuales Reales', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
-lines(entrenamiento$Prediccion, type = "o", col = "blue")
+plot1 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1)) +
+  geom_line()+
+  geom_point()+
+  labs(x="Mes de Compra")+
+  ggtitle("Ventas Mensuales Reales")
 
-plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
-     main = 'Ventas Mensuales Predicion', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
+
+plot2 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1)) +
+  geom_line()+
+  geom_point()+
+  labs(x="Mes de Compra")+
+  ggtitle("Ventas Mensuales Predicion")
+
+
+grid.arrange(plot1, plot2)
+
+#plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
+#     main = 'Ventas Mensuales Reales', 
+#     xlab = 'Fecha', 
+#     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
+#lines(entrenamiento$Prediccion, type = "o", col = "blue")
+
+
+#plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
+#     main = 'Ventas Mensuales Predicion', 
+#     xlab = 'Fecha', 
+#     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
 #lines(entrenamiento$Prediccion, type = "o", col = "blue")
 ```
 
 #### Modelos Regresión Multiple
 
-##### Modelo de regresión lineal múltiple 0 (Modelo con las 12 variables)
+##### Modelo de regresión lineal múltiple 0 (Modelo con las 6 variables)
 
-A fin de reforzar los resultados del modelo de regresion lineal, se crea un modelo de regresion múltiple con las variables creadas con la diferencia de las ventas de las 13 fechas predecesoras a las compras realizadas.
+A fin de reforzar los resultados del modelo de regresion lineal, se crea un modelo de regresion múltiple con las variables creadas con la diferencia de las ventas de 7 meses predecesoras a las compras realizadas.
 
 ````{r}
 #Para la creación del modelo 1 se empezará por un modelo "completo" 
-modelo.multiple0 <- lm(diff ~ . , data = entrenamiento[,4:15])
+modelo.multiple0 <- lm(Ventas ~ lag1 + lag2 + lag3 + lag4 + lag5 + lag6 + lag7, data = entrenamiento)
 # ver el detalle del resumen
 summary(modelo.multiple0)
 ```
 
-Como se observa anteriormente los resultados del modelo de regresión múltiple muestra como las variables más significativas son las variables de los 7 fechas subsecuentes. (Variables del Lag1 al Lag7)
 
 ###### Evaluación Modelo Regresión Múltiple 1
 
@@ -1034,7 +1061,7 @@ Nuevamente en este modelo se observa como la distribución de los residuos del m
 ````{r}
 # Ver distribución de los residuos del modelo
 par(mfrow = c(1,2))
-plot(x = entrenamiento$diff,
+plot(x = entrenamiento$Ventas,
      y = modelo.multiple0$residuals,
      main = 'Residuos del Modelo de Regresión Múltiple entrenamiento',
      xlab = 'Valor',
@@ -1058,17 +1085,20 @@ prueba$Prediccion <- predict(modelo.multiple0, newdata = prueba[,4:15])
 Como se puede apreciar en los gráficos a continuación la predición de la diferencia de las ventas se comporta de manera muy similar a las ventas históricas, de igual manera se observa que el modelo se comporta de forma muy similar al comportamiento de regresión lineal simple.
 
 ```{r}
-par(mfrow = c(2,1))
-plot(x = entrenamiento$Fecha, y = entrenamiento$diff, 
-     main = 'Ventas Mensuales Reales', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "red")
-lines(entrenamiento$Prediccion, type = "o", col = "blue")
+plot1 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Ventas, group=1)) +
+  geom_line()+
+  geom_point()+
+  labs(x="Mes de Compra")+
+  ggtitle("Ventas Mensuales Reales")
 
-plot(x = entrenamiento$Fecha, y = entrenamiento$Prediccion, 
-     main = 'Ventas Mensuales Predicion', 
-     xlab = 'Fecha', 
-     ylab = 'Ventas totales mensuales', type="o" ,col = "blue")
+
+plot2 <- ggplot(data=entrenamiento, aes(x=Fecha, y=Prediccion, group=1)) +
+  geom_line()+
+  geom_point()+
+  labs(x="Mes de Compra")+
+  ggtitle("Ventas Mensuales Predición - Regresión Múltiple")
+
+grid.arrange(plot1, plot2)
 
 ```
 
@@ -1077,7 +1107,7 @@ Para extraer el intervalo de confianza del modelo se utiliza la función confint
 ````{r}
 confint(modelo.multiple0)
 #Residual Standard Error (RSE)
-sigma(modelo.multiple0)/mean(prueba$diff)
+sigma(modelo.multiple0)/mean(prueba$Ventas)
 ````
 
 
@@ -1086,13 +1116,14 @@ Se procede a exportar los datos a un archivo csv para la creación de los dashbo
 
 
 ```{r}
-#entrenamiento$Observacion <- 'entrenamiento'
-#prueba$Observacion <- 'prueba'
+entrenamiento$Observacion <- 'entrenamiento'
+prueba$Observacion <- 'prueba'
 resultados_rm <- rbind(entrenamiento,prueba)
 resultados_rm$Modelo <- 'Regresión Multiple'
 
 
 resultado_regresion <- rbind(resultados_rs,resultados_rm)
+resultado_regresion$Test <- as.Date(resultado_regresion$Fecha, format = '%Y%m%d')
 write.csv(resultado_regresion, "resultado_regresion.csv")
 ```
 
