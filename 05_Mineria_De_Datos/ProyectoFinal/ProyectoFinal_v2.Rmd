@@ -1,5 +1,6 @@
 ---
-title: "Trabajo en clase # 1"
+title: "Proyecto Final"
+subtitle: "Inteligencia de Negocios y Mineria de Datos"
 author: "Jose Aguilar, Eilyn Salazar, Crisia Piedra"
 date: "1 de Junio, 2020"
 output: 
@@ -59,7 +60,7 @@ set.seed(100)
 2.    Mejorar las estimaciones de ventas mensuales en un 20% de su valor real.
 
 ## Evaluación de la situación actual
-Actualmente la compañía XYZ no cuenta con controles para estimar la demanda de los productos que ofrece a través de sus diferentes cadenas minoristas, esto produce que en ocasiones el inventario disponible sea insuficiente para cierto tipo de productos y en otras ocasiones haya exceso de existencias de otros, por esta razón desea optimizar la gestión de sus inventarios a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
+Actualmente la compañía XYZ no cuenta con controles para crear sus presupuestos, lo cual hace que termine gastando mas o menos de lo que le producen las ventas y no tiene en general un sistema de _forecast_ efectivo. Por esta razón desea optimizar la gestión de sus presupeustos a partir de la información histórica disponible sobre las ventas de los diferentes productos que se comercializan.
 
 Por otra parte, el departamento de mercadeo de la empresa desea optimizar su presupuesto enfocando sus esfuerzos en los clientes que son más rentables para la compañía para esto está considerando crear un programa de  fidelidad, sin embargo no cuenta con información sobre el perfil de sus mejores clientes.
 
@@ -129,7 +130,7 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 ## Determinar los objetivos de minería de datos
 
 ### Objetivos de minería de datos
-*	Identificar al menos 3 segmentos de mercados minoristas a partir de las ventas.
+*	Identificar 3 segmentos de mercados minoristas a partir de las ventas.
 *	Crear un modelo de predicción de ventas.
  
 
@@ -179,6 +180,7 @@ atributos<-read.csv('atributos.csv', sep = ',',dec = '.')
 kable(atributos[,0:3],caption = "Descripción de atributos")%>%
 kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
 ## Exploración de los datos
 
 Se aplicó la función summary para la obtención de las estadísticas básicas de cada variable del conjunto de datos. Por medio de este análisis es posible observar elementos interesantes como los valores mínimos y máximos de las cantidades. 
@@ -556,7 +558,21 @@ Para cubrir los objetivos planteados, se seleccionaron dos técnicas de aprendiz
 
 Para realizar el clustering esta tarea se hará uso de las técnicas de agrupamiento Kmedoids y Kmedias a fin de comprar los resultados de ambas técnicas usando diferentes parámetros de K.
 
-TODO: Teoria de RFM
+Para la construcción del modelo vamos a utilizar los datos que genera el modelo [RFM (*R*ecency, *F*requency, *M*onetary Value)](https://en.wikipedia.org/wiki/RFM_(market_research)), el cual utilizar 3 dimensiones de los clientes para definir su valor como clientes. Las tres dimensiones que utiliza son:
+
+* Recency (Antiguedad) – Que tan reciente es la última compra del cliente?
+
+* Frequency (Frequencia) – Que tan a menudo realizan una compra?
+
+* Monetary Value (Valor Monetario) – Cuánto gasta en sus compras?
+
+En este modelo se asigna un puntaje para cada una de estas categorias, por medio de una conversion simple:
+
+* Recency: El maximo entre "10-el numero de meses desde la ultima compra) o 1.
+* Frequency: El máximo entre el numero de compras por el cliente en los ultimos 12 meses o 1
+* Monetary = El valor de la compra mas grande del cliente.
+
+Sin embargo, para nuestro clustering, solamnete vamos a obtener los valores Antiguedad, Frecuencia y Valor Monetario de los clientes, y utilizar estos para crear los clusters que identifiquen los segmentos de mercado.
 
 ### Regresión para la predicción del total de ventas.
 
@@ -688,7 +704,7 @@ Para la selecion del numero optimo de clusters a crear, utilizamos 3 técnicas:
 
 * Método del codo
 
-* Estadística Gap
+Otra técnica comunmente utilizada, la estadística gap, no será evaluada, dado que al intentar ejecutarla no se logró que el proceso terminara satisfactoriamente.
 
 A continuación se muestran los resultados de estas técnicas:
 
@@ -716,7 +732,7 @@ fviz_nbclust(rfm_clustering,pam,method = 'wss',k.max = 10)
 
 ```
 
-Como se muestra en los graficos anteriores, el método de Silhouttey el método del codo, parecen mostrar 2 cortes para identificar la cantidad de clusteres óptimos con los valores de 3 y 6. Considerando que el requerimiento del negocio es agrupar a los clientes en 3 segmentos se utiliza este valor para k, para la creación del número de clusters.
+Como se muestra en los graficos anteriores, el método de Silhoutte y el método del codo, parecen mostrar 2 cortes para identificar la cantidad de clusteres óptimos con los valores de 3 y 6. *Considerando que el requerimiento del negocio es agrupar a los clientes en 3 segmentos se utiliza este valor para k, para la creación del número de clusters.*
 
 
 ```{r warning=FALSE}
@@ -867,9 +883,18 @@ medoids_df2 <- medoids_df %>%
   mutate(cluster = replace(cluster, cluster == "1", "1 Alto Valor")) %>%
   mutate(cluster = replace(cluster, cluster == "3", "3 Bajo Valor"))
 
+
 export_clusters <- rbind(medoids_df2,centroides2)
 
 write.csv(export_clusters,"centros_clusters.csv")
+```
+
+```{r warning=FALSE}
+mdf<-medoids_df2
+mdf$Tecnica<-NULL
+colnames(mdf)<-c("Segmento","Antiguedad","Cantidad de Transacciones","Montos")
+kable(mdf,"html", booktabs = T)%>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, position = "left")
 ```
 
 
